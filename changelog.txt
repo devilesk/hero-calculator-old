@@ -1,0 +1,23 @@
+2014-07-24
+- Added two new hero tabs. Use with the new comparison/delta value feature.
+- Added comparison/delta value feature. Delta values are calculated from the difference between the new hero tab and the old one.
+- Beta version of save feature added. Not stable yet, current save links may not work in the future due to changes.
+- Fixed Silencer Glaives of Wisdom.
+- Added intelligence steal for Silencer.
+
+2014-07-20
+- Fixed Silencer's Curse of the Silent.
+- Mask of Madness now affects EHP magical.
+- Eye of Skadi attack and movespeed slow now taken into account.
+- Shiva's Guard active movement speed reduction now taken into account.
+- Shiva's Guard Freezing Aura now taken into account for enemy's attack speed.
+- Fixed helm of iron will not giving +3 hp regen.
+
+2014-06-08
+- Fixed Lycan ult not affecting MS.
+- Fixed attribute stats not rounded in calculations.
+
+2014-05-29
+- Fixed bug where leveling up Keeper of the Light ultimate spent 3 skill points instead of 1.
+- Calculations now allow for Eul's speed bonus to stack to match the fact that they stack in-game.
+- Rather than reset all your skill points when you decrease your hero level, it will now just take away skill points based on which abilities you levelled last.
