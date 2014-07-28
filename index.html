@@ -15,9 +15,8 @@
     <link rel="stylesheet" href="/media/css/site.css" id="theme-css">
     <link rel="stylesheet" href="/media/css/syntax.css">
     <link rel="stylesheet" type="text/css" href="/media/css/heroes.css" />
-<link rel="stylesheet" type="text/css" href="hero-calculator.app.css" /><link rel="stylesheet" type="text/css" href="hero-calculator.items.css" /><link rel="stylesheet" type="text/css" href="jquery-ui-1.10.3.custom.css" />
-      
-    <!--<script src="/media/js/libs/modernizr-1.7.min.js"></script>!-->
+    <link rel="stylesheet" type="text/css" href="jquery-ui-1.10.3.custom.css" /><link rel="stylesheet" type="text/css" href="hero-calculator.items.css" /><link id="hero-css" rel="stylesheet" type="text/css" href="hero-calculator.app.css" />
+
 </head>
 <body id="index" class="page-webapps">
 <div class="wrapper">
@@ -33,15 +32,14 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="top-nav-menu nav navbar-nav">
-            <li class="dropdown li-community">
+			<li class="dropdown li-community">
                   <a href="/dota2/community" class="dropdown-toggle" data-toggle="dropdown">COMMUNITY <b class="caret"></b></a>
                   <ul class="dropdown-menu">
                     <li class="mobile-only"><a href="/dota2/community">Community Home</a></li>
                     <li class="divider mobile-only"></li>
                     <li class="dropdown-header">The International</li>
-                    <li><a href="/dota2/prize-pool-international-2014">Prize Pool Growth Chart</a></li>
-                                            <li><a href="/dota2/prize-pool-international-2014-2">Prize Pool Growth Chart 2</a></li>
-                                            <li><a href="/dota2/prize-pool-international-2014-3">Prize Pool Growth Chart 3</a></li>
+                    <li><a href="/dota2/international/2014">Tournament Results</a></li>
+                                            <li><a href="/dota2/international/2014/prizepool/">Prize Pool Growth Charts</a></li>
                                             <li class="dropdown-header">Community</li>
                     <li><a href="/dota2/community/streams">Live Streams</a></li>
                                             <li class="divider"></li><li class="dropdown-header">Patches</li>
@@ -69,6 +67,7 @@
                                             <li class="divider"></li><li class="dropdown-header">Other</li>
                     <li><a href="/dota2/apps/hero-calculator">Hero Calculator</a></li>
                                             <li><a href="/dota2/apps/hero-selection-trainer">Hero Selection Trainer</a></li>
+                                            <li><a href="/dota2/apps/item-scramble">Item Scramble</a></li>
                                                               </ul>
                 </li>
                 <li class="dropdown li-heroes">
@@ -92,46 +91,54 @@
                 </li>
                             
 <li class="li-forums"><a href="/dota2/forums/index.php">FORUMS</a></li>
-          </ul>
-        </div>
+		  </ul>
+		</div>
     </div>
 </div>
             <div data-bind="css: { container: !(sideView()) }">
           <header class="banner clearfix">
           <h2>Hero Calculator</h2>          </header>
-
-        <div class="col-md-8" data-bind="css: { 'col-md-8': displayShop(), 'col-md-12': !displayShop()}">
+        <div class="col-md-12 col-lg-8" data-bind="css: { 'col-lg-8': displayShop() && !shopPopout(), 'col-lg-12': !displayShop() || shopPopout()}">
             <ul class="nav nav-tabs">
-              <li class="active" id="popHero0" class="popHero" data-trigger="manual" data-toggle="popover" data-placement="bottom" data-bind="event: {mouseover: function() { $root.showPopover(0); }, mouseleave: function() { $root.hidePopover(0); }}"><a id="heroTab0" href="#hero0" style="color:#5cb85c" data-toggle="tab" data-bind="click: clickTab, text: heroes[0].hero().displayname()">Hero 1</a></li>
-              <li id="popHero4" class="popHero" data-trigger="manual" data-toggle="popover" data-placement="bottom" data-bind="event: {mouseover: function() { $root.showPopover(4); }, mouseleave: function() { $root.hidePopover(4); }}"><a id="heroTab4" href="#hero4" style="color:#5cb85c" data-toggle="tab" data-bind="click: clickTab, text: heroes[4].hero().displayname()">Hero 1-b</a></li>
-              <li><a id="unitTab0" href="#unit0" style="color:#5cb85c" data-toggle="tab" data-bind="click: clickTab, text: heroes[0].unit().hero().displayname()">Unit 1</a></li>
-              <li data-bind="visible: heroes[0].selectedHero().heroName == 'meepo'"><a id="cloneTab0" href="#clone0" style="color:#5cb85c" data-toggle="tab" data-bind="click: clickTab">Meepo Clone</a></li>
-              <!-- ko foreach: heroes[0].illusions() -->
+				<li class="active" id="popHero0" class="popHero" data-trigger="manual" data-toggle="popover" data-placement="bottom" data-bind="event: {mouseover: function() { $root.showPopover(0); }, mouseleave: function() { $root.hidePopover(0); }}">
+					<a id="heroTab0" href="#hero0" style="color:#5cb85c" data-toggle="tab" data-bind="click: clickTab, text: heroes[0].hero().displayname()">Hero 1</a>
+				</li>
+				<li id="popHero4" class="popHero" data-trigger="manual" data-toggle="popover" data-placement="bottom" data-bind="event: {mouseover: function() { $root.showPopover(4); }, mouseleave: function() { $root.hidePopover(4); }}">
+					<a id="heroTab4" href="#hero4" style="color:#5cb85c" data-toggle="tab" data-bind="click: clickTab, text: heroes[4].hero().displayname()">Hero 1-b</a>
+				</li>
+				<li><a id="unitTab0" href="#unit0" style="color:#5cb85c" data-toggle="tab" data-bind="click: clickTab, text: heroes[0].unit().hero().displayname()">Unit 1</a></li>
+				<li data-bind="visible: heroes[0].selectedHero().heroName == 'meepo'"><a id="cloneTab0" href="#clone0" style="color:#5cb85c" data-toggle="tab" data-bind="click: clickTab">Meepo Clone</a></li>
+				<!-- ko foreach: heroes[0].illusions() -->
                 <li>
                     <a style="color:#5cb85c" data-toggle="tab" data-bind="click: $parent.clickTab, attr: {'id': 'illusionTab' + $index(), 'href': '#illusion' + $index()}">Illusion<button class="close" data-bind="click: function(data, event) { $parent.removeTab($index, data, event, 0);}" style="margin-left: 5px;">&times;</button>
                     </a>
                 </li>
-              <!-- /ko -->
-              <li id="popHero1" class="popHero" data-trigger="manual" data-toggle="popover" data-placement="top" data-bind="event: {mouseover: function() { $root.showPopover(1); }, mouseleave: function() { $root.hidePopover(1); }}"><a id="heroTab1" href="#hero1" style="color:#d9534f" data-toggle="tab" data-bind="click: clickTab, text: heroes[1].hero().displayname()">Hero 2</a></li>
-              <li id="popHero5" class="popHero" data-trigger="manual" data-toggle="popover" data-placement="top" data-bind="event: {mouseover: function() { $root.showPopover(5); }, mouseleave: function() { $root.hidePopover(5); }}"><a id="heroTab5" href="#hero5" style="color:#d9534f" data-toggle="tab" data-bind="click: clickTab, text: heroes[5].hero().displayname()">Hero 2-b</a></li>
-              <li><a id="unitTab1" href="#unit1" style="color:#d9534f" data-toggle="tab" data-bind="click: clickTab, text: heroes[1].unit().hero().displayname()">Unit 2</a></li>
-              <li data-bind="visible: heroes[1].selectedHero().heroName == 'meepo'"><a id="cloneTab1" href="#clone1" style="color:#d9534f" data-toggle="tab" data-bind="click: clickTab">Meepo Clone</a></li>
-              <!-- ko foreach: heroes[1].illusions() -->
-                <li>
-                    <a style="color:#d9534f" data-toggle="tab" data-bind="click: $parent.clickTab, attr: {'id': 'illusionTab' + $index(), 'href': '#illusion' + $index()}">Illusion<button class="close" data-bind="click: function(data, event) { $parent.removeTab($index, data, event, 1);}" style="margin-left: 5px;">&times;</button>
-                    </a>
-                </li>
-              <!-- /ko -->
-              <li><a id="settingsTab" href="#settings" data-toggle="tab" data-bind="click: clickTab">Settings</a></li>
-              <li> <div class="checkbox" style="margin-left:15px"><label><input type="checkbox" data-bind="checked: sideView"> Side by side view</label></div></li>
-              <button class="close" data-bind="click: toggleDisplayShop, visible: !displayShop()">+</button>
+				<!-- /ko -->
+				<li id="popHero1" class="popHero" data-trigger="manual" data-toggle="popover" data-placement="top" data-bind="event: {mouseover: function() { $root.showPopover(1); }, mouseleave: function() { $root.hidePopover(1); }}">
+					<a id="heroTab1" href="#hero1" style="color:#d9534f" data-toggle="tab" data-bind="click: clickTab, text: heroes[1].hero().displayname()">Hero 2</a>
+				</li>
+				<li id="popHero5" class="popHero" data-trigger="manual" data-toggle="popover" data-placement="top" data-bind="event: {mouseover: function() { $root.showPopover(5); }, mouseleave: function() { $root.hidePopover(5); }}">
+					<a id="heroTab5" href="#hero5" style="color:#d9534f" data-toggle="tab" data-bind="click: clickTab, text: heroes[5].hero().displayname()">Hero 2-b</a>
+				</li>
+				<li><a id="unitTab1" href="#unit1" style="color:#d9534f" data-toggle="tab" data-bind="click: clickTab, text: heroes[1].unit().hero().displayname()">Unit 2</a></li>
+				<li data-bind="visible: heroes[1].selectedHero().heroName == 'meepo'"><a id="cloneTab1" href="#clone1" style="color:#d9534f" data-toggle="tab" data-bind="click: clickTab">Meepo Clone</a></li>
+				<!-- ko foreach: heroes[1].illusions() -->
+					<li>
+						<a style="color:#d9534f" data-toggle="tab" data-bind="click: $parent.clickTab, attr: {'id': 'illusionTab' + $index(), 'href': '#illusion' + $index()}">Illusion<button class="close" data-bind="click: function(data, event) { $parent.removeTab($index, data, event, 1);}" style="margin-left: 5px;">&times;</button>
+						</a>
+					</li>
+				<!-- /ko -->
+				<li><a id="settingsTab" href="#settings" data-toggle="tab" data-bind="click: clickTab">Settings</a></li>
+				<li><div class="checkbox" style="margin-left:15px"><label><input type="checkbox" data-bind="checked: sideView"> Side by side view</label></div></li>
+				<button class="btn btn-default btn-xs shop-button glyphicon glyphicon-plus pull-right" data-bind="click: toggleDisplayShop, visible: !displayShop() && !shopPopout()"></button>
+				<button class="btn btn-default btn-xs shop-button glyphicon glyphicon-new-window pull-right" data-bind="click: shopPopout, visible: !displayShop() && !shopPopout()"></button>
             </ul>
 
             <div class="tab-content">
             
                 <!-- ko foreach: new Array(2) -->
                 <!-- ko foreach: new Array(2) -->
-                <div class="tab-pane" data-bind="css: { active: $parentContext.$index()==0 && $index()==0, sideView: $root.showSideTab[$parentContext.$index() + $index()*4] }, attr: {id: 'hero' + ($parentContext.$index() + $index()*4)}, with: $root.heroes[$parentContext.$index() + $index()*4]">
+                <div class="tab-pane" data-bind="css: { active: $parentContext.$index()==0 && $index()==0, sideView: $root.showSideTabId('heroTab' + ($parentContext.$index() + $index()*4)) }, attr: {id: 'hero' + ($parentContext.$index() + $index()*4)}, with: $root.heroes[$parentContext.$index() + $index()*4]">
                     <div data-bind="css: { 'row-no-margin': ($root.layout() == 1) || $root.sideView() }" class="row">
                         <div class="col-md-4">
                             <img class="img-rounded" data-bind="attr:{src: '/media/images/heroes/' + selectedHero().heroName + '.png'}"/>
@@ -190,13 +197,25 @@
                                         </tr>
                                         <tr>
                                             <td><abbr title="sum of damage sources">Damage Per Attack:</abbr></td>
-                                            <td class="text-right"><span data-bind="html: damageTotalInfo().total.toFixed(2)"></span></td>
-                                            <td class="text-right"><span data-bind="html: damageTotalInfo().totalReduced.toFixed(2)"></span></td>
+                                            <td class="text-right">
+                                                <span data-bind="html: damageTotalInfo().total.toFixed(2)"></span>
+                                                <span data-bind="text: $root.getDiffText(damageTotalInfo().total.toFixed(2) - heroCompare().damageTotalInfo().total.toFixed(2)), css: {'diffPos': (damageTotalInfo().total.toFixed(2) - heroCompare().damageTotalInfo().total.toFixed(2)) > 0, 'diffNeg': (damageTotalInfo().total.toFixed(2) - heroCompare().damageTotalInfo().total.toFixed(2)) < 0}, visible: showDiff"></span>
+                                            </td>
+                                            <td class="text-right">
+                                                <span data-bind="html: damageTotalInfo().totalReduced.toFixed(2)"></span>
+                                                <span data-bind="text: $root.getDiffText(damageTotalInfo().totalReduced.toFixed(2) - heroCompare().damageTotalInfo().totalReduced.toFixed(2)), css: {'diffPos': (damageTotalInfo().totalReduced.toFixed(2) - heroCompare().damageTotalInfo().totalReduced.toFixed(2)) > 0, 'diffNeg': (damageTotalInfo().totalReduced.toFixed(2) - heroCompare().damageTotalInfo().totalReduced.toFixed(2)) < 0}, visible: showDiff"></span>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td><abbr title="damage per attack / attacks per second">DPS:</abbr></td>
-                                            <td class="text-right"><span data-bind="html: (damageTotalInfo().total * attacksPerSecond()).toFixed(2)"></span></td>
-                                            <td class="text-right"><span data-bind="html: (damageTotalInfo().totalReduced * attacksPerSecond()).toFixed(2)"></span></td>
+                                            <td class="text-right">
+                                                <span data-bind="html: (damageTotalInfo().total * attacksPerSecond()).toFixed(2)"></span>
+                                                <span data-bind="text: $root.getDiffText((damageTotalInfo().total * attacksPerSecond()).toFixed(2) - (heroCompare().damageTotalInfo().total * heroCompare().attacksPerSecond()).toFixed(2)), css: {'diffPos': ((damageTotalInfo().total * attacksPerSecond()).toFixed(2) - (heroCompare().damageTotalInfo().total * heroCompare().attacksPerSecond()).toFixed(2)) > 0, 'diffNeg': ((damageTotalInfo().total * attacksPerSecond()).toFixed(2) - (heroCompare().damageTotalInfo().total * heroCompare().attacksPerSecond()).toFixed(2)) < 0}, visible: showDiff"></span>
+                                            </td>
+                                            <td class="text-right">
+                                                <span data-bind="html: (damageTotalInfo().totalReduced * attacksPerSecond()).toFixed(2)"></span>
+                                                <span data-bind="text: $root.getDiffText((damageTotalInfo().totalReduced * attacksPerSecond()).toFixed(2) - (heroCompare().damageTotalInfo().totalReduced * heroCompare().attacksPerSecond()).toFixed(2)), css: {'diffPos': ((damageTotalInfo().totalReduced * attacksPerSecond()).toFixed(2) - (heroCompare().damageTotalInfo().totalReduced * heroCompare().attacksPerSecond()).toFixed(2)) > 0, 'diffNeg': ((damageTotalInfo().totalReduced * attacksPerSecond()).toFixed(2) - (heroCompare().damageTotalInfo().totalReduced * heroCompare().attacksPerSecond()).toFixed(2)) < 0}, visible: showDiff"></span>
+                                            </td>
                                         </tr>
                                         <tr data-bind="visible: damageTotalInfo().sourcesCrit.length > 0">
                                             <td><abbr title="sum of damage sources + avg crit damage">Damage Per Attack w/ Crit:</abbr></td>
@@ -210,8 +229,15 @@
                                         </tr>
                                         <tr><td colspan=3><strong><abbr title="with %chance taken into account">Damage Sources</abbr></strong></td></tr>
                                         <tr>
-                                            <td>Base Damage</td><td class="text-right"><span data-bind="html: ((baseDamage()[0] + baseDamage()[1])/2).toFixed(2)"></span></td>
-                                            <td class="text-right"><span data-bind="html: getReducedDamage((baseDamage()[0] + baseDamage()[1])/2, 'physical').toFixed(2)"></span></td>
+                                            <td>Base Damage</td>
+                                            <td class="text-right">
+                                                <span data-bind="html: ((baseDamage()[0] + baseDamage()[1])/2).toFixed(2)"></span>
+                                                <span data-bind="text: $root.getDiffText(((baseDamage()[0] + baseDamage()[1])/2).toFixed(2) - ((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2).toFixed(2)), css: {'diffPos': (((baseDamage()[0] + baseDamage()[1])/2).toFixed(2) - ((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2).toFixed(2)) > 0, 'diffNeg': (((baseDamage()[0] + baseDamage()[1])/2).toFixed(2) - ((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2).toFixed(2)) < 0}, visible: showDiff"></span>
+                                            </td>
+                                            <td class="text-right">
+                                                <span data-bind="html: getReducedDamage((baseDamage()[0] + baseDamage()[1])/2, 'physical').toFixed(2)"></span>
+                                                <span data-bind="text: $root.getDiffText(getReducedDamage((baseDamage()[0] + baseDamage()[1])/2, 'physical').toFixed(2) - getReducedDamage((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2, 'physical').toFixed(2)), css: {'diffPos': (getReducedDamage((baseDamage()[0] + baseDamage()[1])/2, 'physical').toFixed(2) - getReducedDamage((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2, 'physical').toFixed(2)) > 0, 'diffNeg': (getReducedDamage((baseDamage()[0] + baseDamage()[1])/2, 'physical').toFixed(2) - getReducedDamage((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2, 'physical').toFixed(2)) < 0}, visible: showDiff"></span>
+                                            </td>
                                         </tr>
                                     </tbody>
                                     <tbody data-bind="foreach: damageTotalInfo().sources">
@@ -530,7 +556,7 @@
                     
                 </div>
                 <!-- /ko -->
-                <div class="tab-pane" data-bind="css: { sideView: $parent.showSideTab[$index()+2] }, attr: {id: 'unit' + $index()}, with: $parent.heroes[$index()].unit">
+                <div class="tab-pane" data-bind="css: { sideView: $parent.showSideTabId('unitTab' + $index()) }, attr: {id: 'unit' + $index()}, with: $parent.heroes[$index()].unit">
                     <h4 style="color:red">Under Construction</h4>
                     <div data-bind="css: { 'row-no-margin': $root.layout() == 1 }" class="row">
                         <div class="col-md-4"><img class="img-rounded" data-bind="attr:{src: selectedUnit().image}"/></div>
@@ -590,7 +616,7 @@
                         <div class="col-md-3"><table class="table table-condensed">
                         <tbody>
                         <tr><td>Armor:</td><td class="text-right"><span data-bind="text: totalArmorPhysical"></span></td></tr>
-                        <tr><td>Magic Res:</td><td class="text-right"><span data-bind="html: (totalMagicResistance() * 100).toFixed(2) + '%'"></span></td></tr>
+                        <tr><td>Magic Res:</td><td class="text-right"><span data-bind="html: totalMagicResistance().toFixed(2) + '%'"></span></td></tr>
                         <tr><td>Lifesteal:</td><td class="text-right"><span data-bind="text: lifesteal"></span></td></tr>
                         <tr><td>Evasion:</td><td class="text-right"><span data-bind="text: evasion"></span></td></tr>
                         <tr><td>Bash:</td><td class="text-right"><span data-bind="text: bash"></span></td></tr>
@@ -745,7 +771,7 @@
      
                 </div>
       
-                <div class="tab-pane" data-bind="css: { sideView: $parent.showSideTab[$index()+3] }, attr: {id: 'clone' + $index()}, with: $parent.heroes[$index()].clone()">
+                <div class="tab-pane" data-bind="css: { sideView: $parent.showSideTabId('cloneTab' + $index()) }, attr: {id: 'clone' + $index()}, with: $parent.heroes[$index()].clone()">
                     <h4 style="color:red">Under Construction</h4>
                     <div data-bind="css: { 'row-no-margin': $root.layout() == 1 }" class="row">
                         <div class="col-md-4">
@@ -994,40 +1020,41 @@
                 
                 <!-- ko foreach: $parent.heroes[$index()].illusions() -->
                     <!-- ko data-bind="text: console.log($root.heroes[$parentContext.$index()].illusions()[$index()]())" --><!-- /ko -->
-                    <div class="tab-pane" data-bind="css: { sideView: $root.showSideTab[$parentContext.$index()+3+$index()] }, attr: {id: 'illusion' + $index()}">
+                    <div class="tab-pane" data-bind="css: { sideView: $root.showSideTabId('illusionTab' + $index()) }, attr: {id: 'illusion' + $index()}">
                         <h4 style="color:red">Under Construction</h4>
+						<div data-bind="css: { 'row-no-margin': $root.layout() == 1 }" class="row">
+							<div class="col-md-4">
+								<div class="img-rounded" style="background-color:#428bca;display:inline-block">
+									<img class="img-rounded" style="opacity:.5" data-bind="attr:{src: '/media/images/heroes/' + selectedHero().heroName + '.png'}"/>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<label for="illusionlevel" data-bind="text: illusionDisplayName"></label>
+								<table class="table">
+									<tbody>
+									<tr>
+										<td>Damage Dealt</td>
+										<td class="text-right" data-bind="text: (getOutgoingDamageMultiplier(illusionType(), false, hero().attacktype())*100).toFixed(0)+'%'"></td>
+									</tr>
+									<tr>
+										<td>Damage Taken</td>
+										<td class="text-right" data-bind="text: (getIncomingDamageMultiplier(illusionType(), false, hero().attacktype())*100).toFixed(0)+'%'"></td>
+									</tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="col-md-4">
+								<div data-bind="visible: illusionType() != 'item_manta'">
+									<label for="illusionlevel">Ability Level</label>
+									<select id="illusionlevel" class="form-control" data-bind="value: illusionAbilityLevel, foreach: new Array(illusionAbilityMaxLevel())">
+										<option data-bind="text: $index()+1"></option>
+									</select>
+								</div>
+							</div>
+						</div>
                         <div class="col-md-4" style="padding-left:0px;" data-bind="css: {'col-md-4': $root.layout() == 0, 'row-no-margin': $root.layout() == 1}">
                         
-                            <div data-bind="css: { 'row-no-margin': $root.layout() == 1 }" class="row">
-                                <div class="col-md-4">
-                                    <div class="img-rounded" style="background-color:#428bca;display:inline-block">
-                                        <img class="img-rounded" style="opacity:.5" data-bind="attr:{src: '/media/images/heroes/' + selectedHero().heroName + '.png'}"/>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="illusionlevel" data-bind="text: illusionDisplayName"></label>
-                                    <table class="table">
-                                        <tbody>
-                                        <tr>
-                                            <td>Damage Dealt</td>
-                                            <td class="text-right" data-bind="text: (getOutgoingDamageMultiplier(illusionType(), false, hero().attacktype())*100).toFixed(0)+'%'"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Damage Taken</td>
-                                            <td class="text-right" data-bind="text: (getIncomingDamageMultiplier(illusionType(), false, hero().attacktype())*100).toFixed(0)+'%'"></td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="col-md-4">
-                                    <div data-bind="visible: illusionType() != 'item_manta'">
-                                        <label for="illusionlevel">Ability Level</label>
-                                        <select id="illusionlevel" class="form-control" data-bind="value: illusionAbilityLevel, foreach: new Array(illusionAbilityMaxLevel())">
-                                            <option data-bind="text: $index()+1"></option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+
                     
                             <div class="row">
                                 <h3 class="col-md-12">Stats <a class="btn btn-default btn-xs" data-bind="click: toggleStatDetails, text: !showStatDetails() ? 'Show more' : 'Show less'"></a></h3>
@@ -1074,7 +1101,7 @@
                 
                 <!-- /ko -->
                 
-                <div class="tab-pane" id="settings" data-bind="css: { sideView: $root.showSideTab[6] }">
+                <div class="tab-pane" id="settings" data-bind="css: { sideView: $root.showSideTabId('settingsTab') }">
                     <h3>Settings</h3>
                     <label>Display the stat section as a column or in a row.</label>
                     <div class="form-group">
@@ -1106,12 +1133,12 @@
                 </div>
             </div>
         </div>
-        <div data-bind="template: { name: 'shop-template'}"></div>
+        <div id="shop-dialog" data-bind="template: { name: 'shop-template'}, css: {'popped-out': shopPopout()}"></div>
         <div class="col-md-12">
         <p><hr></p>
         </div>
         <div class="col-md-12 form">
-            <div class="">
+            <div>
                 <div class="form-group text-right">
                     <button class="btn btn-default" data-toggle="modal" data-target="#myModal">Report a bug</button>
                 </div>
@@ -1122,7 +1149,7 @@
                     <input type="text" id="savelink" class="form-control text-right" data-bind="value: saveLink" onClick="this.select()"></input>
                 </div>
             </div>
-            
+            <div id="last-update" class="pull-right text-right" style="font-size:8pt"></div>
         </div>
         <div class="col-md-12">
         </div>
@@ -1191,24 +1218,29 @@
         return false;
       }
     });
+	var cssPath = "hero-calculator.app";
     if (readCookie('theme') == 'light') {
         $('#theme-css').attr('href','/media/css/site-light.css');
+        $('#hero-css').attr('href', cssPath + '-light.css');
         $("#theme-select").val('light');
     }
     else {
         $('#theme-css').attr('href','/media/css/site.css');
+        $('#hero-css').attr('href', cssPath + '.css');
         $("#theme-select").val('dark');
     }
     $('#theme-select').change( function() {
         var expiration_date = 365*24*60*60*1000;
         if ($(this).val() == 'light') {
             $('#theme-css').attr('href','/media/css/site-light.css');
+			$('#hero-css').attr('href', cssPath + '-light.css');
             var d = new Date();
             d.setTime(d.getTime() + expiration_date);
             document.cookie = 'theme=light;path=/;expires='+d.toGMTString()+';max-age='+expiration_date+';';
         }
         else {
             $('#theme-css').attr('href','/media/css/site.css');
+			$('#hero-css').attr('href', cssPath + '.css');
             var d = new Date();
             d.setTime(d.getTime() + expiration_date);
             document.cookie = 'theme=dark;path=/;expires='+d.toGMTString()+';max-age='+expiration_date+';';
@@ -1225,10 +1257,10 @@
         return null;
     }
   </script>
-      <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.4.1/knockout.mapping.js"></script>
-    <script src="jquery-ui-1.10.3.custom.js"></script>
+    <script src="jquery-ui-1.11.0.custom.js"></script>
     <script src="hero-calculator.inventory.js"></script>
     <script src="hero-calculator.tooltips.js"></script>
     <script src="hero-calculator.abilitydata.js"></script>
@@ -1239,12 +1271,15 @@
     <script src="hero-calculator.hero.illusion.js"></script>
     <script src="hero-calculator.hero.meepo.js"></script>
     <script src="hero-calculator.unit.js"></script>
+    <script src="hero-calculator.ko-bindings.js"></script>
     <script src="hero-calculator.app.js"></script>
-        <script type="text/javascript">
-    $(function () {
-        HEROCALCULATOR.init("/media/js/herodata.json","/media/js/itemdata.json","/media/js/unitdata.json");
-    });
-</script>
+    <script type="text/javascript">
+        $(function () {
+            var lastUpdate = "Development";
+            $('#last-update').text(lastUpdate);
+            HEROCALCULATOR.init("/media/js/herodata.json","/media/js/itemdata.json","/media/js/unitdata.json");
+        });
+    </script>
   
 
   <!--[if lt IE 7 ]>

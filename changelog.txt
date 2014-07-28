@@ -1,3 +1,9 @@
+- Medusa split shot damage reduction now taken into account.
+
+2014-07-26
+- Reworked side by side view tab selection. It will now display the last two tabs you select.
+- Detachable shop window popout.
+
 2014-07-24
 - Added two new hero tabs. Use with the new comparison/delta value feature.
 - Added comparison/delta value feature. Delta values are calculated from the difference between the new hero tab and the old one.

@@ -195,7 +195,9 @@ var HEROCALCULATOR = (function (my) {
             return (self.enemy().ability().getArmorBaseReduction() * self.debuffs.getArmorBaseReduction() * (my.unitData[self.selectedUnit().heroName()].armorphysical + self.totalAgi()*.14)
                     + self.inventory.getArmor() + self.ability().getArmor() + self.enemy().ability().getArmorReduction() + self.buffs.getArmor() + self.debuffs.getArmorReduction()).toFixed(2);
         });
-        self.totalArmorPhysicalReduction = ko.observable();
+        self.totalArmorPhysicalReduction = ko.computed(function() {
+			return ((0.06 * self.totalArmorPhysical()) / (1 + 0.06 * self.totalArmorPhysical()) * 100).toFixed(2);
+		});
         self.totalMovementSpeed = ko.computed(function() {
             if (self.parent.ability().isShapeShiftActive()) {
                 return 522;

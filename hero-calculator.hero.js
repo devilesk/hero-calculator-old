@@ -305,7 +305,9 @@ var HEROCALCULATOR = (function (my) {
             return (self.enemy().ability().getArmorBaseReduction() * self.debuffs.getArmorBaseReduction() * (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].armorphysical + self.totalAgi()*.14)
                     + self.inventory.getArmor() + self.enemy().inventory.getArmorReduction() + self.ability().getArmor() + self.enemy().ability().getArmorReduction() + self.buffs.getArmor() + self.debuffs.getArmorReduction()).toFixed(2);
         });
-        self.totalArmorPhysicalReduction = ko.observable();
+        self.totalArmorPhysicalReduction = ko.computed(function() {
+			return ((0.06 * self.totalArmorPhysical()) / (1 + 0.06 * self.totalArmorPhysical()) * 100).toFixed(2);
+		});
         self.totalMovementSpeed = ko.computed(function() {
             var ms = (self.ability().setMovementSpeed() > 0 ? self.ability().setMovementSpeed() : self.buffs.setMovementSpeed());
             if (ms > 0) {
@@ -331,11 +333,11 @@ var HEROCALCULATOR = (function (my) {
         self.baseDamage = ko.computed(function() {
             var totalAttribute = self.totalAttribute(self.primaryAttribute()),
                 abilityBaseDamage = self.ability().getBaseDamage();
-            return [Math.floor((my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attackdamagemin + totalAttribute + abilityBaseDamage.total) * abilityBaseDamage.multiplier),
-                    Math.floor((my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attackdamagemax + totalAttribute + abilityBaseDamage.total) * abilityBaseDamage.multiplier)];
+            return [Math.floor((my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attackdamagemin + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier),
+                    Math.floor((my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attackdamagemax + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier)];
         });
         self.bonusDamage = ko.computed(function() {
-            return self.inventory.getBonusDamage().total
+            return ((self.inventory.getBonusDamage().total
                     + self.ability().getBonusDamage().total
                     + self.buffs.getBonusDamage().total
                     + Math.floor((self.baseDamage()[0] + self.baseDamage()[1])/2 
@@ -348,7 +350,8 @@ var HEROCALCULATOR = (function (my) {
                         (self.hero().attacktype() == 'DOTA_UNIT_CAP_RANGED_ATTACK' 
                             ? ((self.selectedHero().heroName == 'drow_ranger') ? self.ability().getBonusDamagePrecisionAura().total[0] * self.totalAgi() : self.buffs.getBonusDamagePrecisionAura().total[1])
                             : 0)
-                      );
+                      )
+                    ) * self.ability().getBaseDamageReductionPct());
         });
         self.bonusDamageReduction = ko.computed(function() {
             return Math.abs(self.enemy().ability().getBonusDamageReduction() + self.debuffs.getBonusDamageReduction());
@@ -368,7 +371,7 @@ var HEROCALCULATOR = (function (my) {
                        * self.debuffs.getMagicResistReduction();
         });
         self.totalMagicResistance = ko.computed(function() {
-            return (1 - self.totalMagicResistanceProduct()).toFixed(2);
+            return ((1 - self.totalMagicResistanceProduct()) * 100).toFixed(2);
         });
         self.bat = ko.computed(function() {
             var abilityBAT = self.ability().getBAT();
@@ -666,7 +669,7 @@ var HEROCALCULATOR = (function (my) {
                     }
                 break;
                 case 'magic':
-                    return value * (1 - self.enemy().totalMagicResistance());
+                    return value * (1 - self.enemy().totalMagicResistance()/100);
                 break;
                 case 'pure':
                     return value;
@@ -1149,7 +1152,13 @@ var HEROCALCULATOR = (function (my) {
         self.diff = {}
         self.getDiffFunction = function(prop) {
             return ko.computed(function() {
-                return self[prop]() - self.heroCompare()[prop]();
+                //console.log(prop, self[prop](), self.heroCompare()[prop]());
+                if (prop == 'baseDamage') {
+                    return [self[prop]()[0] - self.heroCompare()[prop]()[0], self[prop]()[1] - self.heroCompare()[prop]()[1]];
+                }
+                else {
+                    return self[prop]() - self.heroCompare()[prop]();
+                }
             }, this, { deferEvaluation: true });
         }
         for (var i = 0; i < self.diffProperties.length; i++) {

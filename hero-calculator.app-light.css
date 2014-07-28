@@ -11,7 +11,7 @@ img {
     color: #d9534f;
 }
 .modal-content {
-    background-color:#1c1d1f;
+    background-color:white;
 }
 .modal-header {
     border-bottom:1px solid #303239;
@@ -19,14 +19,21 @@ img {
 .modal-footer {
     border-top:1px solid #303239;
 }
+.ui-autocomplete {
+background-color: white;
+border: 1px solid #303239;
+}
+.progress > div {
+	color:black !important;
+}
 #shop-dialog {
 	width:100% !important;
 }
 #shop-dialog div {
-    background-color:#131415;
+    background-color:white;
 }
 #shop-dialog.popped-out div {
-	background-color:#111;
+	background-color:white;
 }
 .popped-out {
     box-shadow:2px 2px 2px 2px black;
@@ -50,7 +57,7 @@ position: relative;
 }
 .ui-widget-header {
 box-shadow:2px 2px 2px 2px black;
-background: #1c1d1f;
+background: #ddd;
 color: #222222;
 font-weight: bold;
 }
@@ -212,13 +219,13 @@ td {
 }
 .popover {
 	width:276px;
-    background-color:#1c1d1f;
+    background-color:white;
 }
 .popover.bottom .arrow:after {
-    border-bottom-color:#1c1d1f;
+    border-bottom-color:white;
 }
 .popover.top .arrow:after {
-    border-top-color:#1c1d1f;
+    border-top-color:white;
 }
 .btn-default {
 	border-color:#303239;

@@ -1,12 +1,14 @@
 <script type="text/html" id="shop-template">
-        <div class="col-md-12 col-lg-4" data-bind="visible: displayShop">
-            <ul id="shoptabs" class="nav nav-tabs">
+        <div id="shop-container" class="col-md-12 col-lg-4" data-bind="visible: displayShop() || shopPopout(), css: {'col-lg-4': !shopPopout()}, style: { 'padding-top': shopPopout() ? '5px' : '0px'}">
+              <button id="shop-minimize" class="btn btn-default btn-xs shop-button glyphicon glyphicon-minus pull-right" data-bind="click: toggleDisplayShop, visible: displayShop()"></button>
+              <button id="shop-maximize" class="btn btn-default btn-xs shop-button glyphicon glyphicon-plus pull-right" data-bind="click: toggleDisplayShop, visible: !displayShop()"></button>
+              <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-new-window pull-right" data-bind="click: shopPopout, visible: !shopPopout()"></button>
+            <ul id="shoptabs" class="nav nav-tabs" data-bind="visible: displayShop()">
               <li><a href="#shop_basic" data-toggle="tab">Basic</a></li>
               <li><a href="#shop_upgrade" data-toggle="tab">Upgrade</a></li>
               <li><a href="#shop_secret" data-toggle="tab">Secret</a></li>
-              <button class="close" data-bind="click: toggleDisplayShop">-</button>
             </ul>
-            <div class="tab-content text-center bottom-buffer2">
+            <div class="tab-content text-center bottom-buffer2" data-bind="visible: displayShop()">
                 <div class="tab-pane active" id="shop_basic">
                     <div class="hc-shop hc-shop-consumables" id="consumables"></div>
                     <div class="hc-shop hc-shop-attributes" id="attributes"></div>
@@ -197,7 +199,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" data-bind="visible: displayShop()">
                 <div class="input-group">
                     <input class="form-control" id="auto" data-bind="jqAuto: { autoFocus: true }, jqAutoSource: heroes[selectedTab()].inventory.itemOptions, jqAutoValue: selectedItem, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
                     <span class="input-group-btn">
@@ -208,7 +210,7 @@
 
         </div>
 
-        <div class="col-md-4" data-bind="visible: selectedItem && displayShop">
+        <div class="col-md-12 col-lg-4" data-bind="visible: selectedItem && displayShop(), css: {'col-lg-4': !shopPopout()}">
             <div data-bind="html: getItemTooltipData"></div>
             <div class="form-inline" data-bind="visible: getItemInputLabel() != ''">
                 <div class="form-group">
@@ -323,7 +325,7 @@
 </script>
 
 <script type="text/html" id="stat-template">
-    <span data-bind="text: hero[stat]()"></span><span data-bind="text: $root.getDiffText(hero.diff[stat]()), css: {'diffPos': hero.diff[stat]() > 0, 'diffNeg': hero.diff[stat]() < 0}, visible: hero.showDiff"></span>
+    <span data-bind="text: parseFloat(hero[stat]()).toString()"></span><span data-bind="text: $root.getDiffText(hero.diff[stat]()), css: {'diffPos': hero.diff[stat]() > 0, 'diffNeg': hero.diff[stat]() < 0}, visible: hero.showDiff"></span>
 </script>
 
 <script type="text/html" id="stats0-template">
@@ -345,6 +347,7 @@
     <div class="col-md-12 stats1" data-bind="css: {'col-md-12': $root.layout() == 0, 'col-md-3': $root.layout() == 1}">
         <table class="table table-condensed">
         <tbody>
+		<tr><td>Armor:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'totalArmorPhysical' } }"></td></tr>
         <tr><td>Health:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'health' } }"></td></tr>
         <tr><td>Health Regen:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'healthregen' } }"></td></tr>
         <tr><td>Mana:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'mana' } }"></td></tr>
@@ -360,8 +363,8 @@
     <div class="col-md-12 stats2" data-bind="css: {'col-md-12': $root.layout() == 0, 'col-md-3': $root.layout() == 1}">
         <table class="table table-condensed">
         <tbody>
-        <tr><td>Armor:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'totalArmorPhysical' } }"></td></tr>
-        <tr><td>Magic Res:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'totalMagicResistance' } }"></td></tr>
+        <tr><td>%Phys Res:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'totalArmorPhysicalReduction' } }"></td></tr>
+        <tr><td>%Magic Res:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'totalMagicResistance' } }"></td></tr>
         <tr><td>%Lifesteal:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'lifesteal' } }"></td></tr>
         <tr><td>%Evasion:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'evasion' } }"></td></tr>
         <tr><td>%Bash:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'bash' } }"></td></tr>
@@ -384,9 +387,15 @@
         <tr>
             <td>Damage:</td>
             <td class="text-right">
-                <span data-bind="html: baseDamage()[0].toFixed(0) + '-' + baseDamage()[1].toFixed(0)"></span>
+                <span data-bind="text: baseDamage()[0].toFixed(0)"></span>
+                <span data-bind="text: $root.getDiffText(diff['baseDamage']()[0]), css: {'diffPos': diff['baseDamage']()[0] > 0, 'diffNeg': diff['baseDamage']()[0] < 0}, visible: showDiff"></span>
+                <span>-</span>
+                <span data-bind="text: baseDamage()[1].toFixed(0)"></span>
+                <span data-bind="text: $root.getDiffText(diff['baseDamage']()[1]), css: {'diffPos': diff['baseDamage']()[1] > 0, 'diffNeg': diff['baseDamage']()[1] < 0}, visible: showDiff"></span>
                 <span style="color:green" data-bind="visible: bonusDamage() > 0, text: ' + ' + bonusDamage()"></span>
+                <span data-bind="text: $root.getDiffText(diff['bonusDamage']()), css: {'diffPos': diff['bonusDamage']() > 0, 'diffNeg': diff['bonusDamage']() < 0}, visible: showDiff"></span>
                 <span style="color:red" data-bind="visible: bonusDamageReduction() != 0, text: ' - ' + bonusDamageReduction()"></span>
+                <span data-bind="text: $root.getDiffText(diff['bonusDamageReduction']()), css: {'diffPos': diff['bonusDamageReduction']() > 0, 'diffNeg': diff['bonusDamageReduction']() < 0}, visible: showDiff"></span>
             </td>
         </tr>
         <tr><td><abbr title="Increased Attack Speed">IAS</abbr>:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'ias' } }"></td></tr>

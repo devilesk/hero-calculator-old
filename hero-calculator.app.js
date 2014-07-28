@@ -1,136 +1,5 @@
 var HEROCALCULATOR = (function (my) {
 
-    ko.bindingHandlers.jqAuto = {
-        init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
-            var options = valueAccessor() || {},
-                allBindings = allBindingsAccessor(),
-                unwrap = ko.utils.unwrapObservable,
-                modelValue = allBindings.jqAutoValue,
-                source = allBindings.jqAutoSource,
-                valueProp = allBindings.jqAutoSourceValue,
-                inputValueProp = allBindings.jqAutoSourceInputValue || valueProp,
-                labelProp = allBindings.jqAutoSourceLabel || valueProp;
-
-            //function that is shared by both select and change event handlers
-            function writeValueToModel(valueToWrite) {
-                if (ko.isWriteableObservable(modelValue)) {
-                   modelValue(valueToWrite );  
-                } else {  //write to non-observable
-                   if (allBindings['_ko_property_writers'] && allBindings['_ko_property_writers']['jqAutoValue'])
-                            allBindings['_ko_property_writers']['jqAutoValue'](valueToWrite );    
-                }
-            }
-            
-            //on a selection write the proper value to the model
-            options.select = function(event, ui) {
-                writeValueToModel(ui.item ? ui.item.actualValue : null);
-            };
-                
-            //on a change, make sure that it is a valid value or clear out the model value
-            options.change = function(event, ui) {
-                var currentValue = $(element).val();
-                var matchingItem =  ko.utils.arrayFirst(unwrap(source), function(item) {
-                   return unwrap(item[inputValueProp]) === currentValue;  
-                });
-                
-                if (!matchingItem) {
-                   writeValueToModel(null);
-                }    
-            }
-            
-            
-            //handle the choices being updated in a DO, to decouple value updates from source (options) updates
-            var mappedSource = ko.dependentObservable(function() {
-                    mapped = ko.utils.arrayMap(unwrap(source), function(item) {
-                        var result = {};
-                        result.label = labelProp ? unwrap(item[labelProp]) : unwrap(item).toString();  //show in pop-up choices
-                        result.value = inputValueProp ? unwrap(item[inputValueProp]) : unwrap(item).toString();  //show in input box
-                        result.actualValue = valueProp ? unwrap(item[valueProp]) : item;  //store in model
-                        return result;
-                });
-                return mapped;                
-            });
-            
-            //whenever the items that make up the source are updated, make sure that autocomplete knows it
-            mappedSource.subscribe(function(newValue) {
-               $(element).autocomplete("option", "source", newValue); 
-            });
-            
-            options.source = mappedSource();
-            
-            //initialize autocomplete
-            $(element).autocomplete(options);
-        },
-        update: function(element, valueAccessor, allBindingsAccessor, viewModel) {
-           //update value based on a model change
-           var allBindings = allBindingsAccessor(),
-               unwrap = ko.utils.unwrapObservable,
-               modelValue = unwrap(allBindings.jqAutoValue) || '', 
-               valueProp = allBindings.jqAutoSourceValue,
-               inputValueProp = allBindings.jqAutoSourceInputValue || valueProp;
-            
-           //if we are writing a different property to the input than we are writing to the model, then locate the object
-           if (valueProp && inputValueProp !== valueProp) {
-               var source = unwrap(allBindings.jqAutoSource) || [];
-               var modelValue = ko.utils.arrayFirst(source, function(item) {
-                     return unwrap(item[valueProp]) === modelValue;
-               }) || {};  //probably don't need the || {}, but just protect against a bad value          
-           } 
-
-           //update the element with the value that should be shown in the input
-           $(element).val(modelValue && inputValueProp !== valueProp ? unwrap(modelValue[inputValueProp]) : modelValue.toString());    
-        }
-    };
-
-    ko.bindingHandlers.jqAutoCombo = {
-        init: function(element, valueAccessor) {
-           var autoEl = $("#" + valueAccessor());
-           
-            $(element).click(function() {
-               // close if already visible
-                if (autoEl.autocomplete("widget").is(":visible")) {
-                    autoEl.autocomplete( "close" );
-                    return;
-                }
-
-               //autoEl.blur();
-                autoEl.autocomplete("search", " ");
-                autoEl.focus(); 
-                
-            });
-            
-        }  
-    }
-    
-    ko.extenders.numeric = function(target, precision) {
-        //create a writeable computed observable to intercept writes to our observable
-        var result = ko.computed({
-            read: target,  //always return the original observables value
-            write: function(newValue) {
-                var current = target(),
-                    roundingMultiplier = Math.pow(10, precision),
-                    newValueAsNum = isNaN(newValue) ? 0 : parseFloat(+newValue),
-                    valueToWrite = Math.round(newValueAsNum * roundingMultiplier) / roundingMultiplier;
-     
-                //only write if it changed
-                if (valueToWrite !== current) {
-                    target(valueToWrite);
-                } else {
-                    //if the rounded value is the same, but a different value was written, force a notification for the current field
-                    if (newValue !== current) {
-                        target.notifySubscribers(valueToWrite);
-                    }
-                }
-            }
-        }).extend({ notify: 'always' });
-     
-        //initialize with current value to make sure it is rounded appropriately
-        result(target());
-     
-        //return the new computed observable
-        return result;
-    };
-    
     my.HeroCalculatorViewModel = function() {
         var self = this;
         self.heroes = [new my.HeroCalculatorModel(1), new my.HeroCalculatorModel(0)];
@@ -148,14 +17,12 @@ var HEROCALCULATOR = (function (my) {
         self.heroes.push(self.heroes[1].unit());
         self.heroes.push(new my.HeroCalculatorModel(0));
         self.heroes.push(new my.HeroCalculatorModel(1));
+        self.heroes[4].enemy(self.heroes[1]);
+        self.heroes[5].enemy(self.heroes[0]);
         self.heroes[0].heroCompare = ko.observable(self.heroes[4]);
         self.heroes[1].heroCompare = ko.observable(self.heroes[5]);
         self.heroes[4].heroCompare = ko.observable(self.heroes[0]);
         self.heroes[5].heroCompare = ko.observable(self.heroes[1]);
-        self.heroes[4].enemy = ko.observable(self.heroes[1]);
-        self.heroes[5].enemy = ko.observable(self.heroes[0]);
-        self.selectedTab = ko.observable(0);
-        self.selectedTabView = [ko.observable(true),ko.observable(true),ko.observable(false),ko.observable(false),ko.observable(false),ko.observable(false),ko.observable(false)];
         self.selectedItem = ko.observable();
         self.layout = ko.observable("1");
         self.displayShop = ko.observable(true);
@@ -163,10 +30,10 @@ var HEROCALCULATOR = (function (my) {
             self.displayShop(!self.displayShop());
         }
         self.allItems = ko.observableArray([
-            {name: 'Str,Agi,Int,MS,Turn,Sight', value: 'stats0'},
-            {name: 'Health,Mana,Regen,EHP', value: 'stats1'},
-            {name: 'Armor,Magic Res,Lifesteal,Evasion,Bash,Miss', value: 'stats2'},
-            {name: 'Damage,IAS,BAT,Attack', value: 'stats3'}
+            {name: 'Str, Agi, Int, MS, Turn, Sight', value: 'stats0'},
+            {name: 'Armor, Health, Mana, Regen, EHP', value: 'stats1'},
+            {name: 'Phys Res, Magic Res, Lifesteal, Evasion, Bash, Miss', value: 'stats2'},
+            {name: 'Damage, IAS, BAT, Attack', value: 'stats3'}
         ]); // Initial items
         self.selectedItems = ko.observableArray([]); 
         self.moveUp = function() {
@@ -185,60 +52,49 @@ var HEROCALCULATOR = (function (my) {
                 self.allItems.splice(start,0,e[0]);
             }    
         };
-        
+		self.selectedTabId = ko.observable('heroTab0');
+        self.selectedTab = ko.computed(function() {
+			switch (self.selectedTabId()) {
+				case 'heroTab0':
+					return 0;
+				break;
+				case 'heroTab1':
+					return 1;
+				break;
+				case 'unitTab0':
+					return 2;
+				break;
+				case 'unitTab1':
+					return 3;
+				break;
+				case 'heroTab4':
+					return 4;
+				break;
+				case 'heroTab5':
+					return 5;
+				break;
+				default:
+					return self.selectedTab();
+				break;
+			}
+		});
+        self.selectedTabs = ko.observableArray([]);
+		self.selectedTabs.push('heroTab0');
+		self.selectedTabs.push('heroTab1');
         self.clickTab = function(data, event) {
-            if (event.target.id == 'heroTab0') {
-                self.selectedTab(0);
-                self.selectedTabView[0](true);
-                self.selectedTabView[2](false);
-                self.selectedTabView[4](false);
-                self.selectedTabView[6](false);
-            }
-            else if (event.target.id == 'heroTab1') {
-                self.selectedTab(1);
-                self.selectedTabView[1](true);
-                self.selectedTabView[3](false);
-                self.selectedTabView[5](false);
-                self.selectedTabView[6](false);
-            }
-            else if (event.target.id == 'unitTab0') {
-                self.selectedTab(2);
-                self.selectedTabView[2](true);
-                self.selectedTabView[0](false);
-                self.selectedTabView[4](false);
-                self.selectedTabView[6](false);
-            }
-            else if (event.target.id == 'unitTab1') {
-                self.selectedTab(3);
-                self.selectedTabView[3](true);
-                self.selectedTabView[1](false);
-                self.selectedTabView[5](false);
-                self.selectedTabView[6](false);
-            }
-            else if (event.target.id == 'heroTab4') {
-                self.selectedTab(4);
-                self.selectedTabView[0](false);
-                self.selectedTabView[2](false);
-                self.selectedTabView[4](true);
-                self.selectedTabView[6](false);
-            }
-            else if (event.target.id == 'heroTab5') {
-                self.selectedTab(5);
-                self.selectedTabView[1](false);
-                self.selectedTabView[3](false);
-                self.selectedTabView[5](true);
-                self.selectedTabView[6](false);
-            }
-            else if (event.target.id == 'settingsTab') {
-                self.selectedTabView[6](true);
-            }
+			self.selectedTabId(event.target.id);
+			if (self.selectedTabs()[1] != event.target.id) {
+				self.selectedTabs.shift();
+				self.selectedTabs.push(event.target.id);
+			}
         };
-        
+
+		self.showSideTabId = function(id) {
+			return self.selectedTabs().indexOf(id) > -1 && self.sideView();
+		};
+		
         self.removeTab = function(index, data, event, tab) {
-            //console.log(tab);
-            //console.log(data);
             self.heroes[tab].illusions.remove(function(illusion) {
-                //console.log(illusion, data);
                 return illusion() == data;
             });
         };
@@ -246,33 +102,43 @@ var HEROCALCULATOR = (function (my) {
         self.sideView = ko.observable(false);
         self.sideView.subscribe(function(newValue) {
             if (newValue) {
-                self.displayShop(false);
-                self.layout(0);
+				if (!self.shopPopout()) {
+					self.displayShop(false);
+				}
+                self.layout("0");
             }
         });
-        self.showSideTab = [
-            ko.computed(function() {
-                return self.selectedTabView[0]() && self.sideView() && !self.selectedTabView[4]();
-            }),
-            ko.computed(function() {
-                return self.selectedTabView[1]() && self.sideView() && !self.selectedTabView[4]();
-            }),
-            ko.computed(function() {
-                return self.selectedTabView[2]() && self.sideView() && !self.selectedTabView[4]();
-            }),
-            ko.computed(function() {
-                return self.selectedTabView[3]() && self.sideView() && !self.selectedTabView[4]();
-            }),
-            ko.computed(function() {
-                return self.selectedTabView[4]() && self.sideView() && !self.selectedTabView[4]();
-            }),
-            ko.computed(function() {
-                return self.selectedTabView[5]() && self.sideView() && !self.selectedTabView[4]();
-            }),
-            ko.computed(function() {
-                return self.selectedTabView[6]() && self.sideView();
-            })
-        ];
+        self.shopPopout = ko.observable(false);
+        self.shopPopout.subscribe(function(newValue) {
+            if (newValue) {
+				self.displayShop(true);
+                $( "#shop-dialog" ).dialog({
+                    minWidth: 380,
+                    minHeight: 0,
+					closeText: "",
+					open: function( event, ui ) {
+						$(event.target.offsetParent).find('.ui-dialog-titlebar').find('button')
+							.addClass('close glyphicon glyphicon-remove shop-button btn btn-default btn-xs pull-right')
+							.removeClass('ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close close')
+							.css('margin-right','0px')
+							.parent()
+								.append($('#shop-minimize'))
+								.append($('#shop-maximize'));
+						$(event.target.offsetParent).find('.ui-dialog-titlebar').dblclick(function() {
+							self.displayShop(!self.displayShop());
+						});
+					},
+                    close: function( event, ui ) {
+                        self.shopPopout(false);
+                    }
+				});
+            }
+            else {
+				$('#shop-container').prepend($('#shop-minimize')).prepend($('#shop-maximize'));
+                $( "#shop-dialog" ).dialog("destroy");
+            }
+        });
+
         
         self.changeSelectedItem = function (data,event) {
             self.itemInputValue(1);
@@ -300,6 +166,7 @@ var HEROCALCULATOR = (function (my) {
         self.saveLink = ko.observable();
         self.save = function() {
             var data = {
+                version: "1.0.0",
                 heroes: []
             }
             var indices = [0,1,4,5];
@@ -327,7 +194,6 @@ var HEROCALCULATOR = (function (my) {
                 }
                 // buffs
                 for (var j = 0; j < hero.buffs.buffs().length; j++) {
-                    //console.log(hero.buffs.buffs()[j]);
                     d.buffs.push({
                         name: hero.buffs.buffs()[j].name,
                         level: hero.buffs.buffs()[j].data.level(),
@@ -336,7 +202,6 @@ var HEROCALCULATOR = (function (my) {
                 }
                 // debuffs
                 for (var j = 0; j < hero.debuffs.buffs().length; j++) {
-                    //console.log(hero.debuffs.buffs()[j]);
                     d.debuffs.push({
                         name: hero.debuffs.buffs()[j].name,
                         level: hero.debuffs.buffs()[j].data.level(),
@@ -345,11 +210,7 @@ var HEROCALCULATOR = (function (my) {
                 }
                 data.heroes.push(d);
             }
-            //var serialized = JSON.stringify(JSON.decycle(data));
             var serialized = JSON.stringify(data);
-            //var unserialized = JSON.retrocycle(JSON.parse(serialized));
-            //console.log(data, serialized, unserialized);
-            //self.load(unserialized);
             $.ajax({
                 type: "POST",
                 url: "/dota2/apps/hero-calculator/save.php",
@@ -357,14 +218,6 @@ var HEROCALCULATOR = (function (my) {
                 dataType: "json",
                 success: function(data){
                     self.saveLink("http://devilesk.com/dota2/apps/hero-calculator?id=" + data.file);
-                    /*var a = document.createElement('a');
-                    //a.style.float = 'left';
-                    a.href = "/dota2/apps/hero-calculator?id=" + data.file;
-                    a.target = "_blank";
-                    a.innerHTML = "devilesk.com/dota2/apps/hero-calculator?id=" + data.file;
-                    document.getElementById('savelink').innerHTML = "";
-                    document.getElementById('savelink').appendChild(a);
-                    */
                 },
                 failure: function(errMsg) {
                     alert("Save request failed.");
@@ -372,7 +225,6 @@ var HEROCALCULATOR = (function (my) {
             });
         }
         self.load = function(data) {
-            //console.log('load', data);
             var indices = [0,1,4,5];
             for (var i = 0; i < 4; i++) {
                 var hero = self.heroes[indices[i]];
@@ -406,20 +258,10 @@ var HEROCALCULATOR = (function (my) {
                     hero.debuffs.selectedBuff(_.findWhere(hero.debuffs.availableDebuffs(), {buffName: data.heroes[i].debuffs[j].name}));
                     hero.debuffs.addBuff(hero, {});
                     var b = _.findWhere(hero.debuffs.buffs(), { name: data.heroes[i].debuffs[j].name });
-                    //console.log('debuff b', hero.debuffs.buffs(), b);
                     b.data.level(data.heroes[i].debuffs[j].level);
                     b.data.isActive(data.heroes[i].debuffs[j].isActive);
                 }
             }
-            /*
-            self.allItems = ko.observableArray(data.allItems);
-            for (var i=0;i<data.heroes.length;i++) {
-                self.heroes[i].selectedHero(data.heroes[i].selectedHero)
-                self.heroes[i].selectedHeroLevel(data.heroes[i].selectedHeroLevel)
-                for (var j=0;j<data.heroes[i].ability.abilities.length;j++) {
-                    self.heroes[i].ability().abilities()[j].level(data.heroes[i].ability.abilities[j].level);
-                }
-            }*/
         }
         
         self.sendReport = function() {
@@ -539,7 +381,6 @@ var HEROCALCULATOR = (function (my) {
         $('#popHero1').popover({animation: false, html: true});
         $('#popHero4').popover({animation: false, html: true});
         $('#popHero5').popover({animation: false, html: true});
-        //console.log(my.heroCalculator.heroes);
         var saveId = getParameterByName('id');
         if (saveId) {
             $.get('save/' + saveId + '.json', function(data) {
