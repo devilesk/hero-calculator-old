@@ -2147,6 +2147,41 @@ var HEROCALCULATOR = (function (my) {
                 returnProperty: 'bonusAllStatsReduction'
             }
         ],
+        'slark_shadow_dance': [
+            {
+                label: 'Duration',
+                controlType: 'input'
+            },
+            {
+                attributeName: 'bonus_regen_pct',
+                label: 'TOTAL HEALTH REGENERATED:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a,parent) {
+                    return v*parent.health()*a/100;
+                }
+            },
+            {
+                attributeName: 'bonus_regen_pct',
+                label: 'HEALTH GAINED PER SECOND:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a,parent) {
+                    return parent.health()*a/100;
+                },
+                returnProperty: 'healthregen'
+            },
+            {
+                attributeName: 'bonus_movement_speed',
+                label: '%MOVE SPEED:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a) {
+                    return a;
+                },
+                returnProperty: 'movementSpeedPct'
+            }
+        ],
         'sniper_shrapnel': [
             {
                 label: 'Duration',
@@ -2724,12 +2759,12 @@ var HEROCALCULATOR = (function (my) {
             },
             {
                 attributeName: 'drain_pct',
-                label: '%HP DRAIN:',
+                label: 'HP DRAINED:',
                 ignoreTooltip: true, 
                 controlType: 'text',
                 fn: function(v,a,parent,index) {
                     return v*a;
-                },
+                }
             },
             {
                 label: 'Current MP',
@@ -2737,12 +2772,12 @@ var HEROCALCULATOR = (function (my) {
             },
             {
                 attributeName: 'drain_pct',
-                label: '%MP DRAIN:',
+                label: 'MP DRAINED:',
                 ignoreTooltip: true, 
                 controlType: 'text',
                 fn: function(v,a,parent,index) {
                     return v*a;
-                },
+                }
             },
             {
                 attributeName: 'bonus_attack_speed',
@@ -2752,6 +2787,15 @@ var HEROCALCULATOR = (function (my) {
                     return a;
                 },
                 returnProperty: 'attackspeed'
+            },
+            {
+                attributeName: 'bonus_damage_pct',
+                label: 'Total Damage',
+                controlType: 'text',
+                fn: function(v,a) {
+                    return a;
+                },
+                returnProperty: 'damageReduction'
             }
         ],
         'witch_doctor_paralyzing_cask': [

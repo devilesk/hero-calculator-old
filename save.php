@@ -1,7 +1,7 @@
 <?php 
     $data = $_POST['data']; 
     $file = generateRandomString();
-    header('Content-Type: application/json');
+    header('Content-Type: application/json;charset=utf-8');
     if($data) {
         if (file_put_contents("save/" . $file . ".json", $data)) {
             $output = array('file' => $file);

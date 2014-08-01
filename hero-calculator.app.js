@@ -288,7 +288,7 @@ var HEROCALCULATOR = (function (my) {
                 return '+' + parseFloat(value.toFixed(2));
             }
             else if (value < 0) {
-                return parseFloat(value.toFixed(2)).toString();
+                return '&minus;' + parseFloat(value.toFixed(2)*-1).toString();
             }
             else {
                 return '';
@@ -377,6 +377,8 @@ var HEROCALCULATOR = (function (my) {
     my.run = function() {
         my.heroCalculator = new my.HeroCalculatorViewModel();
         ko.applyBindings(my.heroCalculator);
+		$('#spinner').hide();
+		$('#hero-calc-wrapper').css('display', 'inline-block');
         $('#popHero0').popover({animation: false, html: true});
         $('#popHero1').popover({animation: false, html: true});
         $('#popHero4').popover({animation: false, html: true});

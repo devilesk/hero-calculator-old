@@ -21,11 +21,21 @@ var HEROCALCULATOR = (function (my) {
         self.activeItems = ko.observableArray([]);
         self.hasScepter = ko.computed(function() {
             for (var i=0;i<self.items().length;i++) {
-                var item = self.items()[i].item
+                var item = self.items()[i].item;
                 if (item == 'ultimate_scepter' && self.items()[i].enabled()) {
                     return true;
                 }
                 
+            }
+            return false;
+        }, this);
+        self.isEthereal = ko.computed(function() {
+            for (var i=0;i<self.items().length;i++) {
+                var item = self.items()[i].item;
+                var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
+                if ((item == 'ghost' || item == 'ethereal_blade') && self.items()[i].enabled() && isActive) {
+                    return true;
+                }
             }
             return false;
         }, this);
@@ -978,22 +988,42 @@ var HEROCALCULATOR = (function (my) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bonus_magical_armor':
-                            var d = parseInt(attribute.value[0]);
+                            var d = parseInt(attribute.value[0])/100;
                             if (d > totalAttribute) { totalAttribute = d; };
                         break;
                         case 'bonus_spell_resist':
-                            var d = parseInt(attribute.value[0]);
+                            var d = parseInt(attribute.value[0])/100;
                             if (d > totalAttribute) { totalAttribute = d; };
                         break;
                         case 'magic_resistance':
-                            var d = parseInt(attribute.value[0]);
+                            var d = parseInt(attribute.value[0])/100;
                             if (d > totalAttribute) { totalAttribute = d; };
                         break;
                     }
                 }
             }
-            return totalAttribute;
+            return 1 - totalAttribute;
         };
+        self.getMagicResistReductionSelf = function() {
+            var totalAttribute = 1;
+            for (var i=0; i<self.items().length;i++) {
+                var item = self.items()[i].item;
+                var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
+                if (!self.items()[i].enabled()) continue;
+                if (isActive) {
+                    for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                        var attribute = my.itemData['item_' + item].attributes[j];
+                        switch(attribute.name) {
+                            case 'extra_spell_damage_percent':
+							case 'ethereal_damage_bonus':
+                                return (1 - parseInt(attribute.value[0])/100);
+                            break;
+                        }
+                    }
+                }
+            }
+            return totalAttribute;
+        };   
         self.getMagicResistReduction = function() {
             var totalAttribute = 1;
             for (var i=0; i<self.items().length;i++) {
@@ -1005,6 +1035,7 @@ var HEROCALCULATOR = (function (my) {
                         var attribute = my.itemData['item_' + item].attributes[j];
                         switch(attribute.name) {
                             case 'ethereal_damage_bonus':
+                                if (!self.isEthereal()) totalAttribute *= (1 - parseInt(attribute.value[0])/100);
                             case 'resist_debuff':
                                 totalAttribute *= (1 - parseInt(attribute.value[0])/100);
                             break;

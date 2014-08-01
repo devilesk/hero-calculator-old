@@ -4,6 +4,9 @@
 img {
 	max-width: 100%;
 }
+.table>tbody+tbody {
+border-top: 1px solid #202125;
+}
 .diffPos {
     color: #5cb85c;
 }
@@ -25,6 +28,11 @@ border: 1px solid #303239;
 }
 .progress > div {
 	color:black !important;
+}
+.input-group-addon {
+    color: #555;
+    background-color: #eee;
+    border: 1px solid #ccc;
 }
 #shop-dialog {
 	width:100% !important;
@@ -159,19 +167,19 @@ margin:3px 0px;
   filter: alpha(opacity=100);
 }
 .item_active {
-	border:1px solid goldenrod;
+	border:2px solid goldenrod;
 	padding:0px;
 	float:left;
 }
 .item_inactive {
-	padding:1px;
+	padding:2px;
 	float:left;
 }
 .ability_active {
 	opacity:1;
 }
 .ability_inactive, .item_disabled, .section_disabled {
-	opacity:.4;
+	opacity:.35;
 }
 .ability_active:hover,.ability_inactive:hover,.item_active:hover,.item_inactive:hover,.hc-item:hover ,.section_header {
 	cursor:pointer;
@@ -229,6 +237,15 @@ td {
 }
 .btn-default {
 	border-color:#303239;
+}
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open .dropdown-toggle.btn-default, .toggled {
+color: #333;
+background-color: #ebebeb;
+border-color: #adadad;
+}
+.btn-default.disabled, .btn-default[disabled], fieldset[disabled] .btn-default, .btn-default.disabled:hover, .btn-default[disabled]:hover, fieldset[disabled] .btn-default:hover, .btn-default.disabled:focus, .btn-default[disabled]:focus, fieldset[disabled] .btn-default:focus, .btn-default.disabled:active, .btn-default[disabled]:active, fieldset[disabled] .btn-default:active, .btn-default.disabled.active, .btn-default[disabled].active, fieldset[disabled] .btn-default.active {
+background-color: #fff;
+border-color: #ccc;
 }
 .form-control {
 	border: 1px solid #303239;

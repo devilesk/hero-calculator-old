@@ -1,3 +1,17 @@
+2014-07-31
+- Fixed Power Treads description.
+
+2014-07-30
+- Fixed physical resistance calculation for negative armor.
+- Fixed magic resistance calculation.
+
+2014-07-29
+- Added Wisp Overcharge buff.
+- Added Slark Shadow Dance calculations.
+- Added Earthshaker enchant totem calculation.
+- Crystal Maiden Freezing Field Aghanim's effect now taken into account.
+
+2014-07-28
 - Medusa split shot damage reduction now taken into account.
 
 2014-07-26

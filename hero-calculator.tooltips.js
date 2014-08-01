@@ -37,7 +37,8 @@ var HEROCALCULATOR = (function (my) {
         '$move_speed':'Movement Speed',
         '$evasion':'Evasion',
         '$spell_resist':'Spell Resistance',
-        '$selected_attribute':'Selected Attribute'
+        '$selected_attribute':'Selected Attribute',
+        '$selected_attrib':'Selected Attribute'
     }
 
     function getTooltipItemAttributes(item) {

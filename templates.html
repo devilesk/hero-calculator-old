@@ -1,8 +1,8 @@
 <script type="text/html" id="shop-template">
         <div id="shop-container" class="col-md-12 col-lg-4" data-bind="visible: displayShop() || shopPopout(), css: {'col-lg-4': !shopPopout()}, style: { 'padding-top': shopPopout() ? '5px' : '0px'}">
-              <button id="shop-minimize" class="btn btn-default btn-xs shop-button glyphicon glyphicon-minus pull-right" data-bind="click: toggleDisplayShop, visible: displayShop()"></button>
-              <button id="shop-maximize" class="btn btn-default btn-xs shop-button glyphicon glyphicon-plus pull-right" data-bind="click: toggleDisplayShop, visible: !displayShop()"></button>
-              <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-new-window pull-right" data-bind="click: shopPopout, visible: !shopPopout()"></button>
+              <button id="shop-minimize" class="btn btn-default btn-xs shop-button glyphicon glyphicon-minus pull-right" data-bind="click: toggleDisplayShop, visible: displayShop()" title="Minimize shop"></button>
+              <button id="shop-maximize" class="btn btn-default btn-xs shop-button glyphicon glyphicon-plus pull-right" data-bind="click: toggleDisplayShop, visible: !displayShop()" title="Maximize shop"></button>
+              <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-new-window pull-right" data-bind="click: shopPopout, visible: !shopPopout()" title="Popout shop"></button>
             <ul id="shoptabs" class="nav nav-tabs" data-bind="visible: displayShop()">
               <li><a href="#shop_basic" data-toggle="tab">Basic</a></li>
               <li><a href="#shop_upgrade" data-toggle="tab">Upgrade</a></li>
@@ -238,6 +238,115 @@
     </div>
 </script>
 
+<script type="text/html" id="damage-amp-template">
+    <div class="col-md-12">
+        <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('damageamp'); }, css: { section_disabled: !sectionDisplay().damageamp() }">Damage Amplification & Reduction</h3>
+        <div data-bind="visible: sectionDisplay().damageamp()">
+            <h4 style="color:red">Under Construction</h4>
+            <div class="form-horizontal">
+                <div class="form-group">
+                        <div class="col-md-3 control-label">
+                            <label for="damageinput">Damage</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input class="form-control" id="damageinput" data-bind="value: damageInputValue" />
+                        </div>
+                </div>
+            </div>
+            <div class="form-horizontal">
+                <div class="form-group">
+                        <div class="col-md-3 control-label">
+                            <label for="buffampselect">Amplification</label>
+                        </div>
+                        <div class="col-md-6">
+                            <select id="buffampselect" class="form-control" data-bind="options: damageAmplification.availableBuffs , optionsText: 'buffDisplayName', value: damageAmplification.selectedBuff"></select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-default" data-bind="click: damageAmplification.addBuff">Add Ability</button>
+                        </div>
+                </div>
+            </div>
+            <div class="row" data-bind="foreach: damageAmplification.buffs">
+                <div data-bind="css: {row: $data.data.isDetail() || ($index() < $parent.damageAmplification.buffs().length-1 && $parent.damageAmplification.buffs()[$index()+1].data.isDetail()), row2: $data.data.isDetail() || ($index() < $parent.damageAmplification.buffs().length-1 && $parent.damageAmplification.buffs()[$index()+1].data.isDetail()) }">
+                    <div class="col-md-3 text-center bottom-buffer" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
+                        <img class="img-rounded ability" data-bind="css: { ability_active: $data.data.isActive() || $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.data.isActive() && $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1 }, attr:{src: '/media/images/spellicons/' + $data.data.name() + '.png'}, click: function(data, event) { $parent.damageAmplification.toggleBuff($index, data.data, event); }"/>
+                        <div class="progress" style="position:relative">
+                            <div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data.data) > 0, text: $data.data.level() + '/' + $parent.getAbilityLevelMax($data.data)"></div>
+                            <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;" data-bind="attr: { 'aria-valuenow': ($parent.getAbilityLevelMax($data.data) > 0 ? $data.data.level()/$parent.getAbilityLevelMax($data.data)*100 : 0) }, style: { width: ($parent.getAbilityLevelMax($data.data) > 0 ? $data.data.level()/$parent.getAbilityLevelMax($data.data)*100 : 0) + '%' }"></div>
+                        </div>
+                        <div class="btn-group btn-group-justified" data-bind="if: $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE') == -1">
+                            <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.damageAmplification.levelDownAbility($index, data.data, event, $parent); }">-</a>
+                            <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.damageAmplification.levelUpAbility($index, data.data, event, $parent); }">+</a>
+                        </div>
+                        <div class="btn-group btn-group-justified">
+                            <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.damageAmplification.toggleBuffDetail($index, data, event); }, css: {'toggled': $data.data.isDetail}">Details</a>
+                        </div>
+                    </div>
+                    <div class="col-md-9 bottom-buffer" data-bind="visible: $data.data.isDetail()">
+                        <button type="button" class="close" style="color:white" data-bind="click: function(data, event) { $parent.damageAmplification.toggleBuffDetail($index, data.data, event); }">&times;</button>
+                        <div data-bind="html: $parent.ability().getAbilityTooltipData($data.hero, $data.data.name())"></div>
+                        <div data-bind="if: $data.data.name() in $parent.damageAmplification.abilityData && $parent.damageAmplification.buffs()[$index()].data.level() > 0">
+                            <div class="col-md-8">
+                                <div data-bind="template: { name: 'buff-settings-template', data: $parent.damageAmplification.abilitySettingsData($data.data.name(), $parent, $index()) }"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-horizontal">
+                <div class="form-group">
+                        <div class="col-md-3 control-label">
+                            <label for="buffreductionselect">Reduction</label>
+                        </div>
+                        <div class="col-md-6">
+                            <select id="buffreductionselect" class="form-control" data-bind="options: damageReduction.availableDebuffs , optionsText: 'buffDisplayName', value: damageReduction.selectedBuff"></select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-default" data-bind="click: damageReduction.addBuff">Add Ability</button>
+                        </div>
+                </div>
+            </div>
+            <div class="row" data-bind="foreach: damageReduction.buffs">
+                <div data-bind="css: {row: $data.data.isDetail() || ($index() < $parent.damageReduction.buffs().length-1 && $parent.damageReduction.buffs()[$index()+1].data.isDetail()), row2: $data.data.isDetail() || ($index() < $parent.damageReduction.buffs().length-1 && $parent.damageReduction.buffs()[$index()+1].data.isDetail()) }">
+                    <div class="col-md-3 text-center bottom-buffer" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
+                        <img class="img-rounded ability" data-bind="css: { ability_active: $data.data.isActive() || $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.data.isActive() && $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1 }, attr:{src: '/media/images/spellicons/' + $data.data.name() + '.png'}, click: function(data, event) { $parent.damageReduction.toggleBuff($index, data.data, event); }"/>
+                        <div class="progress" style="position:relative">
+                            <div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data.data) > 0, text: $data.data.level() + '/' + $parent.getAbilityLevelMax($data.data)"></div>
+                            <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;" data-bind="attr: { 'aria-valuenow': ($parent.getAbilityLevelMax($data.data) > 0 ? $data.data.level()/$parent.getAbilityLevelMax($data.data)*100 : 0) }, style: { width: ($parent.getAbilityLevelMax($data.data) > 0 ? $data.data.level()/$parent.getAbilityLevelMax($data.data)*100 : 0) + '%' }"></div>
+                        </div>
+                        <div class="btn-group btn-group-justified" data-bind="if: $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE') == -1">
+                            <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.damageReduction.levelDownAbility($index, data.data, event, $parent); }">-</a>
+                            <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.damageReduction.levelUpAbility($index, data.data, event, $parent); }">+</a>
+                        </div>
+                        <div class="btn-group btn-group-justified">
+                            <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.damageReduction.toggleBuffDetail($index, data, event); }, css: {'toggled': $data.data.isDetail}">Details</a>
+                        </div>
+                    </div>
+                    <div class="col-md-9 bottom-buffer" data-bind="visible: $data.data.isDetail()">
+                        <button type="button" class="close" style="color:white" data-bind="click: function(data, event) { $parent.damageReduction.toggleBuffDetail($index, data.data, event); }">&times;</button>
+                        <div data-bind="html: $parent.ability().getAbilityTooltipData($data.hero, $data.data.name())"></div>
+                        <div data-bind="if: $data.data.name() in $parent.damageReduction.abilityData && $parent.damageReduction.buffs()[$index()].data.level() > 0">
+                            <div class="col-md-8">
+                                <div data-bind="template: { name: 'buff-settings-template', data: $parent.damageReduction.abilitySettingsData($data.data.name(), $parent, $index()) }"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h4>Calculations</h4>
+            <table class="table">
+                <tbody data-bind="foreach: damageInputModified().sources">
+                    <tr>
+                        <td><span data-bind="text: $data.label"></span></td>
+                        <td class="text-right"><span data-bind="text: Math.round($data.value * 100) / 100, style: {color: $parent.getDamageTypeColor($data.damageType)}"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>
+
 <script type="text/html" id="ability-template">
     <div data-bind="if: $data.displayname() != 'Empty' &&  ($data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_HIDDEN') == -1 || $data.name().indexOf('invoker_') != -1),
     style: {clear: $data.name() == 'invoker_cold_snap' || $data.name() == 'invoker_chaos_meteor' ? 'both' : ''}, css: {row: $data.isDetail() || ($index() < $parent.ability().abilities().length-1 && $parent.ability().abilities()[$index()+1].isDetail()), row3: $data.isDetail() || ($index() < $parent.ability().abilities().length-1 && $parent.ability().abilities()[$index()+1].isDetail()) }">
@@ -252,10 +361,39 @@
                 <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.ability().levelUpAbility($index, data, event, $parent); }">+</a>
             </div>
             <div class="btn-group btn-group-justified">
-                <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.ability().toggleAbilityDetail($index, data, event); }">Details</a>
+                <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.ability().toggleAbilityDetail($index, data, event); }, css: {'toggled': $data.isDetail}">Details</a>
             </div>
         </div>
         <div class="col-md-9 bottom-buffer" data-bind="visible: $data.isDetail()">
+            <button type="button" class="close" style="color:white" data-bind="click: function(data, event) { $parent.ability().toggleAbilityDetail($index, data, event); }">&times;</button>
+            <div data-bind="html: $parent.ability().getAbilityTooltipData($parent.hero().name(), $data.name())"></div>
+            <div data-bind="if: $data.name() in $parent.ability().abilityData && $parent.ability().abilities()[$index()].level() > 0">
+                <div class="col-md-8">
+                    <div data-bind="template: { name: 'ability-settings-template', data: $parent.ability().abilitySettingsData($data.name(), $parent, $index()) }"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="ability-2-template">
+    <div data-bind="if: $data.displayname() != 'Empty' &&  ($data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_HIDDEN') == -1 || $data.name().indexOf('invoker_') != -1),
+        style: {clear: $data.name() == 'invoker_cold_snap' || $data.name() == 'invoker_chaos_meteor' ? 'both' : ''}, css: {row: $data.isDetail() || ($index() < $parent.ability().abilities().length-1 && $parent.ability().abilities()[$index()+1].isDetail()), row3: $data.isDetail() || ($index() < $parent.ability().abilities().length-1 && $parent.ability().abilities()[$index()+1].isDetail()) }">
+        <div class="col-md-2 text-center bottom-buffer row2">
+            <img class="img-rounded ability" data-bind="css: { ability_active: $data.isActive() || $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.isActive() && $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1 }, attr:{src: '/media/images/spellicons/' + $data.name() + '.png'}, click: function(data, event) { $parent.ability().toggleAbility($index, data, event); }"/>
+            <div class="progress" style="position:relative">
+                <div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data) > 0, text: $data.level() + '/' + $parent.getAbilityLevelMax($data)"></div>
+                <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;" data-bind="attr: { 'aria-valuenow': ($parent.getAbilityLevelMax($data) > 0 ? $data.level()/$parent.getAbilityLevelMax($data)*100 : 0) }, style: { width: ($parent.getAbilityLevelMax($data) > 0 ? $data.level()/$parent.getAbilityLevelMax($data)*100 : 0) + '%' }"></div>
+            </div>
+            <div class="btn-group btn-group-justified" data-bind="if: $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE') == -1">
+                <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.ability().levelDownAbility($index, data, event, $parent); }">-</a>
+                <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.ability().levelUpAbility($index, data, event, $parent); }">+</a>
+            </div>
+            <div class="btn-group btn-group-justified">
+            <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.ability().toggleAbilityDetail($index, data, event); }, css: {'toggled': $data.isDetail}">Details</a>
+            </div>
+        </div>
+        <div class="col-md-10 bottom-buffer" data-bind="visible: $data.isDetail()">
             <button type="button" class="close" style="color:white" data-bind="click: function(data, event) { $parent.ability().toggleAbilityDetail($index, data, event); }">&times;</button>
             <div data-bind="html: $parent.ability().getAbilityTooltipData($parent.hero().name(), $data.name())"></div>
             <div data-bind="if: $data.name() in $parent.ability().abilityData && $parent.ability().abilities()[$index()].level() > 0">
@@ -325,7 +463,23 @@
 </script>
 
 <script type="text/html" id="stat-template">
-    <span data-bind="text: parseFloat(hero[stat]()).toString()"></span><span data-bind="text: $root.getDiffText(hero.diff[stat]()), css: {'diffPos': hero.diff[stat]() > 0, 'diffNeg': hero.diff[stat]() < 0}, visible: hero.showDiff"></span>
+    <span data-bind="text: parseFloat(hero[stat]()).toString()"></span><span data-bind="html: $root.getDiffText(hero.diff[stat]()), css: {'diffPos': hero.diff[stat]() > 0, 'diffNeg': hero.diff[stat]() < 0}, visible: hero.showDiff"></span>
+</script>
+
+<script type="text/html" id="stats-additional-template">
+    <table class="table table-condensed">
+        <tbody>
+            <tr><td>Base Strength:</td><td class="text-right"><span data-bind="text: hero().attributebasestrength"></span></td></tr>
+            <tr><td>Strength Gain:</td><td class="text-right"><span data-bind="text: hero().attributestrengthgain"></span></td></tr>
+            <tr><td>Base Agility:</td><td class="text-right"><span data-bind="text: hero().attributebaseagility"></span></td></tr>
+            <tr><td>Agility Gain:</td><td class="text-right"><span data-bind="text: hero().attributeagilitygain"></span></td></tr>
+            <tr><td>Base Intelligence:</td><td class="text-right"><span data-bind="text: hero().attributebaseintelligence"></span></td></tr>
+            <tr><td>Intelligence Gain:</td><td class="text-right"><span data-bind="text: hero().attributeintelligencegain"></span></td></tr>
+            <tr><td>Base Armor:</td><td class="text-right"><span data-bind="text: hero().armorphysical"></span></td></tr>
+            <tr><td>Base Magic Res:</td><td class="text-right"><span data-bind="text: hero().magicalresistance() + '%'"></span></td></tr>
+            <tr><td>Base Attack Point:</td><td class="text-right"><span data-bind="text: hero().attackpoint"></span></td></tr>
+        </tbody>
+    </table>
 </script>
 
 <script type="text/html" id="stats0-template">
@@ -369,7 +523,7 @@
         <tr><td>%Evasion:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'evasion' } }"></td></tr>
         <tr><td>%Bash:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'bash' } }"></td></tr>
         <tr><td>%Miss Chance:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'missChance' } }"></td></tr>
-        <tr><td colspan=2><a class="btn btn-default btn-block btn-xs" data-bind="css: {disabled: critInfo().sources.length == 0 ? 'disabled' : ''}, click: toggleCriticalStrikeDetails">Critical Strike Details</a></td></tr>
+        <tr><td colspan=2><a class="btn btn-default btn-block btn-xs" data-bind="css: {disabled: critInfo().sources.length == 0 ? 'disabled' : '', 'toggled': showCriticalStrikeDetails}, click: toggleCriticalStrikeDetails">Critical Strike Details</a></td></tr>
         </tbody>
         <tbody class="tabledropdown" style="border-top:0" data-bind="visible: showCriticalStrikeDetails(),foreach: critInfo().sources">
         <tr><td colspan=2><strong data-bind="text: $data.name"></strong></td></tr>
@@ -387,23 +541,23 @@
         <tr>
             <td>Damage:</td>
             <td class="text-right">
-                <span data-bind="text: baseDamage()[0].toFixed(0)"></span>
-                <span data-bind="text: $root.getDiffText(diff['baseDamage']()[0]), css: {'diffPos': diff['baseDamage']()[0] > 0, 'diffNeg': diff['baseDamage']()[0] < 0}, visible: showDiff"></span>
-                <span>-</span>
-                <span data-bind="text: baseDamage()[1].toFixed(0)"></span>
-                <span data-bind="text: $root.getDiffText(diff['baseDamage']()[1]), css: {'diffPos': diff['baseDamage']()[1] > 0, 'diffNeg': diff['baseDamage']()[1] < 0}, visible: showDiff"></span>
-                <span style="color:green" data-bind="visible: bonusDamage() > 0, text: ' + ' + bonusDamage()"></span>
-                <span data-bind="text: $root.getDiffText(diff['bonusDamage']()), css: {'diffPos': diff['bonusDamage']() > 0, 'diffNeg': diff['bonusDamage']() < 0}, visible: showDiff"></span>
-                <span style="color:red" data-bind="visible: bonusDamageReduction() != 0, text: ' - ' + bonusDamageReduction()"></span>
-                <span data-bind="text: $root.getDiffText(diff['bonusDamageReduction']()), css: {'diffPos': diff['bonusDamageReduction']() > 0, 'diffNeg': diff['bonusDamageReduction']() < 0}, visible: showDiff"></span>
+                <span data-bind="html: baseDamage()[0].toFixed(0)"></span>
+                <span data-bind="html: $root.getDiffText(diff['baseDamage']()[0]), css: {'diffPos': diff['baseDamage']()[0] > 0, 'diffNeg': diff['baseDamage']()[0] < 0}, visible: showDiff"></span>
+                <span>&ndash;</span>
+                <span data-bind="html: baseDamage()[1].toFixed(0)"></span>
+                <span data-bind="html: $root.getDiffText(diff['baseDamage']()[1]), css: {'diffPos': diff['baseDamage']()[1] > 0, 'diffNeg': diff['baseDamage']()[1] < 0}, visible: showDiff"></span>
+                <span style="color:green" data-bind="visible: bonusDamage() > 0, html: ' + ' + bonusDamage()"></span>
+                <span data-bind="html: $root.getDiffText(diff['bonusDamage']()), css: {'diffPos': diff['bonusDamage']() > 0, 'diffNeg': diff['bonusDamage']() < 0}, visible: showDiff"></span>
+                <span style="color:red" data-bind="visible: bonusDamageReduction() != 0, html: ' - ' + bonusDamageReduction()"></span>
+                <span data-bind="html: $root.getDiffText(diff['bonusDamageReduction']()), css: {'diffPos': diff['bonusDamageReduction']() > 0, 'diffNeg': diff['bonusDamageReduction']() < 0}, visible: showDiff"></span>
             </td>
         </tr>
         <tr><td><abbr title="Increased Attack Speed">IAS</abbr>:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'ias' } }"></td></tr>
         <tr><td><abbr title="Base Attack Time">BAT</abbr>:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'bat' } }"></td></tr>
         <tr><td>Attack Time:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'attackTime' } }"></td></tr>
-        <tr><td>Attack / Sec:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'attacksPerSecond' } }"></td></tr>
+        <tr><td>Attack &frasl; Sec:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'attacksPerSecond' } }"></td></tr>
         <tr><td>Attack Range:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'totalattackrange' } }"></td></tr>
-        <tr><td colspan=2><a class="btn btn-default btn-block btn-xs" data-bind="click: toggleDamageDetails">Damage Details</a></td></tr>
+        <tr><td colspan=2><a class="btn btn-default btn-block btn-xs" data-bind="click: toggleDamageDetails, css: {'toggled': showDamageDetails}">Damage Details</a></td></tr>
         </tbody>
         </table>
     </div>

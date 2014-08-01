@@ -115,6 +115,7 @@ var HEROCALCULATOR = (function (my) {
             new my.BuffOption('skeleton_king','skeleton_king_hellfire_blast'),
             new my.BuffOption('skeleton_king','skeleton_king_reincarnation'),
             new my.BuffOption('skywrath_mage','skywrath_mage_concussive_shot'),
+            new my.BuffOption('skywrath_mage','skywrath_mage_ancient_seal'),
             new my.BuffOption('slardar','slardar_slithereen_crush'),
             new my.BuffOption('slardar','slardar_amplify_damage'),
             new my.BuffOption('slark','slark_essence_shift'),
@@ -167,6 +168,7 @@ var HEROCALCULATOR = (function (my) {
                 a.bonusAgility2 = ko.observable(0);
                 a.bonusInt = ko.observable(0);
                 a.bonusAllStatsReduction = ko.observable(0);
+				a.damageReduction = ko.observable(0);
                 a.evasion = ko.observable(0);
                 a.magicResist = ko.observable(0);
                 a.manaregen = ko.observable(0);
@@ -211,6 +213,8 @@ var HEROCALCULATOR = (function (my) {
                         for (var i=0;i<self.abilityControlData[abilityName].data.length;i++) {
                             if (self.abilityControlData[abilityName].data[i].controlVal.dispose != undefined) {
                                 self.abilityControlData[abilityName].data[i].controlVal.dispose();
+							}
+							if (self.abilityControlData[abilityName].data[i].clean != undefined) {
                                 self.abilityControlData[abilityName].data[i].clean.dispose();
                             }
                         }

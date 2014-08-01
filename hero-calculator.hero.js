@@ -66,7 +66,7 @@ var HEROCALCULATOR = (function (my) {
         self.illusionAbilityMaxLevel = ko.computed(function() {
             return my.illusionData[self.selectedIllusion().illusionName].max_level;
         });
-        self.showDiff = ko.observable(true);
+        self.showDiff = ko.observable(false);
         self.getAbilityLevelMax = function(data) {
             if (data.abilitytype() == 'DOTA_ABILITY_TYPE_ATTRIBUTES') {
                 return 10;
@@ -306,7 +306,13 @@ var HEROCALCULATOR = (function (my) {
                     + self.inventory.getArmor() + self.enemy().inventory.getArmorReduction() + self.ability().getArmor() + self.enemy().ability().getArmorReduction() + self.buffs.getArmor() + self.debuffs.getArmorReduction()).toFixed(2);
         });
         self.totalArmorPhysicalReduction = ko.computed(function() {
-			return ((0.06 * self.totalArmorPhysical()) / (1 + 0.06 * self.totalArmorPhysical()) * 100).toFixed(2);
+			var totalArmor = self.totalArmorPhysical();
+			if (totalArmor >= 0) {
+				return ((0.06 * self.totalArmorPhysical()) / (1 + 0.06 * self.totalArmorPhysical()) * 100).toFixed(2);
+			}
+			else {
+				return -((0.06 * -self.totalArmorPhysical()) / (1 + 0.06 * -self.totalArmorPhysical()) * 100).toFixed(2);
+			}
 		});
         self.totalMovementSpeed = ko.computed(function() {
             var ms = (self.ability().setMovementSpeed() > 0 ? self.ability().setMovementSpeed() : self.buffs.setMovementSpeed());
@@ -332,9 +338,11 @@ var HEROCALCULATOR = (function (my) {
         });
         self.baseDamage = ko.computed(function() {
             var totalAttribute = self.totalAttribute(self.primaryAttribute()),
-                abilityBaseDamage = self.ability().getBaseDamage();
-            return [Math.floor((my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attackdamagemin + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier),
-                    Math.floor((my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attackdamagemax + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier)];
+                abilityBaseDamage = self.ability().getBaseDamage(),
+                minDamage = my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attackdamagemin,
+                maxDamage = my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attackdamagemax;
+            return [Math.floor((minDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier),
+                    Math.floor((maxDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier)];
         });
         self.bonusDamage = ko.computed(function() {
             return ((self.inventory.getBonusDamage().total
@@ -363,12 +371,13 @@ var HEROCALCULATOR = (function (my) {
         self.damageAgainstEnemy = ko.observable();
         self.totalMagicResistanceProduct = ko.computed(function() {
             return (1 - my.heroData['npc_dota_hero_' + self.selectedHero().heroName].magicalresistance / 100) 
-                       * (1 - self.inventory.getMagicResist() / 100) 
-                       * (1 - self.ability().getMagicResist() / 100) 
-                       * (1 - self.buffs.getMagicResist() / 100) 
-                       * self.enemy().inventory.getMagicResistReduction()
-                       * self.enemy().ability().getMagicResistReduction() 
-                       * self.debuffs.getMagicResistReduction();
+                    * self.inventory.getMagicResist()
+                    * self.ability().getMagicResist()
+                    * self.buffs.getMagicResist()
+					* self.inventory.getMagicResistReductionSelf()
+					* self.enemy().inventory.getMagicResistReduction()
+					* self.enemy().ability().getMagicResistReduction()
+					* self.debuffs.getMagicResistReduction();
         });
         self.totalMagicResistance = ko.computed(function() {
             return ((1 - self.totalMagicResistanceProduct()) * 100).toFixed(2);
@@ -415,11 +424,13 @@ var HEROCALCULATOR = (function (my) {
         self.ehpPhysical = ko.computed(function() {
             var ehp = (self.health() * (1 + .06 * self.totalArmorPhysical())) / (1-(1-(self.inventory.getEvasion() * self.ability().getEvasion())))
             ehp *= (_.some(self.inventory.activeItems(), function(item) {return item.item == 'mask_of_madness';}) ? (1/1.3) : 1);
+			ehp *= (1/self.ability().getDamageReduction());
             return ehp.toFixed(2);
         });
         self.ehpMagical = ko.computed(function() {
             var ehp = self.health() / self.totalMagicResistanceProduct();
             ehp *= (_.some(self.inventory.activeItems(), function(item) {return item.item == 'mask_of_madness';}) ? (1/1.3) : 1);
+			ehp *= (1/self.ability().getDamageReduction());
             return ehp.toFixed(2);
         });
         self.bash = ko.computed(function() {
@@ -659,22 +670,25 @@ var HEROCALCULATOR = (function (my) {
         });
 
         self.getReducedDamage = function(value, type) {
+			var result = value;
             switch(type) {
                 case 'physical':
                     if (self.enemy().totalArmorPhysical() >= 0) {
-                        return value * (1 - (0.06 * self.enemy().totalArmorPhysical()) / (1 + 0.06 * self.enemy().totalArmorPhysical()));
+                        result = value * (1 - (0.06 * self.enemy().totalArmorPhysical()) / (1 + 0.06 * self.enemy().totalArmorPhysical()));
                     }
                     else {
-                        return value * (1 + (1 - Math.pow(0.94,-self.enemy().totalArmorPhysical())));
+                        result = value * (1 + (1 - Math.pow(0.94,-self.enemy().totalArmorPhysical())));
                     }
                 break;
                 case 'magic':
-                    return value * (1 - self.enemy().totalMagicResistance()/100);
+                    result = value * (1 - self.enemy().totalMagicResistance()/100);
                 break;
                 case 'pure':
-                    return value;
+                    result = value;
                 break;
             }
+			result = result * self.enemy().ability().getDamageReduction() * self.enemy().buffs.getDamageReduction();
+			return result;
         }
             
         self.damageTotalInfo = ko.computed(function() {
@@ -1109,8 +1123,6 @@ var HEROCALCULATOR = (function (my) {
         });
         
         self.addIllusion = function(data, event) {
-            console.log('add illusion');
-            console.log(self.selectedIllusion());
             self.illusions.push(ko.observable(new my.IllusionViewModel(0, self, self.illusionAbilityLevel())));
         };
         

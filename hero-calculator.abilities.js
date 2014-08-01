@@ -28,6 +28,7 @@ var HEROCALCULATOR = (function (my) {
             self.abilities()[i].bonusAgility2 = ko.observable(0);
             self.abilities()[i].bonusInt = ko.observable(0);
             self.abilities()[i].bonusAllStatsReduction = ko.observable(0);
+            self.abilities()[i].damageReduction = ko.observable(0);
             self.abilities()[i].evasion = ko.observable(0);
             self.abilities()[i].magicResist = ko.observable(0);
             self.abilities()[i].manaregen = ko.observable(0);
@@ -93,10 +94,12 @@ var HEROCALCULATOR = (function (my) {
                             }
                             var g = attributeValue(args[i].attributeName)
                             var r = self.getComputedFunction(v, g.fn, args[i].fn, parent, index, self, args[i].returnProperty);
-                            var tooltip = self.getAbilityAttributeTooltip(self.abilities()[index].attributes(), args[i].attributeName);
                             if (tooltip == '' || args[i].ignoreTooltip) {
-                                tooltip = args[i].label;
+                                var tooltip = args[i].label;
                             }
+							else {
+								var tooltip = self.getAbilityAttributeTooltip(self.abilities()[index].attributes(), args[i].attributeName);
+							}
                             result.data.push({ labelName: tooltip, controlVal: r, controlType: args[i].controlType, display: args[i].display, clean: g.fn });
                         }
                         // multi input abilities
@@ -117,10 +120,12 @@ var HEROCALCULATOR = (function (my) {
                             }
                             var g = attributeValue(args[i].attributeName)
                             var r = self.getComputedFunction(v_list, g.fn, args[i].fn, parent, index, self, args[i].returnProperty,args[i].controls);
-                            var tooltip = self.getAbilityAttributeTooltip(self.abilities()[index].attributes(), args[i].attributeName);
                             if (tooltip == '' || args[i].ignoreTooltip) {
-                                tooltip = args[i].label;
+                                var tooltip = args[i].label;
                             }
+							else {
+								var tooltip = self.getAbilityAttributeTooltip(self.abilities()[index].attributes(), args[i].attributeName);
+							}
                             result.data.push({ labelName: tooltip, controlVal: r, controlType: args[i].controlType, display: args[i].display, clean: g.fn });
                         }
                     break;
@@ -774,11 +779,16 @@ var HEROCALCULATOR = (function (my) {
                                 break;
                                 // tusk_frozen_sigil,crystal_maiden_freezing_field
                                 case 'attack_slow':
-                                    if (ability.name() == 'crystal_maiden_freezing_field') {
+                                    if (ability.name() == 'crystal_maiden_freezing_field' && !self.hasScepter()) {
                                         totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
                                     }
                                     else if (ability.name() == 'tusk_frozen_sigil') {
                                         totalAttribute -= self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                    }
+                                break;
+                                case 'attack_slow_scepter':
+                                    if (ability.name() == 'crystal_maiden_freezing_field' && self.hasScepter()) {
+                                        totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
                                     }
                                 break;
                                 // faceless_void_time_walk
@@ -1130,6 +1140,33 @@ var HEROCALCULATOR = (function (my) {
             }
             return totalAttribute;
         });
+		
+        self.getDamageReduction = ko.computed(function() {
+            var totalAttribute = 1;
+            for (var i=0; i < self.abilities().length; i++) {
+                var ability = self.abilities()[i];
+                if (!(ability.name() in self.abilityData)) {
+                    /*if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        for (var j=0;j<self.abilities()[i].attributes().length;j++) {
+                            var attribute = self.abilities()[i].attributes()[j];
+                            switch(attribute.name()) {
+                                // bane_enfeeble
+                                case 'enfeeble_attack_reduction':
+                                    totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                break;
+                            }
+                        }
+                    }*/
+                }
+                else if (ability.damageReduction != undefined) {
+                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        // wisp_overcharge
+                        totalAttribute *= (1 + ability.damageReduction()/100);
+                    }
+                }
+            }
+            return totalAttribute;
+        });
 
         self.getStrength = ko.computed(function() {
             var totalAttribute = 0;
@@ -1439,7 +1476,7 @@ var HEROCALCULATOR = (function (my) {
         });
         
         self.getMagicResist = ko.computed(function() {
-            var totalAttribute = 0;
+            var totalAttribute = 1;
             for (var i=0; i < self.abilities().length; i++) {
                 var ability = self.abilities()[i];
                 if (!(ability.name() in self.abilityData)) {
@@ -1449,18 +1486,18 @@ var HEROCALCULATOR = (function (my) {
                             switch(attribute.name()) {
                                 // antimage_spell_shield
                                 case 'spell_shield_resistance':
-                                    return self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                    totalAttribute *= (1 - self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
                                 break;
                                 // phantom_lancer_phantom_edge
                                 case 'magic_resistance_pct':
                                     if (ability.name() == 'phantom_lancer_phantom_edge') {
-                                        return self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                        totalAttribute *= (1 - self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
                                     }
                                 break;
                                 // rubick_null_field
                                 case 'magic_damage_reduction_pct':
                                     if (ability.name() == 'rubick_null_field') {
-                                        return self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                        totalAttribute *= (1 - self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
                                     }
                                 break;
                             }
@@ -1470,7 +1507,7 @@ var HEROCALCULATOR = (function (my) {
                 else if (ability.magicResist != undefined) {
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
                         // huskar_berserkers_blood,viper_corrosive_skin,visage_gravekeepers_cloak
-                        totalAttribute+=ability.magicResist();
+                        totalAttribute *= (1 - ability.magicResist()/100);
                     }
                 }
             }
@@ -1496,7 +1533,7 @@ var HEROCALCULATOR = (function (my) {
                                 break;
                                 // elder_titan_natural_order
                                 case 'magic_resistance_pct':
-                                    totalAttribute *= (1 + self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
+                                    totalAttribute *= (1 - self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
                                 break;
                             }
                         }
@@ -1598,9 +1635,9 @@ var HEROCALCULATOR = (function (my) {
                                         totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100;
                                     }
                                 break;
-                                // ogre_magi_bloodlust,slark_shadow_dance,death_prophet_witchcraft,kobold_taskmaster_speed_aura
+                                // ogre_magi_bloodlust,death_prophet_witchcraft,kobold_taskmaster_speed_aura
                                 case 'bonus_movement_speed':
-                                    if (ability.name() == 'ogre_magi_bloodlust' || ability.name() == 'slark_shadow_dance' || ability.name() == 'death_prophet_witchcraft' || ability.name() == 'kobold_taskmaster_speed_aura') {
+                                    if (ability.name() == 'ogre_magi_bloodlust' || ability.name() == 'death_prophet_witchcraft' || ability.name() == 'kobold_taskmaster_speed_aura') {
                                         totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100;
                                     }
                                 break;
@@ -1651,12 +1688,27 @@ var HEROCALCULATOR = (function (my) {
                         for (var j=0;j<self.abilities()[i].attributes().length;j++) {
                             var attribute = self.abilities()[i].attributes()[j];
                             switch(attribute.name()) {
+                                // crystal_maiden_freezing_field
+                                case 'movespeed_slow':
+                                    if (ability.name() == 'crystal_maiden_freezing_field' && !self.hasScepter()) {
+                                        totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100;
+                                    }
+                                break;
+                                case 'movespeed_slow_scepter':
+                                    if (ability.name() == 'crystal_maiden_freezing_field' && self.hasScepter()) {
+                                        totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100;
+                                    }
+                                break;
                                 // elder_titan_earth_splitter,magnataur_skewer,abaddon_frostmourne 
                                 case 'slow_pct':
                                     totalAttribute -= self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100;
                                 break;
-                                // night_stalker_void,crystal_maiden_crystal_nova,crystal_maiden_freezing_field,ghost_frost_attack,ogre_magi_frost_armor,polar_furbolg_ursa_warrior_thunder_clap
+                                // night_stalker_void,crystal_maiden_crystal_nova,ghost_frost_attack,ogre_magi_frost_armor,polar_furbolg_ursa_warrior_thunder_clap
                                 case 'movespeed_slow':
+                                    if (ability.name() != 'crystal_maiden_freezing_field') {
+                                        totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100;
+                                    }
+                                break;
                                 // lich_frost_armor,lich_frost_nova,enchantress_enchant
                                 case 'slow_movement_speed':
                                 // beastmaster_primal_roar
