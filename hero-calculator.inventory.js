@@ -15,6 +15,7 @@ var HEROCALCULATOR = (function (my) {
     
     my.InventoryViewModel = function() {
         var self = this,
+        validItems = ["abyssal_blade","ultimate_scepter","courier","arcane_boots","armlet","assault","boots_of_elves","bfury","belt_of_strength","black_king_bar","blade_mail","blade_of_alacrity","blades_of_attack","blink","bloodstone","boots","travel_boots","bottle","bracer","broadsword","buckler","butterfly","chainmail","circlet","clarity","claymore","cloak","lesser_crit","greater_crit","dagon","demon_edge","desolator","diffusal_blade","rapier","ancient_janggo","dust","eagle","energy_booster","ethereal_blade","cyclone","skadi","flying_courier","force_staff","gauntlets","gem","ghost","gloves","hand_of_midas","headdress","flask","heart","heavens_halberd","helm_of_iron_will","helm_of_the_dominator","hood_of_defiance","hyperstone","branches","javelin","sphere","maelstrom","magic_stick","magic_wand","manta","mantle","mask_of_madness","medallion_of_courage","mekansm","mithril_hammer","mjollnir","monkey_king_bar","lifesteal","mystic_staff","necronomicon","null_talisman","oblivion_staff","ward_observer","ogre_axe","orb_of_venom","orchid","pers","phase_boots","pipe","platemail","point_booster","poor_mans_shield","power_treads","quarterstaff","quelling_blade","radiance","reaver","refresher","ring_of_aquila","ring_of_basilius","ring_of_health","ring_of_protection","ring_of_regen","robe","rod_of_atos","relic","sobi_mask","sange","sange_and_yasha","satanic","sheepstick","ward_sentry","shadow_amulet","invis_sword","shivas_guard","basher","slippers","smoke_of_deceit","soul_booster","soul_ring","staff_of_wizardry","stout_shield","talisman_of_evasion","tango","tpscroll","tranquil_boots","ultimate_orb","urn_of_shadows","vanguard","veil_of_discord","vitality_booster","vladmir","void_stone","wraith_band","yasha"];
         itemsWithActive = ['smoke_of_deceit','dust','ghost','tranquil_boots','phase_boots','power_treads','buckler','medallion_of_courage','ancient_janggo','mekansm','pipe','veil_of_discord','rod_of_atos','orchid','sheepstick','armlet','invis_sword','ethereal_blade','shivas_guard','manta','mask_of_madness','diffusal_blade','mjollnir','satanic','ring_of_basilius','ring_of_aquila'];
         self.hasInventory = ko.observable(true);
         self.items = ko.observableArray();
@@ -69,6 +70,7 @@ var HEROCALCULATOR = (function (my) {
             return c;
         }, this);
         self.addItem = function(data, event) {
+            console.log(data);
             if (self.hasInventory() && data.selectedItem() != undefined) {
                 var new_item = {
                     item: data.selectedItem(),
@@ -78,6 +80,34 @@ var HEROCALCULATOR = (function (my) {
                 }
                 self.items.push(new_item);
                 if (data.selectedItem() == 'ring_of_aquila' || data.selectedItem() == 'ring_of_basilius') {
+                    self.toggleItem(undefined,new_item,undefined);
+                }
+            }
+        };
+        self.addItemBuff = function(data, event) {
+            if (self.hasInventory() && self.selectedItemBuff() != undefined) {
+                var new_item = {
+                    item: self.selectedItemBuff(),
+                    state: ko.observable(0),
+                    size: 1,
+                    enabled: ko.observable(true)
+                }
+                self.items.push(new_item);
+                if (self.selectedItemBuff() == 'ring_of_aquila' || self.selectedItemBuff() == 'ring_of_basilius') {
+                    self.toggleItem(undefined,new_item,undefined);
+                }
+            }
+        };
+        self.addItemDebuff = function(data, event) {
+            if (self.hasInventory() && self.selectedItemDebuff() != undefined) {
+                var new_item = {
+                    item: self.selectedItemDebuff(),
+                    state: ko.observable(0),
+                    size: 1,
+                    enabled: ko.observable(true)
+                }
+                self.items.push(new_item);
+                if (self.selectedItemDebuff() == 'ring_of_aquila' || self.selectedItemDebuff() == 'ring_of_basilius') {
                     self.toggleItem(undefined,new_item,undefined);
                 }
             }
@@ -529,7 +559,6 @@ var HEROCALCULATOR = (function (my) {
                 for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
-                        case 'aura_health_regen':
                         case 'health_regen':
                         case 'bonus_regen':
                             totalAttribute += parseInt(attribute.value[0]);
@@ -550,6 +579,26 @@ var HEROCALCULATOR = (function (my) {
             }
             return totalAttribute;
         };
+        self.getHealthRegenAura = function(e) {
+            var totalAttribute = 0,
+                excludeList = e || [];
+            for (var i=0; i<self.items().length;i++) {
+                var item = self.items()[i].item;
+                var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
+                if (!self.items()[i].enabled()) continue;
+                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                    var attribute = my.itemData['item_' + item].attributes[j];
+                    if (excludeList.indexOf(item + attribute.name) > -1) continue;
+                    switch(attribute.name) {
+                        case 'aura_health_regen':
+                            totalAttribute += parseInt(attribute.value[0]);
+                            excludeList.push(item + attribute.name);
+                        break;
+                    }
+                }
+            }
+            return {value: totalAttribute, excludeList: excludeList};
+        };
         self.getMana = function() {
             var totalAttribute = 0;
             for (var i=0; i<self.items().length;i++) {
@@ -566,6 +615,22 @@ var HEROCALCULATOR = (function (my) {
             }
             return totalAttribute;
         };
+        self.getManaRegen = function() {
+            var totalAttribute = 0;
+            for (var i=0; i<self.items().length;i++) {
+                var item = self.items()[i].item;
+                if (!self.items()[i].enabled()) continue;
+                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                    var attribute = my.itemData['item_' + item].attributes[j];
+                    switch(attribute.name) {
+                        case 'aura_mana_regen':
+                            totalAttribute += parseFloat(attribute.value[0]);
+                        break;
+                    }
+                }
+            }
+            return totalAttribute;    
+        };
         self.getManaRegenPercent = function() {
             var totalAttribute = 0;
             for (var i=0; i<self.items().length;i++) {
@@ -575,12 +640,8 @@ var HEROCALCULATOR = (function (my) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bonus_mana_regen':
-                            totalAttribute += parseFloat(attribute.value[0]);
-                        break;
-                        case 'mana_regen':
-                            totalAttribute += parseFloat(attribute.value[0]);
-                        break;
-                        case 'bonus_mana_regen_pct':
+						case 'mana_regen':
+						case 'bonus_mana_regen_pct':
                             totalAttribute += parseFloat(attribute.value[0]);
                         break;
                     }
@@ -610,47 +671,99 @@ var HEROCALCULATOR = (function (my) {
                         case 'bonus_armor':
                             if (!isActive || item != 'medallion_of_courage') { totalAttribute += parseInt(attribute.value[0]); };
                         break;
-                        case 'aura_positive_armor':
-                            totalAttribute += parseInt(attribute.value[0]);
-                        break;
-                        case 'bonus_aoe_armor':
-                        case 'aura_bonus_armor':
-                            if (isActive) { totalAttribute += parseInt(attribute.value[0]); };
-                        break;
-                        case 'heal_bonus_armor':
-                            if (isActive) { totalAttribute += parseInt(attribute.value[0]); };
-                        break;
-                        case 'armor_aura':
-                            totalAttribute += parseInt(attribute.value[0]);
-                        break;
                     }
                 }
             }
             return totalAttribute;
         };
-        self.getArmorReduction = function() {
-            var totalAttribute = 0;
+        self.getArmorAura = function(aList) {
+            var totalAttribute = 0,
+                attributeList = aList || [];
             for (var i=0; i<self.items().length;i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
                 for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
+                    if (_.find(attributeList, function(a) { return attribute.name == a.name; })) continue;
                     switch(attribute.name) {
-                        case 'bonus_armor':
-                            if (isActive && item == 'medallion_of_courage') { totalAttribute -= parseInt(attribute.value[0]); };
+                        // buckler
+                        case 'bonus_aoe_armor':
+							if (isActive) {
+								attributeList.push({'name':attribute.name, 'value': parseInt(attribute.value[0])});
+							}
                         break;
-                        case 'aura_negative_armor':
-                            totalAttribute += parseInt(attribute.value[0]);
+                        // assault
+                        case 'aura_positive_armor':
+                            attributeList.push({'name':attribute.name, 'value': parseInt(attribute.value[0])});
                         break;
-                        case 'corruption_armor':
-                            totalAttribute += parseInt(attribute.value[0]);
+                        // ring_of_aquila,ring_of_basilius
+                        case 'aura_bonus_armor':
+                            if (isActive) {
+                                attributeList.push({'name':attribute.name, 'value': parseInt(attribute.value[0])});
+                            }
+                        break;
+                        // vladmir
+                        case 'armor_aura':
+                            attributeList.push({'name':attribute.name, 'value': parseInt(attribute.value[0])});
+                        break;
+                        // mekansm
+                        case 'heal_bonus_armor':
+                            if (isActive) {
+                                attributeList.push({'name':attribute.name, 'value': parseInt(attribute.value[0])});
+                            }
                         break;
                     }
                 }
             }
-            return totalAttribute;
-        };     
+            // remove buckler if there is a mekansm
+            if (_.find(attributeList, function(attribute) { return attribute.name == 'heal_bonus_armor'; })) {
+                attributeList = _.reject(attributeList, function(attribute) {
+                    return attribute.name == 'bonus_aoe_armor';
+                });
+            }
+            // remove ring_of_aquila,ring_of_basilius if there is a vladmir
+            if (_.find(attributeList, function(attribute) { return attribute.name == 'armor_aura'; })) {
+                attributeList = _.reject(attributeList, function(attribute) {
+                    return attribute.name == 'aura_bonus_armor';
+                });
+            }
+            
+            totalAttribute = _.reduce(attributeList, function(memo, attribute) {
+                return memo += attribute.value;
+            }, 0);
+            return {value: totalAttribute, attributes: attributeList};
+        };
+        self.getArmorReduction = function(e) {
+            var totalAttribute = 0,
+                excludeList = e || [];
+            for (var i=0; i<self.items().length;i++) {
+                var item = self.items()[i].item;
+                var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
+                if (!self.items()[i].enabled()) continue;
+                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                    var attribute = my.itemData['item_' + item].attributes[j];
+                    if (excludeList.indexOf(attribute.name) > -1) continue;
+                    switch(attribute.name) {
+                        case 'bonus_armor':
+                            if (isActive && item == 'medallion_of_courage') {
+                                totalAttribute -= parseInt(attribute.value[0]);
+                                excludeList.push(attribute.name);
+                            }
+                        break;
+                        case 'aura_negative_armor':
+                            totalAttribute += parseInt(attribute.value[0]);
+                            excludeList.push(attribute.name);
+                        break;
+                        case 'corruption_armor':
+                            totalAttribute += parseInt(attribute.value[0]);
+                            excludeList.push(attribute.name);
+                        break;
+                    }
+                }
+            }
+            return {value: totalAttribute, excludeList: excludeList};
+        };
         self.getEvasion = function() {
             var totalAttribute = 1;
             for (var i=0; i<self.items().length;i++) {
@@ -712,21 +825,23 @@ var HEROCALCULATOR = (function (my) {
             }
             return totalAttribute;
         };
-        self.getMovementSpeedPercent = function() {
+        self.getMovementSpeedPercent = function(e) {
             var totalAttribute = 0,
-            hasYasha = false,
-            hasDrums = false,
-            hasDrumsActive = false,
-            hasPhaseActive = false,
-            hasShadowBladeActive = false,
-            hasMoMActive = false,
-            yashaItems = ['manta','yasha','sange_and_yasha'];
+                excludeList = e || [],
+                hasYasha = false,
+                hasDrums = false,
+                hasDrumsActive = false,
+                hasPhaseActive = false,
+                hasShadowBladeActive = false,
+                hasMoMActive = false,
+                yashaItems = ['manta','yasha','sange_and_yasha'];
             for (var i=0; i<self.items().length;i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
                 for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
+                    if (excludeList.indexOf(attribute.name) > -1) continue;
                     switch(attribute.name) {
                         case 'movement_speed_percent_bonus':
                             if (!hasYasha && yashaItems.indexOf(item) >= 0) {
@@ -738,6 +853,7 @@ var HEROCALCULATOR = (function (my) {
                             if (!hasDrums && item == 'ancient_janggo') {
                                 totalAttribute += parseInt(attribute.value[0]);
                                 hasDrums = true;
+                                excludeList.push(attribute.name);
                             }
                         break;
                         case 'phase_movement_speed':
@@ -750,6 +866,7 @@ var HEROCALCULATOR = (function (my) {
                             if (isActive && !hasDrumsActive && item == 'ancient_janggo') {
                                 totalAttribute += parseInt(attribute.value[0]);
                                 hasDrumsActive = true;
+                                excludeList.push(attribute.name);
                             }
                         break;
                         case 'windwalk_movement_speed':
@@ -776,17 +893,19 @@ var HEROCALCULATOR = (function (my) {
                     }
                 }
             }
-            return totalAttribute/100;
+            return {value: totalAttribute/100, excludeList: excludeList};
         };
         
-        self.getMovementSpeedPercentReduction = function() {
-            var totalAttribute = 0;
+        self.getMovementSpeedPercentReduction = function(e) {
+            var totalAttribute = 0,
+                excludeList = e || [];
             for (var i=0; i<self.items().length;i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
                 for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
+                    if (excludeList.indexOf(attribute.name) > -1) continue;
                     switch(attribute.name) {
                         case 'movespeed':
                             if (item == 'dust' && isActive) {
@@ -795,6 +914,7 @@ var HEROCALCULATOR = (function (my) {
                         case 'blast_movement_speed':
                             if (item == 'shivas_guard' && isActive) {
                                 totalAttribute += parseInt(attribute.value[0]);
+                                excludeList.push(attribute.name);
                             }
                         case 'cold_movement_speed':
                             if (item == 'skadi') {
@@ -804,7 +924,7 @@ var HEROCALCULATOR = (function (my) {
                     }
                 }
             }
-            return totalAttribute/100;
+            return {value: totalAttribute/100, excludeList: excludeList};
         };
         
         self.getBonusDamage = function() {
@@ -852,9 +972,10 @@ var HEROCALCULATOR = (function (my) {
             }
             return { sources: sources, total: totalAttribute };
         };
-        self.getBonusDamagePercent = function() {
-            var totalAttribute = 0;
-            var sources = {};
+        self.getBonusDamagePercent = function(s) {
+			s = s || {sources:{},total:0};
+            var totalAttribute = s.total || 0;
+            var sources = s.sources || {};
             for (var i=0; i<self.items().length;i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
@@ -863,32 +984,34 @@ var HEROCALCULATOR = (function (my) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'damage_aura':
-                            totalAttribute += parseInt(attribute.value[0])/100;
                             if (sources[item] == undefined) {
+								totalAttribute += parseInt(attribute.value[0])/100;
                                 sources[item] = {
                                     'damage': parseInt(attribute.value[0])/100,
                                     'damageType': 'physical',
                                     'count':1,
                                     'displayname': my.itemData['item_' + item].displayname
-                                }                            
+                                }
                             }
-                            else {
-                                sources[item].count += 1;
-                            }
+                            // else {
+                                // sources[item].count += 1;
+                            // }
                         break;
                     }
                 }
             }
             return { sources: sources, total: totalAttribute };
         };
-        self.getAttackSpeed = function() {
-            var totalAttribute = 0;
+        self.getAttackSpeed = function(e) {
+            var totalAttribute = 0,
+                excludeList = e || [];
             for (var i=0; i<self.items().length;i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
                 for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
+                    if (excludeList.indexOf(attribute.name) > -1) continue;
                     switch(attribute.name) {
                         case 'bonus_attack_speed':
                             totalAttribute += parseInt(attribute.value[0]);
@@ -899,11 +1022,17 @@ var HEROCALCULATOR = (function (my) {
                         case 'aura_attack_speed':
                             if (item != 'shivas_guard') { totalAttribute += parseInt(attribute.value[0]); };
                         break;
+                        // ancient_janggo
                         case 'bonus_aura_attack_speed_pct':
                             totalAttribute += parseInt(attribute.value[0]);
+                            excludeList.push(attribute.name);
                         break;
+                        // ancient_janggo
                         case 'bonus_attack_speed_pct':
-                            if (isActive) { totalAttribute += parseInt(attribute.value[0]); };
+                            if (isActive) {
+                                totalAttribute += parseInt(attribute.value[0]);
+                                excludeList.push(attribute.name);
+                            }
                         break;
                         case 'unholy_bonus_attack_speed':
                             if (isActive) { totalAttribute += parseInt(attribute.value[0]); };
@@ -914,27 +1043,35 @@ var HEROCALCULATOR = (function (my) {
                     }
                 }
             }
-            return totalAttribute;
+            return {value: totalAttribute, excludeList: excludeList};
         };
-        self.getAttackSpeedReduction = function() {
-            var totalAttribute = 0;
+        self.getAttackSpeedReduction = function(e) {
+            var totalAttribute = 0,
+                excludeList = e || [];
             for (var i=0; i<self.items().length;i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
                 for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
+                    if (excludeList.indexOf(attribute.name) > -1) continue;
                     switch(attribute.name) {
                         case 'aura_attack_speed':
-                            if (item == 'shivas_guard') { totalAttribute += parseInt(attribute.value[0]); };
+                            if (item == 'shivas_guard') {
+                                totalAttribute += parseInt(attribute.value[0]);
+                                excludeList.push(attribute.name);
+                            }
                         break;
                         case 'cold_attack_speed':
-                            if (item == 'skadi') { totalAttribute += parseInt(attribute.value[0]); };
+                            if (item == 'skadi') {
+                                totalAttribute += parseInt(attribute.value[0]);
+                                excludeList.push(attribute.name);
+                            }
                         break;
                     }
                 }
             }
-            return totalAttribute;
+            return {value: totalAttribute, excludeList: excludeList};
         };
         self.getLifesteal = function() {
             var totalAttribute = 0;
@@ -961,22 +1098,25 @@ var HEROCALCULATOR = (function (my) {
             }
             return totalAttribute;
         };
-        self.getLifestealAura = function() {
-            var totalAttribute = 0;
+        self.getLifestealAura = function(e) {
+            var totalAttribute = 0,
+				excludeList = e || [];
             for (var i=0; i<self.items().length;i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
                 for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
+					if (excludeList.indexOf(attribute.name) > -1) continue;
                     switch(attribute.name) {
                         case 'vampiric_aura':
-                            return parseInt(attribute.value[0]);
+                            totalAttribute += parseInt(attribute.value[0]);
+							excludeList.push(attribute.name);
                         break;
                     }
                 }
             }
-            return totalAttribute;
+            return {value: totalAttribute, excludeList: excludeList};
         };
         self.getMagicResist = function() {
             var totalAttribute = 0;
@@ -1047,10 +1187,27 @@ var HEROCALCULATOR = (function (my) {
         };        
 
         self.itemOptions = ko.observableArray([]);
-        for (i in my.itemData) {
-            self.itemOptions.push(new my.ItemInput(i.replace('item_',''),my.itemData[i].displayname));
+        for (var i = 0; i < validItems.length; i++) {
+            self.itemOptions.push(new my.ItemInput(validItems[i],my.itemData['item_' + validItems[i]].displayname));
         }
+        /*for (i in my.itemData) {
+            self.itemOptions.push(new my.ItemInput(i.replace('item_',''),my.itemData[i].displayname));
+        }*/
     
+        self.itemBuffOptions = ko.observableArray([]);        
+        var itemBuffs = ['assault', 'ancient_janggo', 'headdress', 'mekansm', 'pipe', 'ring_of_aquila', 'vladmir', 'ring_of_basilius','buckler'];
+        for (i in itemBuffs) {
+            self.itemBuffOptions.push(new my.ItemInput(itemBuffs[i],my.itemData['item_' + itemBuffs[i]].displayname));
+        }
+        self.selectedItemBuff = ko.observable('assault');
+
+        self.itemDebuffOptions = ko.observableArray([]);        
+        var itemDebuffs = ['assault', 'shivas_guard', 'desolator'];
+        for (i in itemDebuffs) {
+            self.itemDebuffOptions.push(new my.ItemInput(itemDebuffs[i],my.itemData['item_' + itemDebuffs[i]].displayname));
+        }
+        self.selectedItemDebuff = ko.observable('assault');
+        
         return self;
     };
 

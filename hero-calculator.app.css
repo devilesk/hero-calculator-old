@@ -68,6 +68,10 @@ display: table;
 border-collapse: collapse;
 }
 .ui-autocomplete {
+    max-height: 300px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
 	z-index:1000 !important;
 }
 .shop-button {

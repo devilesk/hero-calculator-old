@@ -320,7 +320,7 @@
                                     </div>
                                     <div class="row" data-bind="foreach: buffs.buffs, visible: sectionDisplay().buff()">
                                         <div data-bind="css: {row: $data.data.isDetail() || ($index() < $parent.buffs.buffs().length-1 && $parent.buffs.buffs()[$index()+1].data.isDetail()), row2: $data.data.isDetail() || ($index() < $parent.buffs.buffs().length-1 && $parent.buffs.buffs()[$index()+1].data.isDetail()) }">
-                                            <div class="col-md-3 text-center bottom-buffer" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
+                                            <div class="col-md-3 text-center bottom-buffer2" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
                                                 <img class="img-rounded ability" data-bind="css: { ability_active: $data.data.isActive() || $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.data.isActive() && $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1 }, attr:{src: '/media/images/spellicons/' + $data.data.name() + '.png'}, click: function(data, event) { $parent.buffs.toggleBuff($index, data.data, event); }, event: { dblclick: function(data,event) { $parent.buffs.removeBuff(data, event, $data.data.name()) } }"/>
                                                 <div class="progress" style="position:relative">
                                                     <div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data.data) > 0, text: $data.data.level() + '/' + $parent.getAbilityLevelMax($data.data)"></div>
@@ -345,6 +345,25 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
+                                    <div class="form-horizontal" data-bind="visible: sectionDisplay().buff()">
+                                        <div class="form-group">
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <input class="form-control" id="auto2" data-bind="jqAuto: { autoFocus: true }, jqAutoSource: buffs.itemBuffs.itemBuffOptions, jqAutoValue: buffs.itemBuffs.selectedItemBuff, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default" data-bind="jqAutoCombo: 'auto2'">...</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <button class="btn btn-default" data-bind="click: buffs.itemBuffs.addItemBuff">Add</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div data-bind="foreach: buffs.itemBuffs.items, visible: sectionDisplay().buff()">
+                                        <div class="pull-left" style="margin-right:10px" data-bind="template: { name: 'item-buff-template'}"></div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -365,7 +384,7 @@
                 
                                     <div class="row" data-bind="foreach: debuffs.buffs, visible: sectionDisplay().debuff()">
                                         <div data-bind="css: {row: $data.data.isDetail() || ($index() < $parent.debuffs.buffs().length-1 && $parent.debuffs.buffs()[$index()+1].data.isDetail()), row2: $data.data.isDetail() || ($index() < $parent.debuffs.buffs().length-1 && $parent.debuffs.buffs()[$index()+1].data.isDetail()) }">
-                                            <div class="col-md-3 text-center bottom-buffer" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
+                                            <div class="col-md-3 text-center bottom-buffer2" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
                                                 <img class="img-rounded ability" data-bind="css: { ability_active: $data.data.isActive() || $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.data.isActive() && $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1 }, attr:{src: '/media/images/spellicons/' + $data.data.name() + '.png'}, click: function(data, event) { $parent.debuffs.toggleBuff($index, data.data, event); }, event: { dblclick: function(data,event) { $parent.debuffs.removeBuff(data, event, $data.data.name()) } }"/>
                                                 <div class="progress" style="position:relative">
                                                     <div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data.data) > 0, text: $data.data.level() + '/' + $parent.getAbilityLevelMax($data.data)"></div>
@@ -389,6 +408,25 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    
+                                    <div class="form-horizontal" data-bind="visible: sectionDisplay().debuff()">
+                                        <div class="form-group">
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <input class="form-control" id="auto3" data-bind="jqAuto: { autoFocus: true }, jqAutoSource: debuffs.itemBuffs.itemDebuffOptions, jqAutoValue: debuffs.itemBuffs.selectedItemDebuff, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default" data-bind="jqAutoCombo: 'auto3'">...</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <button class="btn btn-default" data-bind="click: debuffs.itemBuffs.addItemDebuff">Add</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div data-bind="foreach: debuffs.itemBuffs.items, visible: sectionDisplay().debuff()">
+                                        <div class="pull-left" style="margin-right:10px" data-bind="template: { name: 'item-debuff-template'}"></div>
                                     </div>
                                 </div>
                             </div>

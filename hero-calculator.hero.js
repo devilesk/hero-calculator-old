@@ -55,6 +55,9 @@ var HEROCALCULATOR = (function (my) {
         self.hero = ko.computed(function() {
             return ko.mapping.fromJS(my.heroData['npc_dota_hero_' + self.selectedHero().heroName]);
         });
+		self.heroData = ko.computed(function() {
+			return my.heroData['npc_dota_hero_' + self.selectedHero().heroName];
+		});
         self.heroCompare = ko.observable(self);
         self.enemy = ko.observable(self);
         self.unit = ko.observable(self);
@@ -80,7 +83,7 @@ var HEROCALCULATOR = (function (my) {
             else if (data.name() == 'earth_spirit_stone_caller') {
                 return 1;
             }
-            else if (data.abilitytype() == 'DOTA_ABILITY_TYPE_ULTIMATE' || data.name() == 'keeper_of_the_light_recall' || data.name() == 'keeper_of_the_light_blinding_light' || data.name() == 'ember_spirit_activate_fire_remnant') {
+            else if (data.abilitytype() == 'DOTA_ABILITY_TYPE_ULTIMATE' || data.name() == 'keeper_of_the_light_recall' || data.name() == 'keeper_of_the_light_blinding_light' || data.name() == 'ember_spirit_activate_fire_remnant' || data.name() == 'lone_druid_true_form_battle_cry') {
                 return 3;
             }
             else if (data.name() == 'puck_ethereal_jaunt'  || data.name() == 'shadow_demon_shadow_poison_release' || data.name() == 'templar_assassin_trap' || data.name() == 'spectre_reality') {
@@ -98,7 +101,7 @@ var HEROCALCULATOR = (function (my) {
         self.skillPointHistory = ko.observableArray();
         
         self.ability = ko.computed(function() {
-            var a = new my.AbilityModel(ko.mapping.fromJS(my.heroData['npc_dota_hero_' + self.selectedHero().heroName].abilities), self);
+            var a = new my.AbilityModel(ko.mapping.fromJS(self.heroData().abilities), self);
             if (self.selectedHero().heroName == 'earth_spirit') {
                 a.abilities()[3].level(1);
             }
@@ -222,7 +225,7 @@ var HEROCALCULATOR = (function (my) {
             return c;
         }, this);*/
         self.primaryAttribute = ko.computed(function() {
-            var v = my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attributeprimary;
+            var v = self.heroData().attributeprimary;
             if (v == 'DOTA_ATTRIBUTE_AGILITY') {
                 return 'agi'
             }
@@ -248,8 +251,8 @@ var HEROCALCULATOR = (function (my) {
             }
         };
         self.totalAgi = ko.computed(function() {
-            return (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attributebaseagility
-                    + my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attributeagilitygain * (self.selectedHeroLevel() - 1) 
+            return (self.heroData().attributebaseagility
+                    + self.heroData().attributeagilitygain * (self.selectedHeroLevel() - 1) 
                     + self.inventory.getAttributes('agi') 
                     + self.ability().getAttributeBonusLevel()*2
                     + self.ability().getAgility()
@@ -259,8 +262,8 @@ var HEROCALCULATOR = (function (my) {
         });
         self.intStolen = ko.observable(0).extend({ numeric: 0 });
         self.totalInt = ko.computed(function() {
-            return (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attributebaseintelligence 
-                    + my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attributeintelligencegain * (self.selectedHeroLevel() - 1) 
+            return (self.heroData().attributebaseintelligence 
+                    + self.heroData().attributeintelligencegain * (self.selectedHeroLevel() - 1) 
                     + self.inventory.getAttributes('int') 
                     + self.ability().getAttributeBonusLevel()*2
                     + self.ability().getIntelligence()
@@ -269,8 +272,8 @@ var HEROCALCULATOR = (function (my) {
                    ).toFixed(2);
         });
         self.totalStr = ko.computed(function() {
-            return (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attributebasestrength 
-                    + my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attributestrengthgain * (self.selectedHeroLevel() - 1) 
+            return (self.heroData().attributebasestrength 
+                    + self.heroData().attributestrengthgain * (self.selectedHeroLevel() - 1) 
                     + self.inventory.getAttributes('str') 
                     + self.ability().getAttributeBonusLevel()*2
                     + self.ability().getStrength()
@@ -279,31 +282,58 @@ var HEROCALCULATOR = (function (my) {
                    ).toFixed(2);
         });
         self.health = ko.computed(function() {
-            return (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].statushealth + Math.floor(self.totalStr())*19 
+            return (self.heroData().statushealth + Math.floor(self.totalStr())*19 
                     + self.inventory.getHealth()
                     + self.ability().getHealth()).toFixed(2);
         });
         self.healthregen = ko.computed(function() {
-            return (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].statushealthregen + self.totalStr()*.03 
+            var healthRegenAura = _.reduce([self.inventory.getHealthRegenAura, self.buffs.itemBuffs.getHealthRegenAura], function(memo, fn) {
+                var obj = fn(memo.excludeList);
+                obj.value += memo.value;
+                return obj;
+            }, {value:0,excludeList:[]});
+            return (self.heroData().statushealthregen + self.totalStr()*.03 
                     + self.inventory.getHealthRegen() 
                     + self.ability().getHealthRegen()
-                    + self.buffs.getHealthRegen()).toFixed(2);
+                    + self.buffs.getHealthRegen()
+                    + healthRegenAura.value
+                    ).toFixed(2);
         });
         self.mana = ko.computed(function() {
-            return (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].statusmana + self.totalInt()*13 + self.inventory.getMana()).toFixed(2);
+            return (self.heroData().statusmana + self.totalInt()*13 + self.inventory.getMana()).toFixed(2);
         });
         self.manaregen = ko.computed(function() {
-            return ((my.heroData['npc_dota_hero_' + self.selectedHero().heroName].statusmanaregen 
+            return ((self.heroData().statusmanaregen 
                     + self.totalInt()*.04 
                     + self.ability().getManaRegen()) 
                     * (1 + self.inventory.getManaRegenPercent()) 
                     + (self.selectedHero().heroName == 'crystal_maiden' ? self.ability().getManaRegenArcaneAura() * 2 : self.buffs.getManaRegenArcaneAura())
                     + self.inventory.getManaRegenBloodstone()
+					+ self.inventory.getManaRegen()
                     - self.enemy().ability().getManaRegenReduction()).toFixed(2);
         });
         self.totalArmorPhysical = ko.computed(function() {
-            return (self.enemy().ability().getArmorBaseReduction() * self.debuffs.getArmorBaseReduction() * (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].armorphysical + self.totalAgi()*.14)
-                    + self.inventory.getArmor() + self.enemy().inventory.getArmorReduction() + self.ability().getArmor() + self.enemy().ability().getArmorReduction() + self.buffs.getArmor() + self.debuffs.getArmorReduction()).toFixed(2);
+            var armorAura = _.reduce([self.inventory.getArmorAura, self.buffs.itemBuffs.getArmorAura], function(memo, fn) {
+                var obj = fn(memo.attributes);
+                return obj;
+            }, {value:0,attributes:[]});
+            var armorReduction = _.reduce([self.enemy().inventory.getArmorReduction, self.debuffs.itemBuffs.getArmorReduction], function(memo, fn) {
+                var obj = fn(memo.excludeList);
+                obj.value += memo.value;
+                return obj;
+            }, {value:0,excludeList:[]});
+            return (self.enemy().ability().getArmorBaseReduction() * self.debuffs.getArmorBaseReduction() * (self.heroData().armorphysical + self.totalAgi()*.14)
+                    + self.inventory.getArmor()
+                    //+ self.inventory.getArmorAura().value
+                    //+ self.enemy().inventory.getArmorReduction()
+                    + self.ability().getArmor()
+                    + self.enemy().ability().getArmorReduction()
+                    + self.buffs.getArmor()
+                    //+ self.buffs.itemBuffs.getArmorAura().value
+                    + armorAura.value
+                    + armorReduction.value
+                    //+ self.debuffs.getArmorReduction()
+                    ).toFixed(2);
         });
         self.totalArmorPhysicalReduction = ko.computed(function() {
 			var totalArmor = self.totalArmorPhysical();
@@ -320,10 +350,22 @@ var HEROCALCULATOR = (function (my) {
                 return ms;
             }
             else {
-                return ((my.heroData['npc_dota_hero_' + self.selectedHero().heroName].movementspeed + self.inventory.getMovementSpeedFlat()+ self.ability().getMovementSpeedFlat()) * 
-                        (1 + self.inventory.getMovementSpeedPercent() 
+                var movementSpeedPercent = _.reduce([self.inventory.getMovementSpeedPercent, self.buffs.itemBuffs.getMovementSpeedPercent], function(memo, fn) {
+                    var obj = fn(memo.excludeList);
+                    obj.value += memo.value;
+                    return obj;
+                }, {value:0,excludeList:[]});
+                var movementSpeedPercentReduction = _.reduce([self.enemy().inventory.getMovementSpeedPercentReduction, self.debuffs.itemBuffs.getMovementSpeedPercentReduction], function(memo, fn) {
+                    var obj = fn(memo.excludeList);
+                    obj.value += memo.value;
+                    return obj;
+                }, {value:0,excludeList:[]});
+                return ((self.heroData().movementspeed + self.inventory.getMovementSpeedFlat()+ self.ability().getMovementSpeedFlat()) * 
+                        (1 //+ self.inventory.getMovementSpeedPercent() 
+                           + movementSpeedPercent.value
+                           + movementSpeedPercentReduction.value
                            + self.ability().getMovementSpeedPercent() 
-                           + self.enemy().inventory.getMovementSpeedPercentReduction() 
+                           //+ self.enemy().inventory.getMovementSpeedPercentReduction() 
                            + self.enemy().ability().getMovementSpeedPercentReduction() 
                            + self.buffs.getMovementSpeedPercent() 
                            + self.debuffs.getMovementSpeedPercentReduction()
@@ -332,15 +374,15 @@ var HEROCALCULATOR = (function (my) {
             }
         });
         self.totalTurnRate = ko.computed(function() {
-            return (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].movementturnrate 
+            return (self.heroData().movementturnrate 
                     * (1 + self.enemy().ability().getTurnRateReduction()
                          + self.debuffs.getTurnRateReduction())).toFixed(2);
         });
         self.baseDamage = ko.computed(function() {
             var totalAttribute = self.totalAttribute(self.primaryAttribute()),
                 abilityBaseDamage = self.ability().getBaseDamage(),
-                minDamage = my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attackdamagemin,
-                maxDamage = my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attackdamagemax;
+                minDamage = self.heroData().attackdamagemin,
+                maxDamage = self.heroData().attackdamagemax;
             return [Math.floor((minDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier),
                     Math.floor((maxDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier)];
         });
@@ -349,7 +391,7 @@ var HEROCALCULATOR = (function (my) {
                     + self.ability().getBonusDamage().total
                     + self.buffs.getBonusDamage().total
                     + Math.floor((self.baseDamage()[0] + self.baseDamage()[1])/2 
-                                  * (self.inventory.getBonusDamagePercent().total
+                                  * (self.buffs.itemBuffs.getBonusDamagePercent(self.inventory.getBonusDamagePercent()).total
                                      + self.ability().getBonusDamagePercent().total
                                      + self.buffs.getBonusDamagePercent().total
                                     )
@@ -370,7 +412,7 @@ var HEROCALCULATOR = (function (my) {
         });
         self.damageAgainstEnemy = ko.observable();
         self.totalMagicResistanceProduct = ko.computed(function() {
-            return (1 - my.heroData['npc_dota_hero_' + self.selectedHero().heroName].magicalresistance / 100) 
+            return (1 - self.heroData().magicalresistance / 100) 
                     * self.inventory.getMagicResist()
                     * self.ability().getMagicResist()
                     * self.buffs.getMagicResist()
@@ -387,12 +429,24 @@ var HEROCALCULATOR = (function (my) {
             if (abilityBAT > 0) {
                 return abilityBAT;
             }
-            return my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attackrate;
+            return self.heroData().attackrate;
         });
         self.ias = ko.computed(function() {
+            var attackSpeed = _.reduce([self.inventory.getAttackSpeed, self.buffs.itemBuffs.getAttackSpeed], function(memo, fn) {
+                var obj = fn(memo.excludeList);
+                obj.value += memo.value;
+                return obj;
+            }, {value:0,excludeList:[]});
+            var attackSpeedReduction = _.reduce([self.enemy().inventory.getAttackSpeedReduction, self.debuffs.itemBuffs.getAttackSpeedReduction], function(memo, fn) {
+                var obj = fn(memo.excludeList);
+                obj.value += memo.value;
+                return obj;
+            }, {value:0,excludeList:[]});
             var val = parseFloat(self.totalAgi()) 
-                    + self.inventory.getAttackSpeed() 
-                    + self.enemy().inventory.getAttackSpeedReduction() 
+                    //+ self.inventory.getAttackSpeed() 
+                    + attackSpeed.value
+                    + attackSpeedReduction.value
+                    //+ self.enemy().inventory.getAttackSpeedReduction() 
                     + self.ability().getAttackSpeed() 
                     + self.enemy().ability().getAttackSpeedReduction() 
                     + self.buffs.getAttackSpeed() 
@@ -434,7 +488,7 @@ var HEROCALCULATOR = (function (my) {
             return ehp.toFixed(2);
         });
         self.bash = ko.computed(function() {
-            var attacktype = my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attacktype;
+            var attacktype = self.heroData().attacktype;
             return ((1-(self.inventory.getBash(attacktype) * self.ability().getBash())) * 100).toFixed(2);
         });
 
@@ -539,7 +593,7 @@ var HEROCALCULATOR = (function (my) {
         });
         
         self.bashInfo = ko.computed(function() {
-            var attacktype = my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attacktype;
+            var attacktype = self.heroData().attacktype;
             var bashSources = self.inventory.getBashSource(attacktype);
             $.extend(bashSources, self.ability().getBashSource());
             var bashSourcesArray = [];
@@ -605,7 +659,7 @@ var HEROCALCULATOR = (function (my) {
         });
         
         self.orbProcInfo = ko.computed(function() {
-            var attacktype = my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attacktype;
+            var attacktype = self.heroData().attacktype;
             var damageSources = self.inventory.getOrbProcSource();
             //$.extend(damageSources, self.ability().getProcSource());
             var damageSourcesArray = [];
@@ -701,7 +755,7 @@ var HEROCALCULATOR = (function (my) {
                 self.buffs.getBonusDamagePercent().sources
             ],
             itemBonusDamage = self.inventory.getBonusDamage().sources,
-            itemBonusDamagePct = self.inventory.getBonusDamagePercent().sources,
+            itemBonusDamagePct = self.buffs.itemBuffs.getBonusDamagePercent(self.inventory.getBonusDamagePercent()).sources,
             critSources = self.critInfo(),
             abilityOrbSources = self.ability().getOrbSource(),
             itemOrbSources = self.inventory.getOrbSource(),
@@ -911,20 +965,25 @@ var HEROCALCULATOR = (function (my) {
             return ((1-(self.enemy().ability().getMissChance() * self.debuffs.getMissChance())) * 100).toFixed(2);
         });
         self.totalattackrange = ko.computed(function() {
-            return my.heroData['npc_dota_hero_' + self.selectedHero().heroName].attackrange + self.ability().getAttackRange();
+            return self.heroData().attackrange + self.ability().getAttackRange();
         });
         self.visionrangeday = ko.computed(function() {
-            return (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].visiondaytimerange) * (1 + self.enemy().ability().getVisionRangePctReduction()
+            return (self.heroData().visiondaytimerange) * (1 + self.enemy().ability().getVisionRangePctReduction()
                                                                                                           + self.debuffs.getVisionRangePctReduction());
         });
         self.visionrangenight = ko.computed(function() {
-            return (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].visionnighttimerange + self.ability().getVisionRangeNight()) * (1 + self.enemy().ability().getVisionRangePctReduction()
+            return (self.heroData().visionnighttimerange + self.ability().getVisionRangeNight()) * (1 + self.enemy().ability().getVisionRangePctReduction()
                                                                                                                                                    + self.debuffs.getVisionRangePctReduction());
         });
         self.lifesteal = ko.computed(function() {
             var total = self.inventory.getLifesteal() + self.ability().getLifesteal() + self.buffs.getLifesteal();
             if (self.hero().attacktype() == 'DOTA_UNIT_CAP_MELEE_ATTACK') {
-                total+= self.inventory.getLifestealAura();
+				var lifestealAura = _.reduce([self.inventory.getLifestealAura, self.buffs.itemBuffs.getLifestealAura], function(memo, fn) {
+					var obj = fn(memo.excludeList);
+					obj.value += memo.value;
+					return obj;
+				}, {value:0,excludeList:[]});
+                total+= lifestealAura.value;
             }
             return (total).toFixed(2);
         });

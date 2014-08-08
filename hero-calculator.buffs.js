@@ -15,6 +15,21 @@ var HEROCALCULATOR = (function (my) {
 
     };
     
+    my.ItemBuffOption = function (item) {
+        this.buffName = item;
+        if (my.heroData['npc_dota_hero_' + hero] == undefined) {
+            this.hero = hero;
+            this.abilityData = _.findWhere(my.unitData[hero].abilities, {name: item})
+            this.buffDisplayName = my.unitData[hero].displayname + ' - ' + this.abilityData.displayname;        
+        }
+        else {
+            this.hero = 'npc_dota_hero_' + hero;
+            this.abilityData = _.findWhere(my.heroData['npc_dota_hero_' + hero].abilities, {name: item})
+            this.buffDisplayName = my.heroData['npc_dota_hero_' + hero].displayname + ' - ' + this.abilityData.displayname;        
+        }
+
+    };
+    
     my.BuffViewModel = function (a) {
         var self = new my.AbilityModel(ko.observableArray([]));
         self.availableBuffs = ko.observableArray([
@@ -147,6 +162,7 @@ var HEROCALCULATOR = (function (my) {
         self.selectedBuff = ko.observable(self.availableBuffs()[0]);
         
         self.buffs = ko.observableArray([]);
+        self.itemBuffs = new my.InventoryViewModel();
         
         self.addBuff = function(data, event) {
             if (_.findWhere(self.buffs(), { name: self.selectedBuff().buffName })  == undefined) {

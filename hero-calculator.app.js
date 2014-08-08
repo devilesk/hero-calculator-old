@@ -166,7 +166,7 @@ var HEROCALCULATOR = (function (my) {
         self.saveLink = ko.observable();
         self.save = function() {
             var data = {
-                version: "1.0.0",
+                version: "1.1.0",
                 heroes: []
             }
             var indices = [0,1,4,5];
@@ -179,7 +179,9 @@ var HEROCALCULATOR = (function (my) {
                     abilities: [],
                     skillPointHistory: hero.skillPointHistory(),
                     buffs: [],
-                    debuffs: []
+                    itemBuffs: [],
+                    debuffs: [],
+                    itemDebuffs: []
                 }
                 // items
                 for (var j = 0; j < hero.inventory.items().length; j++) {
@@ -200,6 +202,7 @@ var HEROCALCULATOR = (function (my) {
                         isActive: hero.buffs.buffs()[j].data.isActive()
                     });
                 }
+                
                 // debuffs
                 for (var j = 0; j < hero.debuffs.buffs().length; j++) {
                     d.debuffs.push({
@@ -208,6 +211,17 @@ var HEROCALCULATOR = (function (my) {
                         isActive: hero.debuffs.buffs()[j].data.isActive()
                     });
                 }
+
+                // item buffs
+                for (var j = 0; j < hero.buffs.itemBuffs.items().length; j++) {
+                    d.itemBuffs.push(ko.toJS(hero.buffs.itemBuffs.items()[j]));
+                }
+                
+                // item debuffs
+                for (var j = 0; j < hero.debuffs.itemBuffs.items().length; j++) {
+                    d.itemDebuffs.push(ko.toJS(hero.debuffs.itemBuffs.items()[j]));
+                }
+                
                 data.heroes.push(d);
             }
             var serialized = JSON.stringify(data);
@@ -232,6 +246,8 @@ var HEROCALCULATOR = (function (my) {
                 hero.selectedHeroLevel(hero.selectedHeroLevel);
                 hero.inventory.items.removeAll();
                 hero.inventory.activeItems.removeAll();
+                
+                // load items
                 for (var j = 0; j < data.heroes[i].items.length; j++) {
                     var item = data.heroes[i].items[j];
                     var new_item = {
@@ -242,11 +258,15 @@ var HEROCALCULATOR = (function (my) {
                     }
                     hero.inventory.items.push(new_item);
                 }
+                
+                // load abilities
                 for (var j = 0; j < data.heroes[i].abilities.length; j++) {
                     hero.ability().abilities()[j].level(data.heroes[i].abilities[j].level);
                     hero.ability().abilities()[j].isActive(data.heroes[i].abilities[j].isActive);
                 }
                 hero.skillPointHistory(data.heroes[i].skillPointHistory);
+                
+                // load buffs
                 for (var j = 0; j < data.heroes[i].buffs.length; j++) {
                     hero.buffs.selectedBuff(_.findWhere(hero.buffs.availableBuffs(), {buffName: data.heroes[i].buffs[j].name}));
                     hero.buffs.addBuff(hero, {});
@@ -254,12 +274,42 @@ var HEROCALCULATOR = (function (my) {
                     b.data.level(data.heroes[i].buffs[j].level);
                     b.data.isActive(data.heroes[i].buffs[j].isActive);
                 }
+                
+                // load debuffs
                 for (var j = 0; j < data.heroes[i].debuffs.length; j++) {
                     hero.debuffs.selectedBuff(_.findWhere(hero.debuffs.availableDebuffs(), {buffName: data.heroes[i].debuffs[j].name}));
                     hero.debuffs.addBuff(hero, {});
                     var b = _.findWhere(hero.debuffs.buffs(), { name: data.heroes[i].debuffs[j].name });
                     b.data.level(data.heroes[i].debuffs[j].level);
                     b.data.isActive(data.heroes[i].debuffs[j].isActive);
+                }
+                
+                // load item buffs
+                if (data.heroes[i].itemBuffs) {
+                    for (var j = 0; j < data.heroes[i].itemBuffs.length; j++) {
+                        var item = data.heroes[i].itemBuffs[j];
+                        var new_item = {
+                            item: item.item,
+                            state: ko.observable(item.state),
+                            size: item.size,
+                            enabled: ko.observable(item.enabled)
+                        }
+                        hero.buffs.itemBuffs.items.push(new_item);
+                    }
+                }
+                
+                // load item debuffs
+                if (data.heroes[i].itemDebuffs) {
+                    for (var j = 0; j < data.heroes[i].itemDebuffs.length; j++) {
+                        var item = data.heroes[i].itemDebuffs[j];
+                        var new_item = {
+                            item: item.item,
+                            state: ko.observable(item.state),
+                            size: item.size,
+                            enabled: ko.observable(item.enabled)
+                        }
+                        hero.debuffs.itemBuffs.items.push(new_item);
+                    }
                 }
             }
         }
@@ -359,6 +409,8 @@ var HEROCALCULATOR = (function (my) {
             my.heroData['npc_dota_hero_nevermore'].abilities[1].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
             my.heroData['npc_dota_hero_nevermore'].abilities[2].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
             my.heroData['npc_dota_hero_morphling'].abilities[3].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
+            var index = my.heroData['npc_dota_hero_lone_druid'].abilities[3].behavior.indexOf('DOTA_ABILITY_BEHAVIOR_HIDDEN');
+            my.heroData['npc_dota_hero_lone_druid'].abilities[3].behavior.splice(index, 1);
             loadedFiles++;
             if (loadedFiles == loadedFilesMax) my.run();
         });

@@ -956,11 +956,11 @@ var HEROCALCULATOR = (function (my) {
                         for (var j=0;j<self.abilities()[i].attributes().length;j++) {
                             var attribute = self.abilities()[i].attributes()[j];
                             switch(attribute.name()) {
-                                // broodmother_insatiable_hunger,luna_lunar_blessing,templar_assassin_refraction,templar_assassin_meld,troll_warlord_berserkers_rage
+                                // broodmother_insatiable_hunger,luna_lunar_blessing,templar_assassin_refraction,templar_assassin_meld,troll_warlord_berserkers_rage,lone_druid_true_form_battle_cry
                                 case 'bonus_damage':
                                     if (ability.name() == 'broodmother_insatiable_hunger' || ability.name() == 'luna_lunar_blessing'
                                      || ability.name() == 'templar_assassin_refraction' || ability.name() == 'templar_assassin_meld'
-                                     || ability.name() == 'troll_warlord_berserkers_rage') {
+                                     || ability.name() == 'troll_warlord_berserkers_rage' || ability.name() == 'lone_druid_true_form_battle_cry') {
                                         totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
                                         sources[ability.name()] = {
                                             'damage': self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level()),
@@ -2168,6 +2168,9 @@ var HEROCALCULATOR = (function (my) {
                     case 'ember_spirit_fire_remnant':
                         self.abilities()[index()-1].level(self.abilities()[index()].level());
                     break;
+                    case 'lone_druid_true_form':
+                        self.abilities()[index()-1].level(self.abilities()[index()].level());
+                    break;
                 }
             }
         };
@@ -2201,6 +2204,9 @@ var HEROCALCULATOR = (function (my) {
                         self.abilities()[index()-2].level(self.abilities()[index()].level());
                     break;
                     case 'ember_spirit_fire_remnant':
+                        self.abilities()[index()-1].level(self.abilities()[index()].level());
+                    break;
+                    case 'lone_druid_true_form':
                         self.abilities()[index()-1].level(self.abilities()[index()].level());
                     break;
                 }

@@ -38,6 +38,9 @@ var HEROCALCULATOR = (function (my) {
         self.hero = ko.computed(function() {
             return ko.mapping.fromJS(my.unitData[self.selectedUnit().heroName()]);
         });
+		self.heroData = ko.computed(function() {
+			return my.unitData[self.selectedUnit().heroName()];
+		});
         self.getAbilityLevelMax = function(data) {
             if (data.abilitytype() == 'DOTA_ABILITY_TYPE_ATTRIBUTES') {
                 return 10;
@@ -168,7 +171,7 @@ var HEROCALCULATOR = (function (my) {
                     + self.debuffs.getAllStatsReduction()
                    ).toFixed(2);
         });
-        self.health = ko.computed(function() {
+        /*self.health = ko.computed(function() {
             return (my.unitData[self.selectedUnit().heroName()].statushealth + self.totalStr()*19 
                     + self.inventory.getHealth()
                     + self.ability().getHealth()).toFixed(2);
@@ -222,11 +225,12 @@ var HEROCALCULATOR = (function (my) {
                     * (1 + self.enemy().ability().getTurnRateReduction()
                          + self.debuffs.getTurnRateReduction())).toFixed(2);
         });
+		*/
         self.baseDamage = ko.computed(function() {
             return [Math.floor(my.unitData[self.selectedUnit().heroName()].attackdamagemin + self.totalAttribute(self.primaryAttribute()) + self.ability().getBaseDamage().total),
                     Math.floor(my.unitData[self.selectedUnit().heroName()].attackdamagemax + self.totalAttribute(self.primaryAttribute()) + self.ability().getBaseDamage().total)];
         });
-        self.bonusDamage = ko.computed(function() {
+        /*self.bonusDamage = ko.computed(function() {
             return self.inventory.getBonusDamage().total
                     + self.ability().getBonusDamage().total
                     + self.buffs.getBonusDamage().total
@@ -241,14 +245,14 @@ var HEROCALCULATOR = (function (my) {
                             ? ((self.selectedHero().heroName == 'drow_ranger') ? self.ability().getBonusDamagePrecisionAura().total[0] * self.totalAgi() : self.buffs.getBonusDamagePrecisionAura().total[1])
                             : 0)
                       );
-        });
-        self.bonusDamageReduction = ko.computed(function() {
+        });*/
+        /*self.bonusDamageReduction = ko.computed(function() {
             return Math.abs(self.enemy().ability().getBonusDamageReduction() + self.debuffs.getBonusDamageReduction());
         });
         self.damage = ko.computed(function() {
             return [self.baseDamage()[0] + self.bonusDamage()[0],
                     self.baseDamage()[1] + self.bonusDamage()[1]];
-        });
+        });*/
         self.damageAgainstEnemy = ko.observable();
         self.totalMagicResistanceProduct = ko.computed(function() {
             return (1 - my.unitData[self.selectedUnit().heroName()].magicalresistance / 100) 
@@ -262,7 +266,7 @@ var HEROCALCULATOR = (function (my) {
         self.totalMagicResistance = ko.computed(function() {
             return (1 - self.totalMagicResistanceProduct());
         });
-        self.bat = ko.computed(function() {
+        /*self.bat = ko.computed(function() {
             var abilityBAT = self.ability().getBAT();
             if (abilityBAT > 0) {
                 return abilityBAT;
@@ -283,7 +287,7 @@ var HEROCALCULATOR = (function (my) {
                 return 400;
             }
             return (val).toFixed(2);
-        });
+        });*/
         self.attackTime = ko.computed(function() {
             return (self.bat() / (1 + self.ias() / 100)).toFixed(2);
         });
