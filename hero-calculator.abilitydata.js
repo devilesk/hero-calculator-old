@@ -374,6 +374,32 @@ var HEROCALCULATOR = (function (my) {
                 returnProperty: 'movementSpeedPctReduction'
             }
         ],
+        'clinkz_death_pact': [
+            {
+                label: 'Consumed Unit HP',
+                controlType: 'input'
+            },
+            {
+                attributeName: 'damage_gain_pct',
+                label: 'BASE DAMAGE GAIN:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a) {
+                    return v*a/100;
+                },
+                returnProperty: 'baseDamage'
+            },
+            {
+                attributeName: 'health_gain_pct',
+                label: 'HEALTH GAIN:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a) {
+                    return v*a/100;
+                },
+                returnProperty: 'bonusHealth'
+            }
+        ],
         'crystal_maiden_frostbite': [
             {
                 label: 'Duration',

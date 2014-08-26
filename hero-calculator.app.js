@@ -38,18 +38,18 @@ var HEROCALCULATOR = (function (my) {
         self.selectedItems = ko.observableArray([]); 
         self.moveUp = function() {
             var start = self.allItems.indexOf(self.selectedItems()[0]),
-            end = self.allItems.indexOf(self.selectedItems()[self.selectedItems().length-1]);        
+            end = self.allItems.indexOf(self.selectedItems()[self.selectedItems().length - 1]);
             if (start > 0) {
-                var e = self.allItems.splice(start-1,1);
-                self.allItems.splice(end,0,e[0]);            
+                var e = self.allItems.splice(start - 1, 1);
+                self.allItems.splice(end, 0, e[0]);            
             }
         };
         self.moveDown = function() {
             var start = self.allItems.indexOf(self.selectedItems()[0]),
-            end = self.allItems.indexOf(self.selectedItems()[self.selectedItems().length-1]);        
-            if (end < self.allItems().length-1) {
-                var e = self.allItems.splice(end+1,1);
-                self.allItems.splice(start,0,e[0]);
+            end = self.allItems.indexOf(self.selectedItems()[self.selectedItems().length - 1]);        
+            if (end < self.allItems().length - 1) {
+                var e = self.allItems.splice(end + 1, 1);
+                self.allItems.splice(start, 0, e[0]);
             }    
         };
 		self.selectedTabId = ko.observable('heroTab0');
@@ -140,7 +140,7 @@ var HEROCALCULATOR = (function (my) {
         });
 
         
-        self.changeSelectedItem = function (data,event) {
+        self.changeSelectedItem = function (data, event) {
             self.itemInputValue(1);
             self.selectedItem(event.target.id);
         }
@@ -169,7 +169,7 @@ var HEROCALCULATOR = (function (my) {
                 version: "1.1.0",
                 heroes: []
             }
-            var indices = [0,1,4,5];
+            var indices = [0, 1, 4, 5];
             for (var i = 0; i < 4; i++) {
                 var hero = self.heroes[indices[i]];
                 d = {
@@ -228,7 +228,7 @@ var HEROCALCULATOR = (function (my) {
             $.ajax({
                 type: "POST",
                 url: "/dota2/apps/hero-calculator/save.php",
-                data: {'data':serialized},
+                data: {'data': serialized},
                 dataType: "json",
                 success: function(data){
                     self.saveLink("http://devilesk.com/dota2/apps/hero-calculator?id=" + data.file);
@@ -239,7 +239,7 @@ var HEROCALCULATOR = (function (my) {
             });
         }
         self.load = function(data) {
-            var indices = [0,1,4,5];
+            var indices = [0, 1, 4, 5];
             for (var i = 0; i < 4; i++) {
                 var hero = self.heroes[indices[i]];
                 hero.selectedHero(_.findWhere(hero.availableHeroes(), {'heroName': data.heroes[i].hero}));
@@ -331,6 +331,23 @@ var HEROCALCULATOR = (function (my) {
             else {
                 alert('Message is required.');
             }
+        }
+        
+        self.getProperty = function(obj, properties) {
+            var result = obj;
+            for (var i = 0; i < properties.length; i++) {
+                result = result[properties[i]];
+            }
+            return result;
+        };
+        
+        self.getDiffTextWrapper = function(hero, property) {
+            return self.getDiffText(self.getDiffMagnitude(hero, property));
+        }
+        
+        self.getDiffMagnitude = function(hero, property) {
+            var properties = property.split('.');
+            return self.getProperty(hero.damageTotalInfo(), properties).toFixed(2) - self.getProperty(hero.heroCompare().damageTotalInfo(), properties).toFixed(2);
         }
         
         self.getDiffText = function(value) {

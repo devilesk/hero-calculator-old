@@ -21,9 +21,9 @@ var HEROCALCULATOR = (function (my) {
         self.items = ko.observableArray();
         self.activeItems = ko.observableArray([]);
         self.hasScepter = ko.computed(function() {
-            for (var i=0;i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
-                if (item == 'ultimate_scepter' && self.items()[i].enabled()) {
+                if (item === 'ultimate_scepter' && self.items()[i].enabled()) {
                     return true;
                 }
                 
@@ -31,10 +31,10 @@ var HEROCALCULATOR = (function (my) {
             return false;
         }, this);
         self.isEthereal = ko.computed(function() {
-            for (var i=0;i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
-                if ((item == 'ghost' || item == 'ethereal_blade') && self.items()[i].enabled() && isActive) {
+                if ((item === 'ghost' || item === 'ethereal_blade') && self.items()[i].enabled() && isActive) {
                     return true;
                 }
             }
@@ -42,8 +42,8 @@ var HEROCALCULATOR = (function (my) {
         }, this);
         self.totalCost = ko.computed(function() {
             var c = 0;
-            for (var i=0;i<self.items().length;i++) {
-                var item = self.items()[i].item
+            for (var i = 0; i < self.items().length; i++) {
+                var item = self.items()[i].item;
                 if (!self.items()[i].enabled()) continue;
                 if (my.stackableItems.indexOf(item) != -1) {
                     c += my.itemData['item_' + item].itemcost * self.items()[i].size;
@@ -51,11 +51,11 @@ var HEROCALCULATOR = (function (my) {
                 else if (my.levelitems.indexOf(item) != -1) {
                     switch(item) {
                         case 'diffusal_blade':
-                            c += my.itemData['item_' + item].itemcost + (self.items()[i].size-1) * 850;
+                            c += my.itemData['item_' + item].itemcost + (self.items()[i].size - 1) * 850;
                         break;
                         case 'necronomicon':
                         case 'dagon':
-                            c += my.itemData['item_' + item].itemcost + (self.items()[i].size-1) * 1250;
+                            c += my.itemData['item_' + item].itemcost + (self.items()[i].size - 1) * 1250;
                         break;
                         default:
                             c += my.itemData['item_' + item].itemcost;
@@ -79,8 +79,8 @@ var HEROCALCULATOR = (function (my) {
                     enabled: ko.observable(true)
                 }
                 self.items.push(new_item);
-                if (data.selectedItem() == 'ring_of_aquila' || data.selectedItem() == 'ring_of_basilius') {
-                    self.toggleItem(undefined,new_item,undefined);
+                if (data.selectedItem() === 'ring_of_aquila' || data.selectedItem() === 'ring_of_basilius') {
+                    self.toggleItem(undefined, new_item, undefined);
                 }
             }
         };
@@ -93,8 +93,8 @@ var HEROCALCULATOR = (function (my) {
                     enabled: ko.observable(true)
                 }
                 self.items.push(new_item);
-                if (self.selectedItemBuff() == 'ring_of_aquila' || self.selectedItemBuff() == 'ring_of_basilius') {
-                    self.toggleItem(undefined,new_item,undefined);
+                if (self.selectedItemBuff() === 'ring_of_aquila' || self.selectedItemBuff() === 'ring_of_basilius') {
+                    self.toggleItem(undefined, new_item, undefined);
                 }
             }
         };
@@ -107,8 +107,8 @@ var HEROCALCULATOR = (function (my) {
                     enabled: ko.observable(true)
                 }
                 self.items.push(new_item);
-                if (self.selectedItemDebuff() == 'ring_of_aquila' || self.selectedItemDebuff() == 'ring_of_basilius') {
-                    self.toggleItem(undefined,new_item,undefined);
+                if (self.selectedItemDebuff() === 'ring_of_aquila' || self.selectedItemDebuff() === 'ring_of_basilius') {
+                    self.toggleItem(undefined, new_item, undefined);
                 }
             }
         };
@@ -123,7 +123,7 @@ var HEROCALCULATOR = (function (my) {
                 switch (data.item) {
                     case 'power_treads':
                         if (data.state() < 2) {
-                            data.state(data.state()+1);
+                            data.state(data.state() + 1);
                         }
                         else {
                             data.state(0);
@@ -231,7 +231,7 @@ var HEROCALCULATOR = (function (my) {
         }
 
         self.getItemAttributeValue = function(attributes, attributeName, level) {
-            for (var i=0;i<attributes.length;i++) {
+            for (var i = 0; i < attributes.length; i++) {
                 if (attributes[i].name == attributeName) {
                     if (level == 0) {
                         return parseFloat(attributes[i].value[0]);
@@ -240,7 +240,7 @@ var HEROCALCULATOR = (function (my) {
                         return parseFloat(attributes[i].value[0]);
                     }
                     else {
-                        return parseFloat(attributes[i].value[level-1]);
+                        return parseFloat(attributes[i].value[level - 1]);
                     }
                 }
             }
@@ -248,12 +248,12 @@ var HEROCALCULATOR = (function (my) {
         
         self.getAttributes = function(attributetype) {
             var totalAttribute = 0;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
                 var size = self.items()[i].size;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bonus_all_stats':
@@ -312,20 +312,20 @@ var HEROCALCULATOR = (function (my) {
         };
         self.getBash = function(attacktype) {
             var totalAttribute = 1;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bash_chance':
-                            totalAttribute *= (1 - parseInt(attribute.value[0])/100);
+                            totalAttribute *= (1 - parseInt(attribute.value[0]) / 100);
                         break;
                         case 'bash_chance_melee':
-                            if (attacktype == 'DOTA_UNIT_CAP_MELEE_ATTACK') { totalAttribute *= (1 - parseInt(attribute.value[0])/100); };
+                            if (attacktype == 'DOTA_UNIT_CAP_MELEE_ATTACK') { totalAttribute *= (1 - parseInt(attribute.value[0]) / 100); };
                         break;
                         case 'bash_chance_ranged':
-                            if (attacktype == 'DOTA_UNIT_CAP_RANGED_ATTACK') { totalAttribute *= (1 - parseInt(attribute.value[0])/100); };
+                            if (attacktype == 'DOTA_UNIT_CAP_RANGED_ATTACK') { totalAttribute *= (1 - parseInt(attribute.value[0]) / 100); };
                         break;
                     }
                 }
@@ -335,15 +335,15 @@ var HEROCALCULATOR = (function (my) {
         
         self.getCritChance = function() {
             var totalAttribute = 1;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'crit_chance':
-                            totalAttribute *= (1 - parseInt(attribute.value[0])/100);
+                            totalAttribute *= (1 - parseInt(attribute.value[0]) / 100);
                         break;
                     }
                 }
@@ -353,7 +353,7 @@ var HEROCALCULATOR = (function (my) {
         
         self.getCritSource = function() {
             var sources = {};
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
@@ -362,8 +362,8 @@ var HEROCALCULATOR = (function (my) {
                     case 'greater_crit':
                         if (sources[item] == undefined) {
                             sources[item] = {
-                                'chance': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'crit_chance', 0)/100,
-                                'multiplier': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'crit_multiplier', 0)/100,
+                                'chance': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'crit_chance', 0) / 100,
+                                'multiplier': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'crit_multiplier', 0) / 100,
                                 'count': 1,
                                 'displayname': my.itemData['item_' + item].displayname
                             }
@@ -380,7 +380,7 @@ var HEROCALCULATOR = (function (my) {
 
         self.getCleaveSource = function() {
             var sources = {};
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
@@ -389,7 +389,7 @@ var HEROCALCULATOR = (function (my) {
                         if (sources[item] == undefined) {
                             sources[item] = {
                                 'radius': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'cleave_radius', 0),
-                                'magnitude': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'cleave_damage_percent', 0)/100,
+                                'magnitude': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'cleave_damage_percent', 0) / 100,
                                 'count': 1,
                                 'displayname': my.itemData['item_' + item].displayname
                             }
@@ -406,7 +406,7 @@ var HEROCALCULATOR = (function (my) {
         
         self.getBashSource = function(attacktype) {
             var sources = {};
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
@@ -416,8 +416,8 @@ var HEROCALCULATOR = (function (my) {
                             sources[item] = {
                                 'damage': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bonus_chance_damage', 1),
                                 'damageType': 'physical',
-                                'count':1,
-                                'chance': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bonus_chance', 1)/100,
+                                'count': 1,
+                                'chance': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bonus_chance', 1) / 100,
                                 'displayname': my.itemData['item_' + item].displayname + ' Pierce'
                             }                            
                         }
@@ -429,7 +429,7 @@ var HEROCALCULATOR = (function (my) {
                         if (sources[item] == undefined) {
                             sources[item] = {
                                 'item': item,
-                                'chance': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bash_chance', 0)/100,
+                                'chance': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bash_chance', 0) / 100,
                                 'damage': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bash_damage', 0),
                                 'duration': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bash_stun', 0),
                                 'count': 1,
@@ -447,7 +447,7 @@ var HEROCALCULATOR = (function (my) {
                             if (attacktype == 'DOTA_UNIT_CAP_MELEE_ATTACK') {
                                 sources[item] = {
                                     'item': item,
-                                    'chance': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bash_chance_melee', 0)/100,
+                                    'chance': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bash_chance_melee', 0) / 100,
                                     'damage': 0,
                                     'duration': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bash_duration', 0),
                                     'count': 1,
@@ -458,7 +458,7 @@ var HEROCALCULATOR = (function (my) {
                             else {
                                 sources[item] = {
                                     'item': item,
-                                    'chance': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bash_chance_ranged', 0)/100,
+                                    'chance': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bash_chance_ranged', 0) / 100,
                                     'damage': 0,
                                     'duration': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'bash_duration', 0),
                                     'count': 1,
@@ -481,7 +481,7 @@ var HEROCALCULATOR = (function (my) {
         
         self.getOrbProcSource = function() {
             var sources = {};
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
@@ -490,7 +490,7 @@ var HEROCALCULATOR = (function (my) {
                     case 'mjollnir':
                         if (sources[item] == undefined) {
                             sources[item] = {
-                                'chance': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'chain_chance', 0)/100,
+                                'chance': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'chain_chance', 0) / 100,
                                 'damage': self.getItemAttributeValue(my.itemData['item_' + item].attributes, 'chain_damage', 0),
                                 'count': 1,
                                 'damageType': 'magic',
@@ -509,7 +509,7 @@ var HEROCALCULATOR = (function (my) {
 
         self.getOrbSource = function() {
             var sources = {};
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
@@ -536,10 +536,10 @@ var HEROCALCULATOR = (function (my) {
         
         self.getHealth = function() {
             var totalAttribute = 0;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bonus_health':
@@ -552,11 +552,11 @@ var HEROCALCULATOR = (function (my) {
         };
         self.getHealthRegen = function() {
             var totalAttribute = 0;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'health_regen':
@@ -582,11 +582,11 @@ var HEROCALCULATOR = (function (my) {
         self.getHealthRegenAura = function(e) {
             var totalAttribute = 0,
                 excludeList = e || [];
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     if (excludeList.indexOf(item + attribute.name) > -1) continue;
                     switch(attribute.name) {
@@ -601,10 +601,10 @@ var HEROCALCULATOR = (function (my) {
         };
         self.getMana = function() {
             var totalAttribute = 0;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bonus_mana':
@@ -617,10 +617,10 @@ var HEROCALCULATOR = (function (my) {
         };
         self.getManaRegen = function() {
             var totalAttribute = 0;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'aura_mana_regen':
@@ -633,10 +633,10 @@ var HEROCALCULATOR = (function (my) {
         };
         self.getManaRegenPercent = function() {
             var totalAttribute = 0;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bonus_mana_regen':
@@ -647,10 +647,10 @@ var HEROCALCULATOR = (function (my) {
                     }
                 }
             }
-            return totalAttribute/100;    
+            return totalAttribute / 100;    
         };
         self.getManaRegenBloodstone = function() {
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 if (!self.items()[i].enabled()) continue;
                 if (item.indexOf('bloodstone') != -1) {
@@ -661,11 +661,11 @@ var HEROCALCULATOR = (function (my) {
         };
         self.getArmor = function() {
             var totalAttribute = 0;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bonus_armor':
@@ -679,11 +679,11 @@ var HEROCALCULATOR = (function (my) {
         self.getArmorAura = function(aList) {
             var totalAttribute = 0,
                 attributeList = aList || [];
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0;j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     if (_.find(attributeList, function(a) { return attribute.name == a.name; })) continue;
                     switch(attribute.name) {
@@ -737,11 +737,11 @@ var HEROCALCULATOR = (function (my) {
         self.getArmorReduction = function(e) {
             var totalAttribute = 0,
                 excludeList = e || [];
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     if (excludeList.indexOf(attribute.name) > -1) continue;
                     switch(attribute.name) {
@@ -766,15 +766,15 @@ var HEROCALCULATOR = (function (my) {
         };
         self.getEvasion = function() {
             var totalAttribute = 1;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bonus_evasion':
-                            totalAttribute *= (1 - parseInt(attribute.value[0])/100);
+                            totalAttribute *= (1 - parseInt(attribute.value[0]) / 100);
                         break;
                     }
                 }
@@ -786,11 +786,11 @@ var HEROCALCULATOR = (function (my) {
             hasBoots = false,
             hasEuls = false,
             bootItems = ['boots','phase_boots','arcane_boots','travel_boots','power_treads','tranquil_boots'];
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bonus_movement_speed':
@@ -835,11 +835,11 @@ var HEROCALCULATOR = (function (my) {
                 hasShadowBladeActive = false,
                 hasMoMActive = false,
                 yashaItems = ['manta','yasha','sange_and_yasha'];
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     if (excludeList.indexOf(attribute.name) > -1) continue;
                     switch(attribute.name) {
@@ -899,11 +899,11 @@ var HEROCALCULATOR = (function (my) {
         self.getMovementSpeedPercentReduction = function(e) {
             var totalAttribute = 0,
                 excludeList = e || [];
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     if (excludeList.indexOf(attribute.name) > -1) continue;
                     switch(attribute.name) {
@@ -930,11 +930,11 @@ var HEROCALCULATOR = (function (my) {
         self.getBonusDamage = function() {
             var totalAttribute = 0;
             var sources = {};
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bonus_damage':
@@ -976,18 +976,18 @@ var HEROCALCULATOR = (function (my) {
 			s = s || {sources:{},total:0};
             var totalAttribute = s.total || 0;
             var sources = s.sources || {};
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'damage_aura':
                             if (sources[item] == undefined) {
-								totalAttribute += parseInt(attribute.value[0])/100;
+								totalAttribute += parseInt(attribute.value[0]) / 100;
                                 sources[item] = {
-                                    'damage': parseInt(attribute.value[0])/100,
+                                    'damage': parseInt(attribute.value[0]) / 100,
                                     'damageType': 'physical',
                                     'count':1,
                                     'displayname': my.itemData['item_' + item].displayname
@@ -1005,11 +1005,11 @@ var HEROCALCULATOR = (function (my) {
         self.getAttackSpeed = function(e) {
             var totalAttribute = 0,
                 excludeList = e || [];
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     if (excludeList.indexOf(attribute.name) > -1) continue;
                     switch(attribute.name) {
@@ -1048,11 +1048,11 @@ var HEROCALCULATOR = (function (my) {
         self.getAttackSpeedReduction = function(e) {
             var totalAttribute = 0,
                 excludeList = e || [];
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     if (excludeList.indexOf(attribute.name) > -1) continue;
                     switch(attribute.name) {
@@ -1075,11 +1075,11 @@ var HEROCALCULATOR = (function (my) {
         };
         self.getLifesteal = function() {
             var totalAttribute = 0;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'lifesteal_percent':
@@ -1101,11 +1101,11 @@ var HEROCALCULATOR = (function (my) {
         self.getLifestealAura = function(e) {
             var totalAttribute = 0,
 				excludeList = e || [];
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
 					if (excludeList.indexOf(attribute.name) > -1) continue;
                     switch(attribute.name) {
@@ -1120,23 +1120,23 @@ var HEROCALCULATOR = (function (my) {
         };
         self.getMagicResist = function() {
             var totalAttribute = 0;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
-                for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bonus_magical_armor':
-                            var d = parseInt(attribute.value[0])/100;
+                            var d = parseInt(attribute.value[0]) / 100;
                             if (d > totalAttribute) { totalAttribute = d; };
                         break;
                         case 'bonus_spell_resist':
-                            var d = parseInt(attribute.value[0])/100;
+                            var d = parseInt(attribute.value[0]) / 100;
                             if (d > totalAttribute) { totalAttribute = d; };
                         break;
                         case 'magic_resistance':
-                            var d = parseInt(attribute.value[0])/100;
+                            var d = parseInt(attribute.value[0]) / 100;
                             if (d > totalAttribute) { totalAttribute = d; };
                         break;
                     }
@@ -1146,17 +1146,17 @@ var HEROCALCULATOR = (function (my) {
         };
         self.getMagicResistReductionSelf = function() {
             var totalAttribute = 1;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
                 if (isActive) {
-                    for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                    for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                         var attribute = my.itemData['item_' + item].attributes[j];
                         switch(attribute.name) {
                             case 'extra_spell_damage_percent':
 							case 'ethereal_damage_bonus':
-                                return (1 - parseInt(attribute.value[0])/100);
+                                return (1 - parseInt(attribute.value[0]) / 100);
                             break;
                         }
                     }
@@ -1166,18 +1166,18 @@ var HEROCALCULATOR = (function (my) {
         };   
         self.getMagicResistReduction = function() {
             var totalAttribute = 1;
-            for (var i=0; i<self.items().length;i++) {
+            for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if (!self.items()[i].enabled()) continue;
                 if (isActive) {
-                    for (var j=0;j<my.itemData['item_' + item].attributes.length;j++) {
+                    for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                         var attribute = my.itemData['item_' + item].attributes[j];
                         switch(attribute.name) {
                             case 'ethereal_damage_bonus':
-                                if (!self.isEthereal()) totalAttribute *= (1 - parseInt(attribute.value[0])/100);
+                                if (!self.isEthereal()) totalAttribute *= (1 - parseInt(attribute.value[0]) / 100);
                             case 'resist_debuff':
-                                totalAttribute *= (1 - parseInt(attribute.value[0])/100);
+                                totalAttribute *= (1 - parseInt(attribute.value[0]) / 100);
                             break;
                         }
                     }
@@ -1188,7 +1188,7 @@ var HEROCALCULATOR = (function (my) {
 
         self.itemOptions = ko.observableArray([]);
         for (var i = 0; i < validItems.length; i++) {
-            self.itemOptions.push(new my.ItemInput(validItems[i],my.itemData['item_' + validItems[i]].displayname));
+            self.itemOptions.push(new my.ItemInput(validItems[i], my.itemData['item_' + validItems[i]].displayname));
         }
         /*for (i in my.itemData) {
             self.itemOptions.push(new my.ItemInput(i.replace('item_',''),my.itemData[i].displayname));
@@ -1197,14 +1197,14 @@ var HEROCALCULATOR = (function (my) {
         self.itemBuffOptions = ko.observableArray([]);        
         var itemBuffs = ['assault', 'ancient_janggo', 'headdress', 'mekansm', 'pipe', 'ring_of_aquila', 'vladmir', 'ring_of_basilius','buckler'];
         for (i in itemBuffs) {
-            self.itemBuffOptions.push(new my.ItemInput(itemBuffs[i],my.itemData['item_' + itemBuffs[i]].displayname));
+            self.itemBuffOptions.push(new my.ItemInput(itemBuffs[i], my.itemData['item_' + itemBuffs[i]].displayname));
         }
         self.selectedItemBuff = ko.observable('assault');
 
         self.itemDebuffOptions = ko.observableArray([]);        
         var itemDebuffs = ['assault', 'shivas_guard', 'desolator'];
         for (i in itemDebuffs) {
-            self.itemDebuffOptions.push(new my.ItemInput(itemDebuffs[i],my.itemData['item_' + itemDebuffs[i]].displayname));
+            self.itemDebuffOptions.push(new my.ItemInput(itemDebuffs[i], my.itemData['item_' + itemDebuffs[i]].displayname));
         }
         self.selectedItemDebuff = ko.observable('assault');
         

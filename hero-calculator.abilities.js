@@ -433,12 +433,12 @@ var HEROCALCULATOR = (function (my) {
                         }
                     }
                 }
-                /*else if (ability.bonusHealth != undefined) {
+                else if (ability.bonusHealth != undefined) {
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
-                        // 
+                        // clinkz_death_pact
                         totalAttribute+=ability.bonusHealth();
                     }
-                }*/
+                }
             }
             return totalAttribute;
         });
@@ -889,7 +889,7 @@ var HEROCALCULATOR = (function (my) {
                         }
                     }
                 }
-                else if (ability.baseDamageMultiplier != undefined) {
+                else if (ability.baseDamageMultiplier != undefined || ability.baseDamage != undefined) {
                     // earthshaker_enchant_totem
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
                         totalMultiplier += ability.baseDamageMultiplier()/100;
@@ -899,6 +899,16 @@ var HEROCALCULATOR = (function (my) {
                             'damageType': 'physical',
                             'displayname': ability.displayname()
                         }*/
+                    }
+                    
+                    // clinkz_death_pact
+                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        totalAttribute += ability.baseDamage();
+                        sources[ability.name()] = {
+                            'damage': ability.baseDamage(),
+                            'damageType': 'physical',
+                            'displayname': ability.displayname()
+                        }
                     }
                 }
             }

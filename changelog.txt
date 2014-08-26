@@ -1,3 +1,9 @@
+2014-08-26
+- Added Weaver Geminate Attack.
+
+2014-08-08
+- Added Clinkz Death Pact.
+
 2014-08-07
 - Items added to buff and debuff sections.
 - Started implementing logic for non-stacking auras and things that should/shouldn't stack, e.g. bonus armor auras.

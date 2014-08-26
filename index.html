@@ -190,47 +190,69 @@
                                                 <td class="text-right"><strong><abbr data-bind="attr: {title: 'After reductions from ' + $root.heroes[($index()+1) % 2].hero().displayname()}">After Reductions</abbr></strong></td>
                                             </tr>
                                             <tr>
-                                                <td><abbr title="sum of damage sources">Damage Per Attack:</abbr></td>
+                                                <td><abbr title="Sum of damage sources">Damage Per Attack:</abbr></td>
                                                 <td class="text-right">
                                                     <span data-bind="html: damageTotalInfo().total.toFixed(2)"></span>
-                                                    <span data-bind="html: $root.getDiffText(damageTotalInfo().total.toFixed(2) - heroCompare().damageTotalInfo().total.toFixed(2)), css: {'diffPos': (damageTotalInfo().total.toFixed(2) - heroCompare().damageTotalInfo().total.toFixed(2)) > 0, 'diffNeg': (damageTotalInfo().total.toFixed(2) - heroCompare().damageTotalInfo().total.toFixed(2)) < 0}, visible: showDiff"></span>
+                                                    <span data-bind="html: $root.getDiffTextWrapper($data, 'total'), diffStyle: $root.getDiffMagnitude($data, 'total'), visible: showDiff"></span>
                                                 </td>
                                                 <td class="text-right">
                                                     <span data-bind="html: damageTotalInfo().totalReduced.toFixed(2)"></span>
-                                                    <span data-bind="html: $root.getDiffText(damageTotalInfo().totalReduced.toFixed(2) - heroCompare().damageTotalInfo().totalReduced.toFixed(2)), css: {'diffPos': (damageTotalInfo().totalReduced.toFixed(2) - heroCompare().damageTotalInfo().totalReduced.toFixed(2)) > 0, 'diffNeg': (damageTotalInfo().totalReduced.toFixed(2) - heroCompare().damageTotalInfo().totalReduced.toFixed(2)) < 0}, visible: showDiff"></span>
+                                                    <span data-bind="html: $root.getDiffTextWrapper($data, 'totalReduced'), diffStyle: $root.getDiffMagnitude($data, 'totalReduced'), visible: showDiff"></span>
                                                 </td>
+                                            </tr>
+                                            <tr data-bind="visible: damageTotalInfo().geminateAttack.active">
+                                                <td class="indent"><abbr title="Sum of damage sources + geminate attack damage">with Geminate Attack:</abbr></td>
+                                                <td class="text-right">
+                                                    <span data-bind="html: damageTotalInfo().totalGeminateAttack.toFixed(2)"></span>
+                                                    <span data-bind="html: $root.getDiffTextWrapper($data, 'totalGeminateAttack'), diffStyle: $root.getDiffMagnitude($data, 'totalGeminateAttack'), visible: showDiff"></span>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span data-bind="html: damageTotalInfo().totalGeminateAttackReduced.toFixed(2)"></span>
+                                                    <span data-bind="html: $root.getDiffTextWrapper($data, 'totalGeminateAttackReduced'), diffStyle: $root.getDiffMagnitude($data, 'totalGeminateAttackReduced'), visible: showDiff"></span>
+                                                </td>
+                                            </tr>
+                                            <tr data-bind="visible: damageTotalInfo().sourcesCrit.length > 0">
+                                                <td class="indent"><abbr title="Sum of damage sources + average crit damage per attack">with Crit:</abbr></td>
+                                                <td class="text-right"><span data-bind="html: damageTotalInfo().sumTotal.toFixed(2)"></span></td>
+                                                <td class="text-right"><span data-bind="html: damageTotalInfo().sumTotalReduced.toFixed(2)"></span></td>
                                             </tr>
                                             <tr>
-                                                <td><abbr title="damage per attack / attacks per second">DPS:</abbr></td>
+                                                <td><abbr title="Damage per attack * attacks per second">DPS:</abbr></td>
                                                 <td class="text-right">
-                                                    <span data-bind="html: (damageTotalInfo().total * attacksPerSecond()).toFixed(2)"></span>
-                                                    <span data-bind="html: $root.getDiffText((damageTotalInfo().total * attacksPerSecond()).toFixed(2) - (heroCompare().damageTotalInfo().total * heroCompare().attacksPerSecond()).toFixed(2)), css: {'diffPos': ((damageTotalInfo().total * attacksPerSecond()).toFixed(2) - (heroCompare().damageTotalInfo().total * heroCompare().attacksPerSecond()).toFixed(2)) > 0, 'diffNeg': ((damageTotalInfo().total * attacksPerSecond()).toFixed(2) - (heroCompare().damageTotalInfo().total * heroCompare().attacksPerSecond()).toFixed(2)) < 0}, visible: showDiff"></span>
+                                                    <span data-bind="html: damageTotalInfo().dps.base.toFixed(2)"></span>
+                                                    <span data-bind="html: $root.getDiffTextWrapper($data, 'dps.base'), diffStyle: $root.getDiffMagnitude($data, 'dps.base'), visible: showDiff"></span>
                                                 </td>
                                                 <td class="text-right">
-                                                    <span data-bind="html: (damageTotalInfo().totalReduced * attacksPerSecond()).toFixed(2)"></span>
-                                                    <span data-bind="html: $root.getDiffText((damageTotalInfo().totalReduced * attacksPerSecond()).toFixed(2) - (heroCompare().damageTotalInfo().totalReduced * heroCompare().attacksPerSecond()).toFixed(2)), css: {'diffPos': ((damageTotalInfo().totalReduced * attacksPerSecond()).toFixed(2) - (heroCompare().damageTotalInfo().totalReduced * heroCompare().attacksPerSecond()).toFixed(2)) > 0, 'diffNeg': ((damageTotalInfo().totalReduced * attacksPerSecond()).toFixed(2) - (heroCompare().damageTotalInfo().totalReduced * heroCompare().attacksPerSecond()).toFixed(2)) < 0}, visible: showDiff"></span>
+                                                    <span data-bind="html: damageTotalInfo().dps.reduced.base.toFixed(2)"></span>
+                                                    <span data-bind="html: $root.getDiffTextWrapper($data, 'dps.reduced.base'), diffStyle: $root.getDiffMagnitude($data, 'dps.reduced.base'), visible: showDiff"></span>
+                                                </td>
+                                            </tr>
+                                            <tr data-bind="visible: damageTotalInfo().geminateAttack.active">
+                                                <td class="indent"><abbr title="(Damage per attack * attacks per second) + average geminate attack dps">with Geminate Attack:</abbr></td>
+                                                <td class="text-right">
+                                                    <span data-bind="html: damageTotalInfo().dps.geminateAttack.toFixed(2)"></span>
+                                                    <span data-bind="html: $root.getDiffTextWrapper($data, 'dps.geminateAttack'), diffStyle: $root.getDiffMagnitude($data, 'dps.geminateAttack'), visible: showDiff"></span>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span data-bind="html: damageTotalInfo().dps.reduced.geminateAttack.toFixed(2)"></span>
+                                                    <span data-bind="html: $root.getDiffTextWrapper($data, 'dps.reduced.geminateAttack'), diffStyle: $root.getDiffMagnitude($data, 'dps.reduced.geminateAttack'), visible: showDiff"></span>
                                                 </td>
                                             </tr>
                                             <tr data-bind="visible: damageTotalInfo().sourcesCrit.length > 0">
-                                                <td><abbr title="sum of damage sources + avg crit damage">Damage Per Attack w/ Crit:</abbr></td>
-                                                <td class="text-right"><span data-bind="html: (damageTotalInfo().total + damageTotalInfo().totalCrit).toFixed(2)"></span></td>
-                                                <td class="text-right"><span data-bind="html: (damageTotalInfo().totalReduced + damageTotalInfo().totalCritReduced).toFixed(2)"></span></td>
-                                            </tr>
-                                            <tr data-bind="visible: damageTotalInfo().sourcesCrit.length > 0">
-                                                <td><abbr title="damage per attack / attacks per second">DPS w/ Crit:</abbr></td>
-                                                <td class="text-right"><span data-bind="html: ((damageTotalInfo().total + damageTotalInfo().totalCrit) * attacksPerSecond()).toFixed(2)"></span></td>
-                                                <td class="text-right"><span data-bind="html: ((damageTotalInfo().totalReduced + damageTotalInfo().totalCritReduced) * attacksPerSecond()).toFixed(2)"></span></td>
+                                                <td class="indent"><abbr data-bind="attr: { title: damageTotalInfo().geminateAttack.active ? 'Damage per attack (including crit) * attacks per second + average geminate attack dps' : 'Damage per attack (including crit) * attacks per second' }, text: damageTotalInfo().geminateAttack.active ? 'with Crit and Geminate Attack' : 'with Crit:' "></abbr></td>
+                                                <td class="text-right"><span data-bind="html: damageTotalInfo().dps.total.toFixed(2)"></span></td>
+                                                <td class="text-right"><span data-bind="html: damageTotalInfo().dps.reduced.total.toFixed(2)"></span></td>
                                             </tr>
                                             <tr><td colspan=3><strong><abbr title="with %chance taken into account">Damage Sources</abbr></strong></td></tr>
                                             <tr>
                                                 <td>Base Damage</td>
                                                 <td class="text-right">
                                                     <span data-bind="html: ((baseDamage()[0] + baseDamage()[1])/2).toFixed(2)"></span>
-                                                    <span data-bind="html: $root.getDiffText(((baseDamage()[0] + baseDamage()[1])/2).toFixed(2) - ((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2).toFixed(2)), css: {'diffPos': (((baseDamage()[0] + baseDamage()[1])/2).toFixed(2) - ((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2).toFixed(2)) > 0, 'diffNeg': (((baseDamage()[0] + baseDamage()[1])/2).toFixed(2) - ((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2).toFixed(2)) < 0}, visible: showDiff"></span>
+                                                    <span data-bind="html: $root.getDiffText(((baseDamage()[0] + baseDamage()[1])/2).toFixed(2) - ((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2).toFixed(2)), diffStyle: (((baseDamage()[0] + baseDamage()[1])/2).toFixed(2) - ((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2).toFixed(2)), visible: showDiff"></span>
                                                 </td>
                                                 <td class="text-right">
                                                     <span data-bind="html: getReducedDamage((baseDamage()[0] + baseDamage()[1])/2, 'physical').toFixed(2)"></span>
-                                                    <span data-bind="html: $root.getDiffText(getReducedDamage((baseDamage()[0] + baseDamage()[1])/2, 'physical').toFixed(2) - getReducedDamage((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2, 'physical').toFixed(2)), css: {'diffPos': (getReducedDamage((baseDamage()[0] + baseDamage()[1])/2, 'physical').toFixed(2) - getReducedDamage((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2, 'physical').toFixed(2)) > 0, 'diffNeg': (getReducedDamage((baseDamage()[0] + baseDamage()[1])/2, 'physical').toFixed(2) - getReducedDamage((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2, 'physical').toFixed(2)) < 0}, visible: showDiff"></span>
+                                                    <span data-bind="html: $root.getDiffText(getReducedDamage((baseDamage()[0] + baseDamage()[1])/2, 'physical').toFixed(2) - getReducedDamage((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2, 'physical').toFixed(2)), diffStyle: (getReducedDamage((baseDamage()[0] + baseDamage()[1])/2, 'physical').toFixed(2) - getReducedDamage((heroCompare().baseDamage()[0] + heroCompare().baseDamage()[1])/2, 'physical').toFixed(2)), visible: showDiff"></span>
                                                 </td>
                                             </tr>
                                         </tbody>

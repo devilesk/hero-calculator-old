@@ -1,5 +1,16 @@
 var HEROCALCULATOR = (function (my) {
 
+    ko.bindingHandlers.diffStyle = {
+        init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+            var value = ko.utils.unwrapObservable(valueAccessor());
+            ko.applyBindingsToNode(element, { css: {'diffPos': value > 0, 'diffNeg': value < 0} });
+        },
+        update: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+            var value = ko.utils.unwrapObservable(valueAccessor());
+            ko.applyBindingsToNode(element, { css: {'diffPos': value > 0, 'diffNeg': value < 0} });
+        }
+    };
+    
     ko.bindingHandlers.jqAuto = {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
             var options = valueAccessor() || {},
