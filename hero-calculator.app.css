@@ -136,64 +136,6 @@ img {
     text-align: center;
 }
 
-#item_name {
-    font-weight: bold;
-    display: inline;
-}
-
-#item_cost {
-    margin-left: 10px;
-    display: inline;
-    background-image: url('/media/images/gold.png');
-    padding: 0px 0px 0px 27px;
-    background-repeat: no-repeat;
-}
-
-#item_manacost {
-    margin-right: 10px;
-    display: inline;
-    background-image: url('/media/images/manacost.png');
-    padding: 0px 0px 0px 20px;
-    background-repeat: no-repeat;
-}
-
-#item_cooldown {
-    margin-right: 10px;
-    display: inline;
-    background-image: url('/media/images/cooldown.png');
-    padding: 0px 0px 0px 20px;
-    background-repeat: no-repeat;
-}
-
-#item_cdmana {
-    padding: 10px 0px 0px 0px;
-}
-
-#item_lore {
-    font-size: 8pt;
-    font-style: italic;
-}
-
-.close, .ui-dialog-titlebar-close {
-    float: right;
-    font-size: 24px;
-    font-weight: bold;
-    line-height: 1;
-    color: #979aa2;
-    text-shadow: 0 1px 0 #131415;
-    opacity: 0.4;
-    filter: alpha(opacity=40);
-}
-
-.close:hover,
-.close:focus, , .ui-dialog-titlebar-close:hover, , .ui-dialog-titlebar-close:focus {
-    color: white;
-    text-decoration: none;
-    cursor: pointer;
-    opacity: 1;
-    filter: alpha(opacity=100);
-}
-
 .item_field {
     display: block;
 }
@@ -207,6 +149,69 @@ img {
 .item_inactive {
     padding: 2px;
     float: left;
+}
+
+.item_name {
+    font-weight: bold;
+    display: inline;
+}
+
+.item_cost {
+    margin-left: 10px;
+    display: inline;
+    background-image: url('/media/images/gold.png');
+    padding: 0px 0px 0px 27px;
+    background-repeat: no-repeat;
+}
+
+.item_manacost {
+    margin-right: 10px;
+    display: inline;
+    background-image: url('/media/images/manacost.png');
+    padding: 0px 0px 0px 20px;
+    background-repeat: no-repeat;
+}
+
+.item_cooldown {
+    margin-right: 10px;
+    display: inline;
+    background-image: url('/media/images/cooldown.png');
+    padding: 0px 0px 0px 20px;
+    background-repeat: no-repeat;
+}
+
+.item_cdmana {
+    padding: 10px 0px 0px 0px;
+}
+
+.item_lore {
+    font-size: 8pt;
+    font-style: italic;
+}
+
+.item_ability_damage_type {
+    display: inline;
+    margin-right: 10px;
+}
+
+.close, .ui-dialog-titlebar-close {
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 1;
+    color: white;
+    text-shadow: 0 1px 0 #131415;
+    opacity: 0.4;
+    filter: alpha(opacity=40);
+}
+
+.close:hover,
+.close:focus, .ui-dialog-titlebar-close:hover, .ui-dialog-titlebar-close:focus {
+    color: #979aa2;
+    text-decoration: none;
+    cursor: pointer;
+    opacity: 1;
+    filter: alpha(opacity=100);
 }
 
 .ability_active {

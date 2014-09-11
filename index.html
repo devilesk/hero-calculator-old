@@ -10,7 +10,6 @@
 
     <link rel="shortcut icon" href="/media/favicon.png">
   
-    <link href="http://fonts.googleapis.com/css?family=Cinzel" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="/media/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/media/css/site.css" id="theme-css">
     <link rel="stylesheet" href="/media/css/syntax.css">
@@ -76,6 +75,7 @@
                     <li class="mobile-only"><a href="/dota2/heroes">Heroes Home</a></li>
                     <li class="divider mobile-only"></li>
                     <li><a href="/dota2/heroes/herodata">Hero Data</a></li>
+                                            <li><a href="/dota2/heroes/lore">Lore</a></li>
                                             <li><a href="/dota2/heroes/patchhistory">Patch History</a></li>
                                                               </ul>
                 </li>
@@ -357,7 +357,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-9 bottom-buffer" data-bind="visible: $data.data.isDetail()">
-                                                <button type="button" class="close" style="color:white" data-bind="click: function(data, event) { $parent.buffs.toggleBuffDetail($index, data.data, event); }">&times;</button>
+                                                <button type="button" class="close" data-bind="click: function(data, event) { $parent.buffs.toggleBuffDetail($index, data.data, event); }">&times;</button>
                                                 <div data-bind="html: $parent.ability().getAbilityTooltipData($data.hero, $data.data.name())"></div>
                                                 <div data-bind="if: $data.data.name() in $parent.buffs.abilityData && $parent.buffs.buffs()[$index()].data.level() > 0">
                                                     <div class="col-md-8">
@@ -421,7 +421,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-9 bottom-buffer" data-bind="visible: $data.data.isDetail()">
-                                                <button type="button" class="close" style="color:white" data-bind="click: function(data, event) { $parent.debuffs.toggleBuffDetail($index, data.data, event); }">&times;</button>
+                                                <button type="button" class="close" data-bind="click: function(data, event) { $parent.debuffs.toggleBuffDetail($index, data.data, event); }">&times;</button>
                                                 <div data-bind="html: $parent.ability().getAbilityTooltipData($data.hero, $data.data.name())"></div>
                                                 <div data-bind="if: $data.data.name() in $parent.debuffs.abilityData && $parent.debuffs.buffs()[$index()].data.level() > 0">
                                                     <div class="col-md-8">
@@ -1059,15 +1059,14 @@
     <script>DD_belatedPNG.fix('img, .png_bg'); // Fix any <img> or .png_bg bg-images. Also, please read goo.gl/mZiyb </script>
   <![endif]-->
 
-    <script type="text/javascript">
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+<script type="text/javascript">
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-39435120-1', 'devilesk.com');
-  ga('send', 'pageview');
-
+	ga('create', 'UA-39435120-1', 'devilesk.com');
+	ga('send', 'pageview');
 </script>
   
   </body>

@@ -253,7 +253,6 @@ var HEROCALCULATOR = (function (my) {
             return [self.baseDamage()[0] + self.bonusDamage()[0],
                     self.baseDamage()[1] + self.bonusDamage()[1]];
         });*/
-        self.damageAgainstEnemy = ko.observable();
         self.totalMagicResistanceProduct = ko.computed(function() {
             return (1 - my.unitData[self.selectedUnit().heroName()].magicalresistance / 100) 
                        * (1 - self.inventory.getMagicResist() / 100) 

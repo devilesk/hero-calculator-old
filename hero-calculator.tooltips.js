@@ -92,30 +92,30 @@ var HEROCALCULATOR = (function (my) {
         if (itemtooltipdata[el] == undefined) {
             var item = my.itemData['item_' + el];
             var data = $('<div>');
-            data.append($('<span>').html(item.displayname).attr('id', 'item_name').addClass('item_field'));
-            data.append($('<span>').html(item.itemcost).attr('id', 'item_cost').addClass('item_field'));
+            data.append($('<span>').html(item.displayname).addClass('item_field item_name'));
+            data.append($('<span>').html(item.itemcost).addClass('item_field item_cost'));
             data.append($('<hr>'));
             if (item.description != null) {
-                data.append($('<div>').html(getTooltipItemDescription(item)).attr('id', 'item_description').addClass('item_field'));
+                data.append($('<div>').html(getTooltipItemDescription(item)).addClass('item_field item_description'));
             }
             var attributedata = getTooltipItemAttributes(item);
             if (attributedata != '') {
-                data.append($('<div>').html(attributedata).attr('id', 'item_attributes').addClass('item_field'));
+                data.append($('<div>').html(attributedata).addClass('item_field item_attributes'));
             }
             var cd = getTooltipItemCooldown(item);
             var mana = getTooltipItemManaCost(item);
             if (cd != '' || mana != '') {
-                var cdmanacost = $('<div>').attr('id', 'item_cdmana');
+                var cdmanacost = $('<div>').addClass('item_cdmana');
                 if (cd != '') {
-                    cdmanacost.append($('<span>').html(cd).attr('id', 'item_cooldown').addClass('item_field'));
+                    cdmanacost.append($('<span>').html(cd).addClass('item_field item_cooldown'));
                 }
                 if (mana != '') {
-                    cdmanacost.append($('<span>').html(mana).attr('id', 'item_manacost').addClass('item_field'));
+                    cdmanacost.append($('<span>').html(mana).addClass('item_field item_manacost'));
                 }
                 data.append(cdmanacost);
             }
             if (item.lore != null) {
-                data.append($('<div>').html(item.lore).attr('id', 'item_lore').addClass('item_field'));
+                data.append($('<div>').html(item.lore).addClass('item_field item_lore'));
             }
             itemtooltipdata[el] = data.html();
             return data.html();
@@ -167,10 +167,15 @@ var HEROCALCULATOR = (function (my) {
                 var p = attributeTooltip.indexOf('%');
                 if (p == 0) {
                     if (attributeValue.toString().indexOf('/') == -1) {
-                        attributeValue = attributeValue + '%';
+                        attributeValue = attributeValue.toString().trim() + '%';
                     } else {
-                        var regexp2 = new RegExp('/', 'gi');
-                        attributeValue = attributeValue.replace(regexp2, '%/') + '%';
+                        //var regexp2 = new RegExp('/', 'gi');
+                        //attributeValue = attributeValue.replace(regexp2, '%/') + '%';
+                        var attributeValues = attributeValue.split('/');
+                        trimmedAttributeValues = _.map(attributeValues, function(v) {
+                            return v.trim();
+                        });
+                        attributeValue = trimmedAttributeValues.join('% / ') + '%';
                     }
                     attributeTooltip = attributeTooltip.slice(1);
                 }
@@ -212,6 +217,14 @@ var HEROCALCULATOR = (function (my) {
         }
         return c;
     }
+    
+    var abilityDamageTypes = {
+        'DAMAGE_TYPE_MAGICAL': 'Magical',
+        'DAMAGE_TYPE_PURE': 'Pure',
+        'DAMAGE_TYPE_PHYSICAL': 'Physical',
+        'DAMAGE_TYPE_COMPOSITE': 'Composite',
+        'DAMAGE_TYPE_HP_REMOVAL': 'HP Removal'
+    }
         
     my.getAbilityTooltipData = function(hero, el) {
         if (abilityTooltipData[el] == undefined) {
@@ -232,29 +245,32 @@ var HEROCALCULATOR = (function (my) {
                 }
             }
             var data = $('<div>')
-            data.append($('<span>').html(ability.displayname).attr('id', 'item_name').addClass('item_field'));
-            data.append($('<hr>'));
+            data.append($('<span>').html(ability.displayname).addClass('item_field pull-left item_name'));
+            if (ability.abilityunitdamagetype) {
+                data.append($('<span>').html(abilityDamageTypes[ability.abilityunitdamagetype]).addClass('item_field pull-right item_ability_damage_type').css('margin-right','10px'));
+            }
+            data.append($('<hr>').css('clear', 'both'));
             if (ability.description != null) {
-                data.append($('<div>').html(getTooltipAbilityDescription(ability)).attr('id', 'item_description').addClass('item_field'));
+                data.append($('<div>').html(getTooltipAbilityDescription(ability)).addClass('item_field item_description'));
             }
             var attributedata = getTooltipAbilityAttributes(ability);
             if (attributedata != '') {
-                data.append($('<div>').html(attributedata).attr('id', 'item_attributes').addClass('item_field'));
+                data.append($('<div>').html(attributedata).addClass('item_field item_attributes'));
             }
             var cd = getTooltipAbilityCooldown(ability);
             var mana = getTooltipAbilityManaCost(ability);
             if (cd != '' || mana != '') {
-                var cdmanacost = $('<div>').attr('id', 'item_cdmana');
+                var cdmanacost = $('<div>').addClass('item_cdmana');
                 if (mana != '') {
-                    cdmanacost.append($('<span>').html(mana.trim()).attr('id', 'item_manacost').addClass('item_field'));
+                    cdmanacost.append($('<span>').html(mana.trim()).addClass('item_field item_manacost'));
                 }
                 if (cd != '') {
-                    cdmanacost.append($('<span>').html(cd.trim()).attr('id', 'item_cooldown').addClass('item_field'));
+                    cdmanacost.append($('<span>').html(cd.trim()).addClass('item_field item_cooldown'));
                 }
                 data.append(cdmanacost);
             }
             if (ability.lore != null) {
-                data.append($('<div>').html(ability.lore).attr('id', 'item_lore').addClass('item_field'));
+                data.append($('<div>').html(ability.lore).addClass('item_field item_lore'));
             }
             abilityTooltipData[el] = data.html();
             return data.html();

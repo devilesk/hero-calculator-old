@@ -634,7 +634,6 @@ var HEROCALCULATOR = (function (my) {
                 controlType: 'text',
                 fn: function(v,a) {
                     if (v) {
-                        console.log('totem_damage_percentage',v,a);
                         return a;
                     }
                     else {
@@ -2364,6 +2363,88 @@ var HEROCALCULATOR = (function (my) {
                     return a
                 },
                 returnProperty: 'bash'
+            }
+        ],
+        'techies_land_mines': [
+            {
+                label: 'Number of Mines',
+                controlType: 'input'
+            },
+            {
+                attributeName: 'damage',
+                label: 'Total Damage',
+                controlType: 'text',
+                fn: function(v,a,parent,index) {
+                    return v*a;
+                }
+            },
+            {
+                attributeName: 'damage',
+                label: 'AFTER REDUCTIONS:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a,parent,index) {
+                    var phys_reduction = parent.enemy().totalArmorPhysicalReduction(),
+                        magic_reduction = parent.enemy().totalMagicResistance();
+                    return (v * a * (1 - phys_reduction / 100) * (1 - magic_reduction / 100)).toFixed(2);
+                }
+            }
+        ],
+        'techies_suicide': [
+            {
+                attributeName: 'damage',
+                label: 'FULL DAMAGE AFTER REDUCTIONS:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a,parent,index) {
+                    var phys_reduction = parent.enemy().totalArmorPhysicalReduction(),
+                        magic_reduction = parent.enemy().totalMagicResistance();
+                    return (a * (1 - phys_reduction / 100) * (1 - magic_reduction / 100)).toFixed(2);
+                }
+            },
+            {
+                attributeName: 'partial_damage',
+                label: 'PARTIAL DAMAGE AFTER REDUCTIONS:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a,parent,index) {
+                    var phys_reduction = parent.enemy().totalArmorPhysicalReduction(),
+                        magic_reduction = parent.enemy().totalMagicResistance();
+                    return (a * (1 - phys_reduction / 100) * (1 - magic_reduction / 100)).toFixed(2);
+                }
+            },
+            {
+                attributeName: 'damage',
+                label: 'RESPAWN TIME:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a,parent,index) {
+                    return (parent.respawnTime() / 2).toFixed(0) + ' seconds';
+                }
+            }
+        ],
+        'techies_remote_mines': [
+            {
+                label: 'Number of Mines',
+                controlType: 'input'
+            },
+            {
+                attributeName: 'damage',
+                label: 'Total Damage',
+                controlType: 'text',
+                fn: function(v,a,parent,index) {
+                    return v*a;
+                }
+            },
+            {
+                attributeName: 'damage',
+                label: 'AFTER REDUCTIONS:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a,parent,index) {
+                    var magic_reduction = parent.enemy().totalMagicResistance();
+                    return (v * a * (1 - magic_reduction / 100)).toFixed(2);
+                }
             }
         ],
         'tinker_march_of_the_machines': [

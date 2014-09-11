@@ -102,7 +102,7 @@ var HEROCALCULATOR = (function (my) {
         }
     }
     
-    my.IllusionViewModel = function (h,p,abilityLevel) {
+    my.IllusionViewModel = function (h, p, abilityLevel) {
         var self = new my.HeroCalculatorModel(0);
         self.parent = p;
         self.inventory = self.parent.inventory;
@@ -136,7 +136,7 @@ var HEROCALCULATOR = (function (my) {
                 return parseFloat(attribute.value[0]);
             }
             else {
-                return parseFloat(attribute.value[level-1]);
+                return parseFloat(attribute.value[level - 1]);
             }
         }
         
@@ -180,19 +180,19 @@ var HEROCALCULATOR = (function (my) {
         });
         
         self.ehpPhysical = ko.computed(function() {
-            var ehp = (self.health() * (1 + .06 * self.totalArmorPhysical())) / (1-(1-(self.inventory.getEvasion() * self.ability().getEvasion())))
-            ehp *= (_.some(self.inventory.activeItems(), function(item) {return item.item == 'mask_of_madness';}) ? (1/1.3) : 1);
-            ehp *= (1/self.getIncomingDamageMultiplier(self.illusionType(), false, self.hero().attacktype()));
+            var ehp = (self.health() * (1 + .06 * self.totalArmorPhysical())) / (1 - (1 - (self.inventory.getEvasion() * self.ability().getEvasion())))
+            ehp *= (_.some(self.inventory.activeItems(), function(item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
+            ehp *= (1 / self.getIncomingDamageMultiplier(self.illusionType(), false, self.hero().attacktype()));
             return ehp.toFixed(2);
         });
         self.ehpMagical = ko.computed(function() {
             var ehp = self.health() / self.totalMagicResistanceProduct();
-            ehp *= (1/self.getIncomingDamageMultiplier(self.illusionType(), false, self.hero().attacktype()));
+            ehp *= (1 / self.getIncomingDamageMultiplier(self.illusionType(), false, self.hero().attacktype()));
             return ehp.toFixed(2);
         });
         
         self.totalArmorPhysical = ko.computed(function() {
-            return (self.enemy().ability().getArmorBaseReduction() * self.debuffs.getArmorBaseReduction() * (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].armorphysical + self.totalAgi()*.14)
+            return (self.enemy().ability().getArmorBaseReduction() * self.debuffs.getArmorBaseReduction() * (my.heroData['npc_dota_hero_' + self.selectedHero().heroName].armorphysical + self.totalAgi() * .14)
                     + self.ability().getArmor() + self.enemy().ability().getArmorReduction() + self.buffs.getArmor() + self.debuffs.getArmorReduction()).toFixed(2);
         });
         
@@ -209,7 +209,7 @@ var HEROCALCULATOR = (function (my) {
             else if (val > 400) {
                 return 400;
             }
-            return (val).toFixed(2);
+            return val.toFixed(2);
         });
         
         return self;

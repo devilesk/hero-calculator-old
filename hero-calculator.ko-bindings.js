@@ -1,5 +1,5 @@
 var HEROCALCULATOR = (function (my) {
-
+    
     ko.bindingHandlers.diffStyle = {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
             var value = ko.utils.unwrapObservable(valueAccessor());

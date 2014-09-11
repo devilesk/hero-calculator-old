@@ -1,3 +1,18 @@
+2014-09-10
+- Fixed saved builds not loading.
+
+2014-09-08
+- Added damage calculator for Techies' abilities.
+
+2014-09-07
+- Fixed ability details calculator not working.
+
+2014-08-30
+- Fixed dps calculation error.
+
+2014-08-27
+- Added Techies.
+
 2014-08-26
 - Added Weaver Geminate Attack.
 

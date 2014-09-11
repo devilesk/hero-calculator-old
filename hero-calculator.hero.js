@@ -6,7 +6,7 @@ var HEROCALCULATOR = (function (my) {
         this.baseHero = baseHero;
     };
     
-    my.HeroOption = function(name, displayname) {
+    my.HeroOption = function (name, displayname) {
         this.heroName = name;
         this.heroDisplayName = displayname;
     };
@@ -27,7 +27,10 @@ var HEROCALCULATOR = (function (my) {
         return options;
     }
     
-    my.HeroCalculatorModel = function(h) {
+    my.totalExp = [0, 200, 500, 900, 1400, 2000, 2600, 3200, 4400, 5400, 6000, 8200, 9000, 10400, 11900, 13500, 15200, 17000, 18900, 20900, 23000, 25200, 27500, 29900, 32400];
+    my.nextLevelExp = [200, 300, 400, 500, 600, 600, 600, 1200, 1000, 600, 2200, 800, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, '&mdash;'];
+    
+    my.HeroCalculatorModel = function (h) {
         var self = this;
         self.availableHeroes = ko.observableArray(createHeroOptions());
         self.sectionDisplay = ko.observable({
@@ -38,10 +41,10 @@ var HEROCALCULATOR = (function (my) {
             damageamp: ko.observable(false),
             illusion: ko.observable(false)
         });
-        self.sectionDisplayToggle = function(section) {
+        self.sectionDisplayToggle = function (section) {
             self.sectionDisplay()[section](!self.sectionDisplay()[section]());
         }
-        self.availableHeroes.sort(function(left, right) {
+        self.availableHeroes.sort(function (left, right) {
             return left.heroDisplayName == right.heroDisplayName ? 0 : (left.heroDisplayName < right.heroDisplayName ? -1 : 1);
         });
         self.selectedHero = ko.observable(self.availableHeroes()[h]);
@@ -52,10 +55,10 @@ var HEROCALCULATOR = (function (my) {
         self.debuffs = new my.BuffViewModel();
         self.damageAmplification = new my.DamageAmpViewModel();
         self.damageReduction = new my.DamageAmpViewModel();
-        self.hero = ko.computed(function() {
+        self.hero = ko.computed(function () {
             return ko.mapping.fromJS(my.heroData['npc_dota_hero_' + self.selectedHero().heroName]);
         });
-		self.heroData = ko.computed(function() {
+		self.heroData = ko.computed(function () {
 			return my.heroData['npc_dota_hero_' + self.selectedHero().heroName];
 		});
         self.heroCompare = ko.observable(self);
@@ -66,11 +69,11 @@ var HEROCALCULATOR = (function (my) {
         self.availableIllusions = ko.observableArray(createIllusionOptions());
         self.selectedIllusion = ko.observable(self.availableIllusions()[0]);
         self.illusionAbilityLevel = ko.observable(1);
-        self.illusionAbilityMaxLevel = ko.computed(function() {
+        self.illusionAbilityMaxLevel = ko.computed(function () {
             return my.illusionData[self.selectedIllusion().illusionName].max_level;
         });
         self.showDiff = ko.observable(false);
-        self.getAbilityLevelMax = function(data) {
+        self.getAbilityLevelMax = function (data) {
             if (data.abilitytype() === 'DOTA_ABILITY_TYPE_ATTRIBUTES') {
                 return 10;
             }
@@ -83,19 +86,22 @@ var HEROCALCULATOR = (function (my) {
             else if (data.name() === 'earth_spirit_stone_caller') {
                 return 1;
             }
-            else if ( data.abilitytype() === 'DOTA_ABILITY_TYPE_ULTIMATE' || data.name() === 'keeper_of_the_light_recall' ||
-                      data.name() === 'keeper_of_the_light_blinding_light' || data.name() === 'ember_spirit_activate_fire_remnant' ||
-                      data.name() === 'lone_druid_true_form_battle_cry' ) {
+            else if (data.abilitytype() === 'DOTA_ABILITY_TYPE_ULTIMATE' || data.name() === 'keeper_of_the_light_recall' ||
+                     data.name() === 'keeper_of_the_light_blinding_light' || data.name() === 'ember_spirit_activate_fire_remnant' ||
+                     data.name() === 'lone_druid_true_form_battle_cry') {
                 return 3;
             }
-            else if ( data.name() === 'puck_ethereal_jaunt'  || data.name() === 'shadow_demon_shadow_poison_release' ||
-                      data.name() === 'templar_assassin_trap' || data.name() === 'spectre_reality' ) {
+            else if (data.name() === 'puck_ethereal_jaunt'  || data.name() === 'shadow_demon_shadow_poison_release' ||
+                     data.name() === 'templar_assassin_trap' || data.name() === 'spectre_reality') {
                 return 0;
             }
-            else if ( data.name() === 'invoker_cold_snap'  || data.name() === 'invoker_ghost_walk' || data.name() === 'invoker_tornado' || 
-                      data.name() === 'invoker_emp' || data.name() === 'invoker_alacrity' || data.name() === 'invoker_chaos_meteor' || 
-                      data.name() === 'invoker_sun_strike' || data.name() === 'invoker_forge_spirit' || data.name() === 'invoker_ice_wall' || 
-                      data.name() === 'invoker_deafening_blast' ) {
+            else if (data.name() === 'invoker_cold_snap'  || data.name() === 'invoker_ghost_walk' || data.name() === 'invoker_tornado' || 
+                     data.name() === 'invoker_emp' || data.name() === 'invoker_alacrity' || data.name() === 'invoker_chaos_meteor' || 
+                     data.name() === 'invoker_sun_strike' || data.name() === 'invoker_forge_spirit' || data.name() === 'invoker_ice_wall' || 
+                     data.name() === 'invoker_deafening_blast') {
+                return 0;
+            }
+            else if (data.name() === 'techies_minefield_sign' || data.name() === 'techies_focused_detonate') {
                 return 0;
             }
             else {
@@ -105,12 +111,12 @@ var HEROCALCULATOR = (function (my) {
         
         self.skillPointHistory = ko.observableArray();
         
-        self.ability = ko.computed(function() {
+        self.ability = ko.computed(function () {
             var a = new my.AbilityModel(ko.mapping.fromJS(self.heroData().abilities), self);
             if (self.selectedHero().heroName === 'earth_spirit') {
                 a.abilities()[3].level(1);
             }
-            if (self.selectedHero().heroName === 'invoker') {
+            else if (self.selectedHero().heroName === 'invoker') {
                 for (var i = 6; i < 16; i++) {
                     a.abilities()[i].level(1);
                 }
@@ -120,23 +126,23 @@ var HEROCALCULATOR = (function (my) {
             return a;
         });
         self.showCriticalStrikeDetails = ko.observable(false);
-        self.toggleCriticalStrikeDetails = function() {
+        self.toggleCriticalStrikeDetails = function () {
             self.showCriticalStrikeDetails(!self.showCriticalStrikeDetails());
         };
         self.damageInputValue = ko.observable(0);
         self.showDamageDetails = ko.observable(false);
-        self.toggleDamageDetails = function() {
+        self.toggleDamageDetails = function () {
             self.showDamageDetails(!self.showDamageDetails());
         };
         self.showStatDetails = ko.observable(false);
-        self.toggleStatDetails = function() {
+        self.toggleStatDetails = function () {
             self.showStatDetails(!self.showStatDetails());
         };
         
-        self.availableSkillPoints = ko.computed(function() {
+        self.availableSkillPoints = ko.computed(function () {
             var c = self.selectedHeroLevel();
             for (var i = 0; i < self.ability().abilities().length; i++) {
-                var getIndex = function() {
+                var getIndex = function () {
                     return i;
                 };
                 switch(self.ability().abilities()[i].abilitytype()) {
@@ -169,7 +175,7 @@ var HEROCALCULATOR = (function (my) {
                     break;
                 }
             }
-            var getIndex = function() {
+            var getIndex = function () {
                 return self.skillPointHistory()[self.skillPointHistory().length-1];
             };
             while (self.skillPointHistory().length > c) {
@@ -177,72 +183,32 @@ var HEROCALCULATOR = (function (my) {
             }
             return c-self.skillPointHistory().length;
         }, this);
-        /*self.availableSkillPoints = ko.computed(function() {
-            var c = self.selectedHeroLevel();
-            for (var i=0;i < self.ability().abilities().length;i++) {
-                switch(self.ability().abilities()[i].abilitytype()) {
-                    case 'DOTA_ABILITY_TYPE_ULTIMATE':
-                        if ((self.ability().abilities()[i].level()+1) * 5 + 1 > parseInt(self.selectedHeroLevel())) {
-                            self.ability().abilities()[i].level(Math.floor((parseInt(self.selectedHeroLevel()) - 1) / 5));
-                        }
-                    break;
-                    default:
-                        if (self.ability().abilities()[i].level() * 2 + 1 > parseInt(self.selectedHeroLevel())) {
-                                self.ability().abilities()[i].level(Math.floor((parseInt(self.selectedHeroLevel()) + 1) / 2));
-                        }
-                    break;
-                }
-                switch(self.ability().abilities()[i].name()) {
-                    case 'beastmaster_call_of_the_wild_boar':
-                    case 'chen_test_of_faith_teleport':
-                    case 'keeper_of_the_light_recall':
-                    case 'keeper_of_the_light_blinding_light':
-                    case 'keeper_of_the_light_illuminate_end':
-                    case 'keeper_of_the_light_spirit_form_illuminate':
-                    case 'morphling_morph_str':
-                    case 'shadow_demon_shadow_poison_release':
-                    case 'nevermore_shadowraze2':
-                    case 'nevermore_shadowraze3':
-                    case 'earth_spirit_stone_caller':
-                    case 'ember_spirit_activate_fire_remnant':
-                    case 'invoker_cold_snap' :
-                    case 'invoker_ghost_walk':
-                    case 'invoker_tornado':
-                    case 'invoker_emp':
-                    case 'invoker_alacrity':
-                    case 'invoker_chaos_meteor':
-                    case 'invoker_sun_strike':
-                    case 'invoker_forge_spirit':
-                    case 'invoker_ice_wall':
-                    case 'invoker_deafening_blast':
-                    break;
-                    default:
-                        c -= self.ability().abilities()[i].level();
-                    break;
-                }
-            }
-            if (c < 0) {
-                for (var i=0;i < self.ability().abilities().length;i++) {
-                    self.ability().abilities()[i].level(0);
-                }
-                c = self.selectedHeroLevel();
-            }
-            return c;
-        }, this);*/
-        self.primaryAttribute = ko.computed(function() {
+        self.primaryAttribute = ko.computed(function () {
             var v = self.heroData().attributeprimary;
             if (v === 'DOTA_ATTRIBUTE_AGILITY') return 'agi';
             if (v === 'DOTA_ATTRIBUTE_INTELLECT') return 'int';
             if (v === 'DOTA_ATTRIBUTE_STRENGTH') return 'str';
             return '';
         });
-        self.totalAttribute = function(a) {
+        self.totalExp = ko.computed(function () {
+            return my.totalExp[self.selectedHeroLevel() - 1];
+        });
+        self.nextLevelExp = ko.computed(function () {
+            return my.nextLevelExp[self.selectedHeroLevel() - 1];
+        });
+        self.startingArmor = ko.computed(function () {
+            return (self.heroData().attributebaseagility * .14 + self.heroData().armorphysical).toFixed(2);
+        });
+        self.respawnTime = ko.computed(function () {
+            return self.selectedHeroLevel() * 4;
+        });
+        self.totalAttribute = function (a) {
             if (a === 'agi') return parseFloat(self.totalAgi());
             if (a === 'int') return parseFloat(self.totalInt());
             if (a === 'str') return parseFloat(self.totalStr());
             return 0;
         };
-        self.totalAgi = ko.computed(function() {
+        self.totalAgi = ko.computed(function () {
             return (self.heroData().attributebaseagility
                     + self.heroData().attributeagilitygain * (self.selectedHeroLevel() - 1) 
                     + self.inventory.getAttributes('agi') 
@@ -253,7 +219,7 @@ var HEROCALCULATOR = (function (my) {
                    ).toFixed(2);
         });
         self.intStolen = ko.observable(0).extend({ numeric: 0 });
-        self.totalInt = ko.computed(function() {
+        self.totalInt = ko.computed(function () {
             return (self.heroData().attributebaseintelligence 
                     + self.heroData().attributeintelligencegain * (self.selectedHeroLevel() - 1) 
                     + self.inventory.getAttributes('int') 
@@ -263,7 +229,7 @@ var HEROCALCULATOR = (function (my) {
                     + self.debuffs.getAllStatsReduction() + self.intStolen()
                    ).toFixed(2);
         });
-        self.totalStr = ko.computed(function() {
+        self.totalStr = ko.computed(function () {
             return (self.heroData().attributebasestrength 
                     + self.heroData().attributestrengthgain * (self.selectedHeroLevel() - 1) 
                     + self.inventory.getAttributes('str') 
@@ -273,13 +239,13 @@ var HEROCALCULATOR = (function (my) {
                     + self.debuffs.getAllStatsReduction()
                    ).toFixed(2);
         });
-        self.health = ko.computed(function() {
+        self.health = ko.computed(function () {
             return (self.heroData().statushealth + Math.floor(self.totalStr()) * 19 
                     + self.inventory.getHealth()
                     + self.ability().getHealth()).toFixed(2);
         });
-        self.healthregen = ko.computed(function() {
-            var healthRegenAura = _.reduce([self.inventory.getHealthRegenAura, self.buffs.itemBuffs.getHealthRegenAura], function(memo, fn) {
+        self.healthregen = ko.computed(function () {
+            var healthRegenAura = _.reduce([self.inventory.getHealthRegenAura, self.buffs.itemBuffs.getHealthRegenAura], function (memo, fn) {
                 var obj = fn(memo.excludeList);
                 obj.value += memo.value;
                 return obj;
@@ -291,10 +257,10 @@ var HEROCALCULATOR = (function (my) {
                     + healthRegenAura.value
                     ).toFixed(2);
         });
-        self.mana = ko.computed(function() {
+        self.mana = ko.computed(function () {
             return (self.heroData().statusmana + self.totalInt() * 13 + self.inventory.getMana()).toFixed(2);
         });
-        self.manaregen = ko.computed(function() {
+        self.manaregen = ko.computed(function () {
             return ((self.heroData().statusmanaregen 
                     + self.totalInt() * .04 
                     + self.ability().getManaRegen()) 
@@ -304,12 +270,12 @@ var HEROCALCULATOR = (function (my) {
 					+ self.inventory.getManaRegen()
                     - self.enemy().ability().getManaRegenReduction()).toFixed(2);
         });
-        self.totalArmorPhysical = ko.computed(function() {
-            var armorAura = _.reduce([self.inventory.getArmorAura, self.buffs.itemBuffs.getArmorAura], function(memo, fn) {
+        self.totalArmorPhysical = ko.computed(function () {
+            var armorAura = _.reduce([self.inventory.getArmorAura, self.buffs.itemBuffs.getArmorAura], function (memo, fn) {
                 var obj = fn(memo.attributes);
                 return obj;
             }, {value:0, attributes:[]});
-            var armorReduction = _.reduce([self.enemy().inventory.getArmorReduction, self.debuffs.itemBuffs.getArmorReduction], function(memo, fn) {
+            var armorReduction = _.reduce([self.enemy().inventory.getArmorReduction, self.debuffs.itemBuffs.getArmorReduction], function (memo, fn) {
                 var obj = fn(memo.excludeList);
                 obj.value += memo.value;
                 return obj;
@@ -327,7 +293,7 @@ var HEROCALCULATOR = (function (my) {
                     //+ self.debuffs.getArmorReduction()
                     ).toFixed(2);
         });
-        self.totalArmorPhysicalReduction = ko.computed(function() {
+        self.totalArmorPhysicalReduction = ko.computed(function () {
 			var totalArmor = self.totalArmorPhysical();
 			if (totalArmor >= 0) {
 				return ((0.06 * self.totalArmorPhysical()) / (1 + 0.06 * self.totalArmorPhysical()) * 100).toFixed(2);
@@ -336,18 +302,18 @@ var HEROCALCULATOR = (function (my) {
 				return -((0.06 * -self.totalArmorPhysical()) / (1 + 0.06 * -self.totalArmorPhysical()) * 100).toFixed(2);
 			}
 		});
-        self.totalMovementSpeed = ko.computed(function() {
+        self.totalMovementSpeed = ko.computed(function () {
             var ms = (self.ability().setMovementSpeed() > 0 ? self.ability().setMovementSpeed() : self.buffs.setMovementSpeed());
             if (ms > 0) {
                 return ms;
             }
             else {
-                var movementSpeedPercent = _.reduce([self.inventory.getMovementSpeedPercent, self.buffs.itemBuffs.getMovementSpeedPercent], function(memo, fn) {
+                var movementSpeedPercent = _.reduce([self.inventory.getMovementSpeedPercent, self.buffs.itemBuffs.getMovementSpeedPercent], function (memo, fn) {
                     var obj = fn(memo.excludeList);
                     obj.value += memo.value;
                     return obj;
                 }, {value:0, excludeList:[]});
-                var movementSpeedPercentReduction = _.reduce([self.enemy().inventory.getMovementSpeedPercentReduction, self.debuffs.itemBuffs.getMovementSpeedPercentReduction], function(memo, fn) {
+                var movementSpeedPercentReduction = _.reduce([self.enemy().inventory.getMovementSpeedPercentReduction, self.debuffs.itemBuffs.getMovementSpeedPercentReduction], function (memo, fn) {
                     var obj = fn(memo.excludeList);
                     obj.value += memo.value;
                     return obj;
@@ -365,12 +331,12 @@ var HEROCALCULATOR = (function (my) {
                         )).toFixed(2);
             }
         });
-        self.totalTurnRate = ko.computed(function() {
+        self.totalTurnRate = ko.computed(function () {
             return (self.heroData().movementturnrate 
                     * (1 + self.enemy().ability().getTurnRateReduction()
                          + self.debuffs.getTurnRateReduction())).toFixed(2);
         });
-        self.baseDamage = ko.computed(function() {
+        self.baseDamage = ko.computed(function () {
             var totalAttribute = self.totalAttribute(self.primaryAttribute()),
                 abilityBaseDamage = self.ability().getBaseDamage(),
                 minDamage = self.heroData().attackdamagemin,
@@ -378,7 +344,7 @@ var HEROCALCULATOR = (function (my) {
             return [Math.floor((minDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier),
                     Math.floor((maxDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier)];
         });
-        self.bonusDamage = ko.computed(function() {
+        self.bonusDamage = ko.computed(function () {
             return ((self.inventory.getBonusDamage().total
                     + self.ability().getBonusDamage().total
                     + self.buffs.getBonusDamage().total
@@ -395,15 +361,14 @@ var HEROCALCULATOR = (function (my) {
                       )
                     ) * self.ability().getBaseDamageReductionPct());
         });
-        self.bonusDamageReduction = ko.computed(function() {
+        self.bonusDamageReduction = ko.computed(function () {
             return Math.abs(self.enemy().ability().getBonusDamageReduction() + self.debuffs.getBonusDamageReduction());
         });
-        self.damage = ko.computed(function() {
+        self.damage = ko.computed(function () {
             return [self.baseDamage()[0] + self.bonusDamage()[0],
                     self.baseDamage()[1] + self.bonusDamage()[1]];
         });
-        self.damageAgainstEnemy = ko.observable();
-        self.totalMagicResistanceProduct = ko.computed(function() {
+        self.totalMagicResistanceProduct = ko.computed(function () {
             return (1 - self.heroData().magicalresistance / 100) 
                     * self.inventory.getMagicResist()
                     * self.ability().getMagicResist()
@@ -413,23 +378,23 @@ var HEROCALCULATOR = (function (my) {
 					* self.enemy().ability().getMagicResistReduction()
 					* self.debuffs.getMagicResistReduction();
         });
-        self.totalMagicResistance = ko.computed(function() {
+        self.totalMagicResistance = ko.computed(function () {
             return ((1 - self.totalMagicResistanceProduct()) * 100).toFixed(2);
         });
-        self.bat = ko.computed(function() {
+        self.bat = ko.computed(function () {
             var abilityBAT = self.ability().getBAT();
             if (abilityBAT > 0) {
                 return abilityBAT;
             }
             return self.heroData().attackrate;
         });
-        self.ias = ko.computed(function() {
-            var attackSpeed = _.reduce([self.inventory.getAttackSpeed, self.buffs.itemBuffs.getAttackSpeed], function(memo, fn) {
+        self.ias = ko.computed(function () {
+            var attackSpeed = _.reduce([self.inventory.getAttackSpeed, self.buffs.itemBuffs.getAttackSpeed], function (memo, fn) {
                 var obj = fn(memo.excludeList);
                 obj.value += memo.value;
                 return obj;
             }, {value:0, excludeList:[]});
-            var attackSpeedReduction = _.reduce([self.enemy().inventory.getAttackSpeedReduction, self.debuffs.itemBuffs.getAttackSpeedReduction], function(memo, fn) {
+            var attackSpeedReduction = _.reduce([self.enemy().inventory.getAttackSpeedReduction, self.debuffs.itemBuffs.getAttackSpeedReduction], function (memo, fn) {
                 var obj = fn(memo.excludeList);
                 obj.value += memo.value;
                 return obj;
@@ -450,15 +415,15 @@ var HEROCALCULATOR = (function (my) {
             else if (val > 400) {
                 return 400;
             }
-            return (val).toFixed(2);
+            return val.toFixed(2);
         });
-        self.attackTime = ko.computed(function() {
+        self.attackTime = ko.computed(function () {
             return (self.bat() / (1 + self.ias() / 100)).toFixed(2);
         });
-        self.attacksPerSecond = ko.computed(function() {
+        self.attacksPerSecond = ko.computed(function () {
             return ((1 + self.ias() / 100) / self.bat()).toFixed(2);
         });
-        self.evasion = ko.computed(function() {
+        self.evasion = ko.computed(function () {
             var e = self.ability().setEvasion();
             if (e) {
                 return (e * 100).toFixed(2);
@@ -467,24 +432,24 @@ var HEROCALCULATOR = (function (my) {
                 return ((1-(self.inventory.getEvasion() * self.ability().getEvasion())) * 100).toFixed(2);
             }
         });
-        self.ehpPhysical = ko.computed(function() {
+        self.ehpPhysical = ko.computed(function () {
             var ehp = (self.health() * (1 + .06 * self.totalArmorPhysical())) / (1 - (1 - (self.inventory.getEvasion() * self.ability().getEvasion())))
-            ehp *= (_.some(self.inventory.activeItems(), function(item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
+            ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
 			ehp *= (1 / self.ability().getDamageReduction());
             return ehp.toFixed(2);
         });
-        self.ehpMagical = ko.computed(function() {
+        self.ehpMagical = ko.computed(function () {
             var ehp = self.health() / self.totalMagicResistanceProduct();
-            ehp *= (_.some(self.inventory.activeItems(), function(item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
+            ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
 			ehp *= (1 / self.ability().getDamageReduction());
             return ehp.toFixed(2);
         });
-        self.bash = ko.computed(function() {
+        self.bash = ko.computed(function () {
             var attacktype = self.heroData().attacktype;
             return ((1 - (self.inventory.getBash(attacktype) * self.ability().getBash())) * 100).toFixed(2);
         });
 
-        self.cleaveInfo = ko.computed(function() {
+        self.cleaveInfo = ko.computed(function () {
             var cleaveSources = self.inventory.getCleaveSource();
             $.extend(cleaveSources, self.ability().getCleaveSource());
             $.extend(cleaveSources, self.buffs.getCleaveSource());
@@ -523,11 +488,11 @@ var HEROCALCULATOR = (function (my) {
             return result;
         });
         
-        self.critChance = ko.computed(function() {
+        self.critChance = ko.computed(function () {
             return ((1 - (self.inventory.getCritChance() * self.ability().getCritChance())) * 100).toFixed(2);
         });
 
-        self.critInfo = ko.computed(function() {
+        self.critInfo = ko.computed(function () {
             var critSources = self.inventory.getCritSource();
             $.extend(critSources, self.ability().getCritSource());
             $.extend(critSources, self.buffs.getCritSource());
@@ -584,7 +549,7 @@ var HEROCALCULATOR = (function (my) {
             return { sources: result, total: critTotal };
         });
         
-        self.bashInfo = ko.computed(function() {
+        self.bashInfo = ko.computed(function () {
             var attacktype = self.heroData().attacktype;
             var bashSources = self.inventory.getBashSource(attacktype);
             $.extend(bashSources, self.ability().getBashSource());
@@ -650,7 +615,7 @@ var HEROCALCULATOR = (function (my) {
             return { sources: result, total: bashTotal };
         });
         
-        self.orbProcInfo = ko.computed(function() {
+        self.orbProcInfo = ko.computed(function () {
             var attacktype = self.heroData().attacktype;
             var damageSources = self.inventory.getOrbProcSource();
             var damageSourcesArray = [];
@@ -714,7 +679,7 @@ var HEROCALCULATOR = (function (my) {
             return { sources: result, total: damageTotal };
         });
 
-        self.getReducedDamage = function(value, type) {
+        self.getReducedDamage = function (value, type) {
 			var result = value;
             switch (type) {
                 case 'physical':
@@ -736,7 +701,7 @@ var HEROCALCULATOR = (function (my) {
 			return result;
         }
             
-        self.damageTotalInfo = ko.computed(function() {
+        self.damageTotalInfo = ko.computed(function () {
             var bonusDamageArray = [
                 self.ability().getBonusDamage().sources,
                 self.buffs.getBonusDamage().sources
@@ -856,7 +821,7 @@ var HEROCALCULATOR = (function (my) {
 			
 			// weaver_geminate_attack
 			if (self.selectedHero().heroName === 'weaver') {
-				var a = _.find(self.ability().abilities(), function(ability) {
+				var a = _.find(self.ability().abilities(), function (ability) {
 					return ability.name() === 'weaver_geminate_attack';
 				});
 				if (a) {
@@ -948,12 +913,12 @@ var HEROCALCULATOR = (function (my) {
                     + self.getReducedDamage(damage.magic, 'magic'),
                 totalCritReduced = self.getReducedDamage(totalCrit, 'physical'),
                 dps = {
-                    base: totalDamage / self.attacksPerSecond(),
-                    crit: totalCrit / self.attacksPerSecond(),
+                    base: totalDamage * self.attacksPerSecond(),
+                    crit: totalCrit * self.attacksPerSecond(),
                     geminateAttack: geminateAttack.active ? geminateAttack.damage / geminateAttack.cooldown : 0,
                     reduced: {
-                        base: totalReduced / self.attacksPerSecond(),
-                        crit: totalCritReduced / self.attacksPerSecond(),
+                        base: totalReduced * self.attacksPerSecond(),
+                        crit: totalCritReduced * self.attacksPerSecond(),
                         geminateAttack: geminateAttack.active ? self.getReducedDamage(geminateAttack.damage, 'physical') / geminateAttack.cooldown : 0,
                     }
                 }
@@ -985,7 +950,7 @@ var HEROCALCULATOR = (function (my) {
             };
         });
         
-        self.getDamageTypeColor = function(damageType) {
+        self.getDamageTypeColor = function (damageType) {
             switch (damageType) {
                 case 'physical':
                     return '#979aa2';
@@ -1002,26 +967,26 @@ var HEROCALCULATOR = (function (my) {
             }
         }
         
-        self.critDamage = ko.computed(function() {
+        self.critDamage = ko.computed(function () {
             self.critInfo();
             return 0;
         });
-        self.missChance = ko.computed(function() {
+        self.missChance = ko.computed(function () {
             return ((1 - (self.enemy().ability().getMissChance() * self.debuffs.getMissChance())) * 100).toFixed(2);
         });
-        self.totalattackrange = ko.computed(function() {
+        self.totalattackrange = ko.computed(function () {
             return self.heroData().attackrange + self.ability().getAttackRange();
         });
-        self.visionrangeday = ko.computed(function() {
+        self.visionrangeday = ko.computed(function () {
             return (self.heroData().visiondaytimerange) * (1 + self.enemy().ability().getVisionRangePctReduction() + self.debuffs.getVisionRangePctReduction());
         });
-        self.visionrangenight = ko.computed(function() {
+        self.visionrangenight = ko.computed(function () {
             return (self.heroData().visionnighttimerange + self.ability().getVisionRangeNight()) * (1 + self.enemy().ability().getVisionRangePctReduction() + self.debuffs.getVisionRangePctReduction());
         });
-        self.lifesteal = ko.computed(function() {
+        self.lifesteal = ko.computed(function () {
             var total = self.inventory.getLifesteal() + self.ability().getLifesteal() + self.buffs.getLifesteal();
             if (self.hero().attacktype() == 'DOTA_UNIT_CAP_MELEE_ATTACK') {
-				var lifestealAura = _.reduce([self.inventory.getLifestealAura, self.buffs.itemBuffs.getLifestealAura], function(memo, fn) {
+				var lifestealAura = _.reduce([self.inventory.getLifestealAura, self.buffs.itemBuffs.getLifestealAura], function (memo, fn) {
 					var obj = fn(memo.excludeList);
 					obj.value += memo.value;
 					return obj;
@@ -1082,7 +1047,7 @@ var HEROCALCULATOR = (function (my) {
             ['dazzle_shallow_grave']
         ];
         
-        self.getDamageAfterBracket = function(initialDamage,index) {
+        self.getDamageAfterBracket = function (initialDamage,index) {
             var bracket = self.damageBrackets[index];
             var multiplier = 1;
             for (var i = 0; i < bracket.length; i++) {
@@ -1093,7 +1058,7 @@ var HEROCALCULATOR = (function (my) {
             return initialDamage * multiplier;
         };
         
-        self.getDamageAmpReduc = function(initialDamage, skipBracket4) {
+        self.getDamageAmpReduc = function (initialDamage, skipBracket4) {
             var damage = initialDamage;
             var sources = self.damageAmplification.getDamageMultiplierSources();
             $.extend(sources, self.damageReduction.getDamageMultiplierSources());
@@ -1220,11 +1185,11 @@ var HEROCALCULATOR = (function (my) {
             return { value: damage + damageBracket4total, sources: result };
         };
         
-        self.damageInputModified = ko.computed(function() {
+        self.damageInputModified = ko.computed(function () {
             return self.getDamageAmpReduc(self.damageInputValue(), false);
         });
         
-        self.addIllusion = function(data, event) {
+        self.addIllusion = function (data, event) {
             self.illusions.push(ko.observable(new my.IllusionViewModel(0, self, self.illusionAbilityLevel())));
         };
         
@@ -1244,7 +1209,6 @@ var HEROCALCULATOR = (function (my) {
             'bonusDamage',
             'bonusDamageReduction',
             'damage',
-            'damageAgainstEnemy',
             'totalMagicResistanceProduct',
             'totalMagicResistance',
             'bat',
@@ -1264,8 +1228,8 @@ var HEROCALCULATOR = (function (my) {
             'lifesteal'
         ];
         self.diff = {};
-        self.getDiffFunction = function(prop) {
-            return ko.computed(function() {
+        self.getDiffFunction = function (prop) {
+            return ko.computed(function () {
                 if (prop == 'baseDamage') {
                     return [self[prop]()[0] - self.heroCompare()[prop]()[0], self[prop]()[1] - self.heroCompare()[prop]()[1]];
                 }

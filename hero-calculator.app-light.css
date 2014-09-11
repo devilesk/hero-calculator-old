@@ -195,8 +195,8 @@ img {
 }
 
 .close:hover,
-.close:focus, , .ui-dialog-titlebar-close:hover, , .ui-dialog-titlebar-close:focus {
-    color: white;
+.close:focus, .ui-dialog-titlebar-close:hover, .ui-dialog-titlebar-close:focus {
+    color: #979aa2;
     text-decoration: none;
     cursor: pointer;
     opacity: 1;
