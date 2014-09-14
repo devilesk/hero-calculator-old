@@ -222,13 +222,17 @@ img {
     opacity: .35;
 }
 
-.ability_active:hover,.ability_inactive:hover,.item_active:hover,.item_inactive:hover,.hc-item:hover ,.section_header {
+.item_active:hover,.item_inactive:hover,.hc-item:hover ,.section_header {
     cursor: pointer;
     cursor: hand;
 }
 
 .section_header {
     display: inline-block;
+}
+
+.section_header:hover,.section_header:active {
+    opacity: 0.8;
 }
 
 .progress-bar-danger {
@@ -285,7 +289,7 @@ img {
 .btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open .dropdown-toggle.btn-default, .toggled {
     color: #aaa;
     background-color: #202126;
-    border-color: #303239;
+    border-color: #6C707B;
 }
 
 .btn-default.disabled, .btn-default[disabled], fieldset[disabled] .btn-default, .btn-default.disabled:hover, .btn-default[disabled]:hover, fieldset[disabled] .btn-default:hover, .btn-default.disabled:focus, .btn-default[disabled]:focus, fieldset[disabled] .btn-default:focus, .btn-default.disabled:active, .btn-default[disabled]:active, fieldset[disabled] .btn-default:active, .btn-default.disabled.active, .btn-default[disabled].active, fieldset[disabled] .btn-default.active {

@@ -226,13 +226,17 @@ img {
     opacity: .35;
 }
 
-.ability_active:hover,.ability_inactive:hover,.item_active:hover,.item_inactive:hover,.hc-item:hover ,.section_header {
+.item_active:hover,.item_inactive:hover,.hc-item:hover ,.section_header {
     cursor: pointer;
     cursor: hand;
 }
 
 .section_header {
     display: inline-block;
+}
+
+.section_header:hover,.section_header:active {
+    opacity: 0.8;
 }
 
 .progress-bar-danger {

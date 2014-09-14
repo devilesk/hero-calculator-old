@@ -90,6 +90,7 @@ var HEROCALCULATOR = (function (my) {
         };
 
 		self.showSideTabId = function (id) {
+            console.log('showSidetabId', id, self.selectedTabs());
 			return self.selectedTabs().indexOf(id) > -1 && self.sideView();
 		};
 		
@@ -361,6 +362,17 @@ var HEROCALCULATOR = (function (my) {
                 return '';
             }
         }
+        self.highlightedTabInternal = ko.observable('');
+        self.highlightedTab = ko.computed(function () {
+            return self.highlightedTabInternal();
+        }).extend({ throttle: 100 });
+        self.highlightTab = function (data) {
+            console.log(data);
+            self.highlightedTabInternal(data);
+        }
+        self.unhighlightTab = function (data) {
+            self.highlightedTabInternal('');
+        }
         self.showPopover = function (tab) {
             if ($(window).width() < 768) return null;
             var compareText = "<strong>Compare tab</strong><br>Delta values are calculated from the difference with this tab.",
@@ -418,7 +430,6 @@ var HEROCALCULATOR = (function (my) {
         $.get('templates.html', function (templates) {
             $('body').append('<div style="display:none">' + templates + '<\/div>');
             loadedFiles++;
-            
         });
         $.getJSON(HERODATA_PATH, function (data) {
             my.heroData = data;

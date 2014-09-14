@@ -287,6 +287,7 @@ var HEROCALCULATOR = (function (my) {
                     + self.ability().getArmor()
                     + self.enemy().ability().getArmorReduction()
                     + self.buffs.getArmor()
+                    + self.debuffs.getArmorReduction()
                     //+ self.buffs.itemBuffs.getArmorAura().value
                     + armorAura.value
                     + armorReduction.value

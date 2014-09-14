@@ -1454,10 +1454,6 @@ var HEROCALCULATOR = (function (my) {
         ],
         'luna_moon_glaive': [
             {
-                label: 'Bounces',
-                controlType: 'input'
-            },
-            {
                 label: 'Damage',
                 controlType: 'input'
             },
@@ -1466,9 +1462,12 @@ var HEROCALCULATOR = (function (my) {
                 label: 'BOUNCE DAMAGE:',
                 ignoreTooltip: true,
                 controlType: 'text',
-                controls: [0,1],
                 fn: function(v,a,parent,index) {
-                    return v[1]*Math.pow(a/100,v[0]);
+                    var result = [];
+                    for (var i = 1; i < 6; i++) {
+                        result.push((v*Math.pow(a/100,i)).toFixed(2))
+                    }
+                    return result.join('<br>');
                 }
             }
         ],

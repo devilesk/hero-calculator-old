@@ -1,3 +1,6 @@
+2014-09-11
+- Fixed armor reduction abilities in debuffs section not being taken into account.
+
 2014-09-10
 - Fixed saved builds not loading.
 
