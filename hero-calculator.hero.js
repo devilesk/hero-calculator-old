@@ -44,6 +44,7 @@ var HEROCALCULATOR = (function (my) {
         self.sectionDisplayToggle = function (section) {
             self.sectionDisplay()[section](!self.sectionDisplay()[section]());
         }
+        self.showUnitTab = ko.observable(false);
         self.availableHeroes.sort(function (left, right) {
             return left.heroDisplayName == right.heroDisplayName ? 0 : (left.heroDisplayName < right.heroDisplayName ? -1 : 1);
         });

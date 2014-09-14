@@ -1,7 +1,78 @@
 var HEROCALCULATOR = (function (my) {
 
+    my.idCount = 0;
+    my.getUniqueId = function() {
+        my.idCount++;
+        return my.idCount;
+    }
+    
+    my.Tab = function(id, href, data, text, color, template) {
+        var self = this;
+        self.id = id;
+        self.href = href;
+        self.color = color;
+        self.data = data;
+        self.data.id = ko.observable(self.href);
+        self.text = text;
+        self.template = template;
+        return self;
+    }
+    
+    my.TabGroup = function(hero, unit, clone) {
+        var self = this;
+        self.hero = hero;
+        self.unit = unit;
+        self.clone = clone;
+        self.illusions = ko.observableArray([]);
+    }
+    
     my.HeroCalculatorViewModel = function () {
         var self = this;
+        self.heroes = [
+            new my.HeroCalculatorModel(1),
+            new my.HeroCalculatorModel(0),
+            new my.HeroCalculatorModel(0),
+            new my.HeroCalculatorModel(1)
+        ];
+
+        for (var i = 0; i < 4; i++) {
+            self.heroes[i].enemy = ko.observable(self.heroes[1 - (i % 2)]);
+            self.heroes[i].unit = ko.observable(new my.UnitViewModel(0, self.heroes[i]));
+            self.heroes[i].clone = ko.observable(new my.CloneViewModel(0, self.heroes[i]));
+            self.heroes[i].heroCompare = ko.observable(self.heroes[1 - (i % 2) + (i < 2 ? 0 : 2)]);
+            self.heroes[i].unit().selectedUnit(self.heroes[i].unit().availableUnits()[0]);
+            self.heroes[i].selectedHero(self.heroes[i].availableHeroes()[i < 2 ? 0 : 2]);
+            self.heroes[i].illusions.subscribe(function(changes) {
+                for (var i = 0; i < changes.length; i++) {
+                    if (changes[i].status == 'added') {
+                        var color = this.index < 2 ? '#5cb85c' : '#d9534f',
+                            j = my.getUniqueId();
+                        self.tabs()[this.index].illusions.push(
+                            new my.Tab(
+                                'illusionTab' + this.index + '-' + j,
+                                'illusionPane' + this.index + '-' + j,
+                                self.heroes[this.index].illusions()[self.tabs()[this.index].illusions().length](),
+                                'Illusion ' + j,
+                                color,
+                                'illusion-pane-template')
+                        );
+                    }
+                }
+            }, {vm: this, index: i}, "arrayChange");
+        }
+        self.heroes[0].showUnitTab(true);
+        self.tabs = ko.observableArray([]);
+        for (var i = 0; i < 4; i++) {
+            var color = i < 2 ? '#5cb85c' : '#d9534f';
+            var tabGroup = new my.TabGroup(
+                new my.Tab('heroTab' + i, 'heroPane' + i, self.heroes[i], 'Hero ' + i, color, 'hero-pane-template'),
+                new my.Tab('unitTab' + i, 'unitPane' + i, self.heroes[i].unit(), 'Unit ' + i, color, 'unit-pane-template'),
+                new my.Tab('cloneTab' + i, 'clonePane' + i, self.heroes[i].clone(), 'Meepo Clone ' + i, color, 'clone-pane-template')
+            );
+            self.tabs.push(tabGroup);
+        }
+
+        /*
         self.heroes = [new my.HeroCalculatorModel(1), new my.HeroCalculatorModel(0)];
         self.heroes[0].enemy = ko.observable(self.heroes[1]);
         self.heroes[1].enemy = ko.observable(self.heroes[0]);
@@ -23,6 +94,7 @@ var HEROCALCULATOR = (function (my) {
         self.heroes[1].heroCompare = ko.observable(self.heroes[5]);
         self.heroes[4].heroCompare = ko.observable(self.heroes[0]);
         self.heroes[5].heroCompare = ko.observable(self.heroes[1]);
+        */
         self.selectedItem = ko.observable();
         self.layout = ko.observable("1");
         self.displayShop = ko.observable(true);
@@ -38,7 +110,7 @@ var HEROCALCULATOR = (function (my) {
         self.selectedItems = ko.observableArray([]); 
         self.moveUp = function () {
             var start = self.allItems.indexOf(self.selectedItems()[0]),
-            end = self.allItems.indexOf(self.selectedItems()[self.selectedItems().length - 1]);
+                end = self.allItems.indexOf(self.selectedItems()[self.selectedItems().length - 1]);
             if (start > 0) {
                 var e = self.allItems.splice(start - 1, 1);
                 self.allItems.splice(end, 0, e[0]);            
@@ -46,7 +118,7 @@ var HEROCALCULATOR = (function (my) {
         };
         self.moveDown = function () {
             var start = self.allItems.indexOf(self.selectedItems()[0]),
-            end = self.allItems.indexOf(self.selectedItems()[self.selectedItems().length - 1]);        
+                end = self.allItems.indexOf(self.selectedItems()[self.selectedItems().length - 1]);        
             if (end < self.allItems().length - 1) {
                 var e = self.allItems.splice(end + 1, 1);
                 self.allItems.splice(start, 0, e[0]);
@@ -54,35 +126,34 @@ var HEROCALCULATOR = (function (my) {
         };
 		self.selectedTabId = ko.observable('heroTab0');
         self.selectedTab = ko.computed(function () {
-			switch (self.selectedTabId()) {
-				case 'heroTab0':
-					return 0;
-				break;
-				case 'heroTab1':
-					return 1;
-				break;
-				case 'unitTab0':
-					return 2;
-				break;
-				case 'unitTab1':
-					return 3;
-				break;
-				case 'heroTab4':
-					return 4;
-				break;
-				case 'heroTab5':
-					return 5;
-				break;
-				default:
-					return self.selectedTab();
-				break;
-			}
+            var indices = self.selectedTabId().replace('heroTab', '').replace('cloneTab', '').replace('unitTab', '').replace('illusionTab', '').split('-'),
+                index = indices[0],
+                tab = self.tabs()[index];
+            if (self.selectedTabId().indexOf('hero') != -1) {
+                return tab.hero;
+            }
+            else if (self.selectedTabId().indexOf('unit') != -1) {
+                return tab.unit;
+            }
+            else if (self.selectedTabId().indexOf('clone') != -1) {
+                return tab.clone;
+            }
+            else if (self.selectedTabId().indexOf('illusion') != -1) {
+                return _.find(tab.illusions(), function(tab) {
+                    return tab.id == self.selectedTabId();
+                });
+            }
+            else {
+                return self.tabs()[0].hero;
+            }
 		});
         self.selectedTabs = ko.observableArray([]);
 		self.selectedTabs.push('heroTab0');
 		self.selectedTabs.push('heroTab1');
-        self.clickTab = function (data, event) {
-			self.selectedTabId(event.target.id);
+        self.clickTab = function (data, event, index) {
+            if (event.target.id != 'settingsTab') {
+                self.selectedTabId(event.target.id);
+            }
 			if (self.selectedTabs()[1] != event.target.id) {
 				self.selectedTabs.shift();
 				self.selectedTabs.push(event.target.id);
@@ -90,13 +161,20 @@ var HEROCALCULATOR = (function (my) {
         };
 
 		self.showSideTabId = function (id) {
-            console.log('showSidetabId', id, self.selectedTabs());
 			return self.selectedTabs().indexOf(id) > -1 && self.sideView();
 		};
 		
         self.removeTab = function (index, data, event, tab) {
+            if (data.id == self.selectedTabId()) {
+                //self.selectedTabId('heroTab0');
+                self.clickTab(null, {target: {id: 'heroTab0'}});
+                $('#heroTab0').tab('show');
+            }
+            self.tabs()[tab].illusions.remove(function (illusion) {
+                return illusion == data;
+            });
             self.heroes[tab].illusions.remove(function (illusion) {
-                return illusion() == data;
+                return illusion() == data.data;
             });
         };
         
@@ -367,7 +445,6 @@ var HEROCALCULATOR = (function (my) {
             return self.highlightedTabInternal();
         }).extend({ throttle: 100 });
         self.highlightTab = function (data) {
-            console.log(data);
             self.highlightedTabInternal(data);
         }
         self.unhighlightTab = function (data) {
@@ -379,20 +456,20 @@ var HEROCALCULATOR = (function (my) {
                 enemyText = "<strong>Enemy tab</strong><br>Stats from this tab are taken into account and affect calculations.";
             switch (tab) {
                 case 0:
-                    $('#popHero' + 1).popover('destroy').popover({content: enemyText, animation: false, html: true}).popover('show');
-                    $('#popHero' + 4).popover('destroy').popover({content: compareText, animation: false, html: true}).popover('show');
+                    $('#popHero' + 2).popover('destroy').popover({content: enemyText, animation: false, html: true, placement: 'top'}).popover('show');
+                    $('#popHero' + 1).popover('destroy').popover({content: compareText, animation: false, html: true}).popover('show');
                 break;
                 case 1:
-                    $('#popHero' + 0).popover('destroy').popover({content: enemyText, animation: false, html: true}).popover('show');
-                    $('#popHero' + 5).popover('destroy').popover({content: compareText, animation: false, html: true}).popover('show');
-                break;
-                case 4:
-                    $('#popHero' + 1).popover('destroy').popover({content: enemyText, animation: false, html: true}).popover('show');
+                    $('#popHero' + 2).popover('destroy').popover({content: enemyText, animation: false, html: true, placement: 'top'}).popover('show');
                     $('#popHero' + 0).popover('destroy').popover({content: compareText, animation: false, html: true}).popover('show');
                 break;
-                case 5:
-                    $('#popHero' + 0).popover('destroy').popover({content: enemyText, animation: false, html: true}).popover('show');
-                    $('#popHero' + 1).popover('destroy').popover({content: compareText, animation: false, html: true}).popover('show');
+                case 2:
+                    $('#popHero' + 0).popover('destroy').popover({content: enemyText, animation: false, html: true, placement: 'top'}).popover('show');
+                    $('#popHero' + 3).popover('destroy').popover({content: compareText, animation: false, html: true}).popover('show');
+                break;
+                case 3:
+                    $('#popHero' + 0).popover('destroy').popover({content: enemyText, animation: false, html: true, placement: 'top'}).popover('show');
+                    $('#popHero' + 2).popover('destroy').popover({content: compareText, animation: false, html: true}).popover('show');
                 break;
             }
         }
@@ -400,22 +477,22 @@ var HEROCALCULATOR = (function (my) {
             switch (tab) {
                 case 0:
                     $('#popHero' + 1).popover('hide');
-                    $('#popHero' + 4).popover('hide');
-                    $('#popHero' + 5).popover('hide');
+                    $('#popHero' + 2).popover('hide');
+                    $('#popHero' + 3).popover('hide');
                 break;
                 case 1:
                     $('#popHero' + 0).popover('hide');
-                    $('#popHero' + 4).popover('hide');
-                    $('#popHero' + 5).popover('hide');
+                    $('#popHero' + 2).popover('hide');
+                    $('#popHero' + 3).popover('hide');
                 break;
-                case 4:
+                case 2:
                     $('#popHero' + 1).popover('hide');
                     $('#popHero' + 0).popover('hide');
-                    $('#popHero' + 5).popover('hide');
+                    $('#popHero' + 3).popover('hide');
                 break;
-                case 5:
+                case 3:
                     $('#popHero' + 1).popover('hide');
-                    $('#popHero' + 4).popover('hide');
+                    $('#popHero' + 2).popover('hide');
                     $('#popHero' + 0).popover('hide');
                 break;
             }
@@ -460,6 +537,8 @@ var HEROCALCULATOR = (function (my) {
         ko.applyBindings(my.heroCalculator);
 		$('#spinner').hide();
 		$('#hero-calc-wrapper').css('display', 'inline-block');
+        $('#popHero0').addClass('active');
+        $('#heroPane0').addClass('active');
         $('#popHero0').popover({animation: false, html: true});
         $('#popHero1').popover({animation: false, html: true});
         $('#popHero4').popover({animation: false, html: true});

@@ -1,3 +1,10 @@
+2014-09-14
+- Small ui tweaks and ui code refactored.
+- Fixed padding and margins when in side by side view (now called Fullscreen).
+- Added panel highlight effect when hovering over tabs to show which tab panels are active.
+- Each hero tab now has a corresponding unit tab that can be shown or hidden using a checkbox option.
+- Illusion tabs can also be added for each hero tab. Previously only the main hero tabs had unit and illusion tabs.
+
 2014-09-11
 - Fixed armor reduction abilities in debuffs section not being taken into account.
 

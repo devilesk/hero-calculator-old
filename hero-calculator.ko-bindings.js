@@ -1,4 +1,47 @@
 var HEROCALCULATOR = (function (my) {
+
+    ko.bindingHandlers.hoverTabPopover = {
+        update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            var $root = bindingContext.$root,
+                value = ko.utils.unwrapObservable(valueAccessor());
+                
+            ko.utils.registerEventHandler(element, "mouseover", function() {
+                $root.showPopover(value);
+            });  
+
+            ko.utils.registerEventHandler(element, "mouseout", function() {
+                $root.hidePopover(value);
+            });      
+        }
+    };
+    
+    ko.bindingHandlers.hoverTab = {
+        update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            var $root = bindingContext.$root,
+                value = ko.utils.unwrapObservable(valueAccessor());
+                
+            ko.utils.registerEventHandler(element, "mouseover", function() {
+                $root.highlightTab(value);
+            });  
+
+            ko.utils.registerEventHandler(element, "mouseout", function() {
+                $root.unhighlightTab(value);
+            });      
+        }
+    };
+    
+    ko.bindingHandlers.hoverPaneStyle = {
+        init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            var $root = bindingContext.$root,
+                value = ko.utils.unwrapObservable(valueAccessor());
+            ko.applyBindingsToNode(element, { style: { opacity: !($root.sideView()) || $root.highlightedTab() == value || $root.highlightedTab() == '' ? 1 : .5 } });
+        },
+        update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            var $root = bindingContext.$root,
+                value = ko.utils.unwrapObservable(valueAccessor());
+            ko.applyBindingsToNode(element, { style: { opacity: !($root.sideView()) || $root.highlightedTab() == value || $root.highlightedTab() == '' ? 1 : .5 } });
+        }
+    };
     
     ko.bindingHandlers.diffStyle = {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
