@@ -248,9 +248,8 @@ var HEROCALCULATOR = (function (my) {
                 version: "1.1.0",
                 heroes: []
             }
-            var indices = [0, 1, 4, 5];
             for (var i = 0; i < 4; i++) {
-                var hero = self.heroes[indices[i]];
+                var hero = self.heroes[i];
                 d = {
                     hero: hero.selectedHero().heroName,
                     level: hero.selectedHeroLevel(),
@@ -318,9 +317,8 @@ var HEROCALCULATOR = (function (my) {
             });
         }
         self.load = function (data) {
-            var indices = [0, 1, 4, 5];
             for (var i = 0; i < 4; i++) {
-                var hero = self.heroes[indices[i]];
+                var hero = self.heroes[i];
                 hero.selectedHero(_.findWhere(hero.availableHeroes(), {'heroName': data.heroes[i].hero}));
                 hero.selectedHeroLevel(data.heroes[i].level);
                 hero.inventory.items.removeAll();
