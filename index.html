@@ -103,25 +103,25 @@
         <div id="hero-calc-wrapper" style="display:none;width:100%;">
             <ul class="nav nav-tabs">
             <!-- ko foreach: tabs() -->
-                <li class="popHero" data-trigger="manual" data-toggle="popover" data-placement="bottom" data-bind="attr: { id: 'popHero' + $index() }, hoverTabPopover: $index()">
+                <li class="popHero" data-trigger="manual" data-toggle="popover" data-placement="bottom" data-bind="attr: { id: 'popHero' + $index() }, hoverTabPopover: $index(), secondTab: hero.id">
                     <a data-toggle="tab" data-bind="click: $root.clickTab, attr: { id: hero.id, href: '#' + hero.href }, style: { color: hero.color }, text: hero.data.hero().displayname(), hoverTab: hero.id"></a>
                 </li>
-                <li data-bind="visible: hero.data.showUnitTab">
+                <li data-bind="visible: hero.data.showUnitTab, secondTab: unit.id">
                     <a data-toggle="tab" data-bind="click: $root.clickTab, attr: { id: unit.id, href: '#' + unit.href }, style: { color: unit.color }, text: unit.data.hero().displayname(), hoverTab: unit.id"></a>
                 </li>
-                <li data-bind="visible: hero.data.selectedHero().heroName == 'meepo'">
+                <li data-bind="visible: hero.data.selectedHero().heroName == 'meepo', secondTab: clone.id">
                     <a data-toggle="tab" data-bind="click: $root.clickTab, attr: { id: clone.id, href: '#' + clone.href }, style: { color: clone.color }, hoverTab: clone.id">Meepo Clone</a>
                 </li>
                 <!-- ko foreach: illusions -->
-                    <li>
+                    <li data-bind="secondTab: id">
                         <a data-toggle="tab" data-bind="click: $root.clickTab, attr: { id: id, href: '#' + href }, style: { color: color }, hoverTab: id">Illusion<button class="close" data-bind="click: function(data, event) { $root.removeTab($index, data, event, $parentContext.$index());}" style="margin-left: 5px;">&times;</button></a>
                     </li>      
                 <!-- /ko -->
             <!-- /ko -->
-                <li><a id="settingsTab" href="#settings" data-toggle="tab" data-bind="click: clickTab">Settings</a></li>
+                <li data-bind="secondTab: 'settingsTab'"><a id="settingsTab" href="#settings" data-toggle="tab" data-bind="click: clickTab">Settings</a></li>
                 <li><div class="checkbox" style="margin-left:15px"><label><input type="checkbox" data-bind="checked: sideView"> Fullscreen</label></div></li>
                 <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-plus pull-right" data-bind="click: toggleDisplayShop, visible: !displayShop() && !shopPopout()" title="Maximize shop"></button>
-                <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-new-window pull-right" data-bind="click: shopPopout, visible: !displayShop() && !shopPopout()" title="Popout shop"></button>
+                <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-new-window pull-right hidden-xs" data-bind="click: shopPopout, visible: !displayShop() && !shopPopout()" title="Popout shop"></button>
                 <strong style="cursor:pointer" class="pull-right shop-button" data-bind="click: toggleDisplayShop, visible: !displayShop() && !shopPopout()">Shop</strong>
             </ul>
             <div class="col-md-12 col-lg-8" data-bind="css: { 'col-lg-8': displayShop() && !shopPopout(), 'col-lg-12': !displayShop() || shopPopout()}">

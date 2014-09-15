@@ -1,5 +1,13 @@
 var HEROCALCULATOR = (function (my) {
 
+    ko.bindingHandlers.secondTab = {
+        update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+            var $root = bindingContext.$root,
+                value = ko.utils.unwrapObservable(valueAccessor());
+            ko.applyBindingsToNode(element, { css: {'second-tab': $root.isSecondTab(value) && $root.sideView()} });
+        }
+    };
+    
     ko.bindingHandlers.hoverTabPopover = {
         update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
             var $root = bindingContext.$root,

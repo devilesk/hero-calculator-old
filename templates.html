@@ -944,7 +944,7 @@
         <div id="shop-container" class="col-md-12 col-lg-4" data-bind="visible: displayShop() || shopPopout(), css: {'col-lg-4': !shopPopout()}, style: { 'padding-top': shopPopout() ? '5px' : '0px'}">
               <button id="shop-minimize" class="btn btn-default btn-xs shop-button glyphicon glyphicon-minus pull-right" data-bind="click: toggleDisplayShop, visible: displayShop()" title="Minimize shop"></button>
               <button id="shop-maximize" class="btn btn-default btn-xs shop-button glyphicon glyphicon-plus pull-right" data-bind="click: toggleDisplayShop, visible: !displayShop()" title="Maximize shop"></button>
-              <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-new-window pull-right" data-bind="click: shopPopout, visible: !shopPopout()" title="Popout shop"></button>
+              <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-new-window pull-right hidden-xs" data-bind="click: shopPopout, visible: !shopPopout()" title="Popout shop"></button>
             <ul id="shoptabs" class="nav nav-tabs" data-bind="visible: displayShop()">
               <li><a href="#shop_basic" data-toggle="tab">Basic</a></li>
               <li><a href="#shop_upgrade" data-toggle="tab">Upgrade</a></li>

@@ -1,12 +1,12 @@
 var HEROCALCULATOR = (function (my) {
 
     my.idCount = 0;
-    my.getUniqueId = function() {
+    my.getUniqueId = function () {
         my.idCount++;
         return my.idCount;
     }
     
-    my.Tab = function(id, href, data, text, color, template) {
+    my.Tab = function (id, href, data, text, color, template) {
         var self = this;
         self.id = id;
         self.href = href;
@@ -18,12 +18,13 @@ var HEROCALCULATOR = (function (my) {
         return self;
     }
     
-    my.TabGroup = function(hero, unit, clone) {
+    my.TabGroup = function (hero, unit, clone) {
         var self = this;
         self.hero = hero;
         self.unit = unit;
         self.clone = clone;
         self.illusions = ko.observableArray([]);
+        return self;
     }
     
     my.HeroCalculatorViewModel = function () {
@@ -42,7 +43,7 @@ var HEROCALCULATOR = (function (my) {
             self.heroes[i].heroCompare = ko.observable(self.heroes[1 - (i % 2) + (i < 2 ? 0 : 2)]);
             self.heroes[i].unit().selectedUnit(self.heroes[i].unit().availableUnits()[0]);
             self.heroes[i].selectedHero(self.heroes[i].availableHeroes()[i < 2 ? 0 : 2]);
-            self.heroes[i].illusions.subscribe(function(changes) {
+            self.heroes[i].illusions.subscribe(function (changes) {
                 for (var i = 0; i < changes.length; i++) {
                     if (changes[i].status == 'added') {
                         var color = this.index < 2 ? '#5cb85c' : '#d9534f',
@@ -72,29 +73,6 @@ var HEROCALCULATOR = (function (my) {
             self.tabs.push(tabGroup);
         }
 
-        /*
-        self.heroes = [new my.HeroCalculatorModel(1), new my.HeroCalculatorModel(0)];
-        self.heroes[0].enemy = ko.observable(self.heroes[1]);
-        self.heroes[1].enemy = ko.observable(self.heroes[0]);
-        self.heroes[0].unit = ko.observable(new my.UnitViewModel(0,self.heroes[0]));
-        self.heroes[1].unit = ko.observable(new my.UnitViewModel(0,self.heroes[1]));
-        self.heroes[0].clone = ko.observable(new my.CloneViewModel(0,self.heroes[0]));
-        self.heroes[1].clone = ko.observable(new my.CloneViewModel(0,self.heroes[1]));
-        self.heroes[0].unit().selectedUnit(self.heroes[0].unit().availableUnits()[0]);
-        self.heroes[1].unit().selectedUnit(self.heroes[1].unit().availableUnits()[0]);
-        self.heroes[0].selectedHero(self.heroes[0].availableHeroes()[0]);
-        self.heroes[1].selectedHero(self.heroes[1].availableHeroes()[1]);
-        self.heroes.push(self.heroes[0].unit());
-        self.heroes.push(self.heroes[1].unit());
-        self.heroes.push(new my.HeroCalculatorModel(0));
-        self.heroes.push(new my.HeroCalculatorModel(1));
-        self.heroes[4].enemy(self.heroes[1]);
-        self.heroes[5].enemy(self.heroes[0]);
-        self.heroes[0].heroCompare = ko.observable(self.heroes[4]);
-        self.heroes[1].heroCompare = ko.observable(self.heroes[5]);
-        self.heroes[4].heroCompare = ko.observable(self.heroes[0]);
-        self.heroes[5].heroCompare = ko.observable(self.heroes[1]);
-        */
         self.selectedItem = ko.observable();
         self.layout = ko.observable("1");
         self.displayShop = ko.observable(true);
@@ -139,7 +117,7 @@ var HEROCALCULATOR = (function (my) {
                 return tab.clone;
             }
             else if (self.selectedTabId().indexOf('illusion') != -1) {
-                return _.find(tab.illusions(), function(tab) {
+                return _.find(tab.illusions(), function (tab) {
                     return tab.id == self.selectedTabId();
                 });
             }
@@ -159,7 +137,10 @@ var HEROCALCULATOR = (function (my) {
 				self.selectedTabs.push(event.target.id);
 			}
         };
-
+        self.isSecondTab = function (id) {
+            return self.selectedTabs().indexOf(id) > -1 && self.selectedTabId() != id;
+        }
+        
 		self.showSideTabId = function (id) {
 			return self.selectedTabs().indexOf(id) > -1 && self.sideView();
 		};

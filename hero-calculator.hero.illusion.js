@@ -116,11 +116,44 @@ var HEROCALCULATOR = (function (my) {
         else {
             self.selectedHero(self.parent.selectedHero());
         }
-        self.selectedHeroLevel(self.parent.selectedHeroLevel())
+        self.selectedHeroLevel(self.parent.selectedHeroLevel());
         self.hero = ko.computed(function() {
             return ko.mapping.fromJS(my.heroData['npc_dota_hero_' + self.selectedHero().heroName]);
         });
-
+        
+        self.ability().getAttributeBonusLevel = self.parent.ability().getAttributeBonusLevel;
+        self.totalAgi = ko.computed(function () {
+            return (self.heroData().attributebaseagility
+                    + self.heroData().attributeagilitygain * (self.selectedHeroLevel() - 1) 
+                    + self.inventory.getAttributes('agi') 
+                    + self.ability().getAttributeBonusLevel() * 2
+                    + self.ability().getAgility()
+                    + self.enemy().ability().getAllStatsReduction()
+                    + self.debuffs.getAllStatsReduction()
+                   ).toFixed(2);
+        });
+        self.intStolen = ko.observable(0).extend({ numeric: 0 });
+        self.totalInt = ko.computed(function () {
+            return (self.heroData().attributebaseintelligence 
+                    + self.heroData().attributeintelligencegain * (self.selectedHeroLevel() - 1) 
+                    + self.inventory.getAttributes('int') 
+                    + self.ability().getAttributeBonusLevel() * 2
+                    + self.ability().getIntelligence()
+                    + self.enemy().ability().getAllStatsReduction()
+                    + self.debuffs.getAllStatsReduction() + self.intStolen()
+                   ).toFixed(2);
+        });
+        self.totalStr = ko.computed(function () {
+            return (self.heroData().attributebasestrength 
+                    + self.heroData().attributestrengthgain * (self.selectedHeroLevel() - 1) 
+                    + self.inventory.getAttributes('str') 
+                    + self.ability().getAttributeBonusLevel() * 2
+                    + self.ability().getStrength()
+                    + self.enemy().ability().getAllStatsReduction()
+                    + self.debuffs.getAllStatsReduction()
+                   ).toFixed(2);
+        });
+        
         self.getAbilityAttributeValue = function(hero, ability, attributeName, level) {
             if (ability == 'item_manta') {
                 var abilityObj = my.itemData[ability];
