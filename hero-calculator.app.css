@@ -23,10 +23,6 @@ table tr td:first-child {
     border-top: 1px solid #202125;
 }
 
-.nav-tabs>li.second-tab>a, .nav-tabs>li.second-tab>a:hover, .nav-tabs>li.second-tab>a:focus {
-    border: 1px solid #202126;
-}
-
 .diffPos {
     color: #5cb85c;
 }
@@ -317,10 +313,18 @@ table tr td:first-child {
     padding: 0px 15px;
 }
 
+.nav-tabs {
+border-bottom: 1px solid #303239;
+}
+
+.nav-tabs>li.second-tab>a, .nav-tabs>li.second-tab>a:hover, .nav-tabs>li.second-tab>a:focus {
+    border: 1px solid #303239;
+}
+
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
     color: #2C8CE0;
     background-color: #131415;
-    border: 1px solid #202126;
+    border: 1px solid #303239;
     border-bottom-color: transparent;
     cursor: default;
 }
