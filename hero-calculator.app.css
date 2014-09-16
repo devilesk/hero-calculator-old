@@ -6,17 +6,13 @@ img {
     max-width: 100%;
 }
 
-.indent {
-    text-indent: 10px;
-}
-
-#ans_msg_container {
-    min-height: 2em;
-}
-
 table tr td:first-child {
     font-size: 13px;
     line-height: 20px;
+}
+
+.indent {
+    text-indent: 10px;
 }
 
 .table>tbody+tbody {
@@ -66,6 +62,7 @@ table tr td:first-child {
     left: 0;
     padding: .2em;
     outline: 0;
+    z-index: 100 !important;
 }
 
 .ui-dialog .ui-dialog-titlebar {
@@ -92,6 +89,17 @@ table tr td:first-child {
     /* prevent horizontal scrollbar */
     overflow-x: hidden;
     z-index: 1000 !important;
+    background-color: #131415;
+    border: 1px solid #303239;
+}
+
+.ui-menu .ui-menu-item {
+    padding: 3px 1em 3px .4em;
+}
+
+.ui-state-focus {
+    background-color: #2C8CE0;
+    color: white;
 }
 
 .shop-button {
@@ -267,11 +275,6 @@ table tr td:first-child {
     margin-right: 0px;
     margin-left: 0px;
     padding-bottom: 0px;
-}
-
-.row-no-margin {
-    margin-right: 0px;
-    margin-left: 0px;
 }
 
 .popover {
