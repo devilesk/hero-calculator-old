@@ -1,11 +1,5 @@
 var HEROCALCULATOR = (function (my) {
 
-    my.idCount = 0;
-    my.getUniqueId = function () {
-        my.idCount++;
-        return my.idCount;
-    }
-    
     my.Tab = function (id, href, data, text, color, template) {
         var self = this;
         self.id = id;
@@ -47,7 +41,7 @@ var HEROCALCULATOR = (function (my) {
                 for (var i = 0; i < changes.length; i++) {
                     if (changes[i].status == 'added') {
                         var color = this.index < 2 ? '#5cb85c' : '#d9534f',
-                            j = my.getUniqueId();
+                            j = _.uniqueId();
                         self.tabs()[this.index].illusions.push(
                             new my.Tab(
                                 'illusionTab' + this.index + '-' + j,
@@ -129,9 +123,10 @@ var HEROCALCULATOR = (function (my) {
 		self.selectedTabs.push('heroTab0');
 		self.selectedTabs.push('heroTab1');
         self.clickTab = function (data, event, index) {
-            if (event.target.id != 'settingsTab') {
+            /*if (event.target.id != 'settingsTab') {
                 self.selectedTabId(event.target.id);
-            }
+            }*/
+            self.selectedTabId(event.target.id);
 			if (self.selectedTabs()[1] != event.target.id) {
 				self.selectedTabs.shift();
 				self.selectedTabs.push(event.target.id);
@@ -431,6 +426,7 @@ var HEROCALCULATOR = (function (my) {
         }
         self.showPopover = function (tab) {
             if ($(window).width() < 768) return null;
+            if (self.sideView()) return null;
             var compareText = "<strong>Compare tab</strong><br>Delta values are calculated from the difference with this tab.",
                 enemyText = "<strong>Enemy tab</strong><br>Stats from this tab are taken into account and affect calculations.";
             switch (tab) {
