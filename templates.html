@@ -1229,7 +1229,7 @@
             </div>
             <div class="row" data-bind="foreach: damageAmplification.buffs">
                 <div data-bind="css: {row: $data.data.isDetail() || ($index() < $parent.damageAmplification.buffs().length-1 && $parent.damageAmplification.buffs()[$index()+1].data.isDetail()), row2: $data.data.isDetail() || ($index() < $parent.damageAmplification.buffs().length-1 && $parent.damageAmplification.buffs()[$index()+1].data.isDetail()) }">
-                    <div class="col-md-3 text-center bottom-buffer" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
+                    <div class="col-md-3 text-center bottom-buffer row2" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
                         <img class="img-rounded ability" data-bind="css: { ability_active: $data.data.isActive() || $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.data.isActive() && $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1 }, attr:{src: '/media/images/spellicons/' + $data.data.name() + '.png'}, click: function(data, event) { $parent.damageAmplification.toggleBuff($index, data.data, event); }"/>
                         <div class="progress" style="position:relative">
                             <div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data.data) > 0, text: $data.data.level() + '/' + $parent.getAbilityLevelMax($data.data)"></div>
@@ -1269,7 +1269,7 @@
             </div>
             <div class="row" data-bind="foreach: damageReduction.buffs">
                 <div data-bind="css: {row: $data.data.isDetail() || ($index() < $parent.damageReduction.buffs().length-1 && $parent.damageReduction.buffs()[$index()+1].data.isDetail()), row2: $data.data.isDetail() || ($index() < $parent.damageReduction.buffs().length-1 && $parent.damageReduction.buffs()[$index()+1].data.isDetail()) }">
-                    <div class="col-md-3 text-center bottom-buffer" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
+                    <div class="col-md-3 text-center bottom-buffer row2" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
                         <img class="img-rounded ability" data-bind="css: { ability_active: $data.data.isActive() || $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.data.isActive() && $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1 }, attr:{src: '/media/images/spellicons/' + $data.data.name() + '.png'}, click: function(data, event) { $parent.damageReduction.toggleBuff($index, data.data, event); }"/>
                         <div class="progress" style="position:relative">
                             <div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data.data) > 0, text: $data.data.level() + '/' + $parent.getAbilityLevelMax($data.data)"></div>
