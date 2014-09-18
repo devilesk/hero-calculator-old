@@ -93,7 +93,7 @@
                             <tr>
                                 <td></td>
                                 <td class="text-right"><strong>Unmitigated</strong></td>
-                                <td class="text-right"><strong><abbr data-bind="attr: {title: 'After reductions from ' + $root.heroes[($index()+1) % 2].hero().displayname()}">After Reductions</abbr></strong></td>
+                                <td class="text-right"><strong><abbr data-bind="attr: {title: 'After reductions from ' + enemy().hero().displayname()}">After Reductions</abbr></strong></td>
                             </tr>
                             <tr>
                                 <td><abbr title="Sum of damage sources">Damage Per Attack:</abbr></td>
@@ -321,7 +321,7 @@
                             <tr>
                                 <td></td>
                                 <td class="text-right"><strong>Unmitigated</strong></td>
-                                <td class="text-right"><strong><abbr data-bind="attr: {title: 'After reductions from ' + $root.heroes[($index()+1) % 2].hero().displayname()}">After Reductions</abbr></strong></td>
+                                <td class="text-right"><strong><abbr data-bind="attr: {title: 'After reductions from ' + enemy().hero().displayname()}">After Reductions</abbr></strong></td>
                             </tr>
                             <tr>
                                 <td><abbr title="Sum of damage sources">Damage Per Attack:</abbr></td>
@@ -638,7 +638,7 @@
                             <tr>
                                 <td></td>
                                 <td class="text-right"><strong>Unmitigated</strong></td>
-                                <td class="text-right"><strong><abbr data-bind="attr: {title: 'After reductions from ' + $root.heroes[($index()+1) % 2].hero().displayname()}">After Reductions</abbr></strong></td>
+                                <td class="text-right"><strong><abbr data-bind="attr: {title: 'After reductions from ' + enemy().hero().displayname()}">After Reductions</abbr></strong></td>
                             </tr>
                             <tr>
                                 <td><abbr title="Sum of damage sources">Damage Per Attack:</abbr></td>
@@ -1374,7 +1374,7 @@
 <div class="form-horizontal">
 <div data-bind="foreach: data">
 <div class="form-group">
-    <label class="col-md-6 control-label" data-bind="visible: (display == undefined || display != 'buff'), attr: {'for': labelName}, text: labelName"></label>
+    <label class="col-md-6 control-label" data-bind="visible: (display == undefined || display != 'buff'), attr: {'for': labelName}, html: labelName"></label>
     <div data-bind="if: controlType == 'input' && (display == undefined || display != 'buff')">
         <div class="col-md-6"><input class="form-control" data-bind="attr: {'id': labelName}, value: controlVal"></div>
     </div>
@@ -1393,7 +1393,7 @@
 <div class="form-horizontal">
 <div data-bind="foreach: data">
 <div class="form-group">
-    <label class="col-md-6 control-label" data-bind="visible: (display == undefined || display == 'buff'), attr: {'for': labelName}, text: labelName"></label>
+    <label class="col-md-6 control-label" data-bind="visible: (display == undefined || display == 'buff'), attr: {'for': labelName}, html: labelName"></label>
     <div data-bind="if: controlType == 'input' && (display == undefined || display == 'buff')">
         <div class="col-md-6"><input class="form-control" data-bind="attr: {'id': labelName}, value: controlVal"></div>
     </div>

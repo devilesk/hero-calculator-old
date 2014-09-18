@@ -190,7 +190,8 @@ var HEROCALCULATOR = (function (my) {
         self.getAbilityAttributeTooltip = function (attributes, attributeName) {
             for (var i=0; i<attributes.length; i++) {
                 if (attributes[i].name() == attributeName) {
-                        return attributes[i].tooltip();
+                        var d = attributes[i].tooltip().replace(/\\n/g, '');
+                        return d;
                 }
             }
             return '';
@@ -892,9 +893,10 @@ var HEROCALCULATOR = (function (my) {
                         }
                     }
                 }
-                else if (ability.baseDamageMultiplier != undefined || ability.baseDamage != undefined) {
+                else if (ability.baseDamageMultiplier != undefined) {
                     // earthshaker_enchant_totem
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        console.log(ability.name(), ability.baseDamageMultiplier, ability.baseDamage());
                         totalMultiplier += ability.baseDamageMultiplier()/100;
                         /*totalAttribute += ability.baseDamage();
                         sources[ability.name()] = {
@@ -903,7 +905,8 @@ var HEROCALCULATOR = (function (my) {
                             'displayname': ability.displayname()
                         }*/
                     }
-                    
+                }
+                else if (ability.baseDamage != undefined) {
                     // clinkz_death_pact
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
                         totalAttribute += ability.baseDamage();
