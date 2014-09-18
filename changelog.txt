@@ -1,3 +1,6 @@
+2014-09-18
+- Added Heart of Tarrasque passive health regen.
+
 2014-09-14
 - Small ui tweaks and ui code refactored.
 - Fixed padding and margins when in side by side view (now called Fullscreen).

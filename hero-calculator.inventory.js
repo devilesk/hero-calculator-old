@@ -13,10 +13,11 @@ var HEROCALCULATOR = (function (my) {
         this.displayname = ko.observable(name + ' ');
     };
     
-    my.InventoryViewModel = function () {
+    my.InventoryViewModel = function (h) {
         var self = this,
         validItems = ["abyssal_blade","ultimate_scepter","courier","arcane_boots","armlet","assault","boots_of_elves","bfury","belt_of_strength","black_king_bar","blade_mail","blade_of_alacrity","blades_of_attack","blink","bloodstone","boots","travel_boots","bottle","bracer","broadsword","buckler","butterfly","chainmail","circlet","clarity","claymore","cloak","lesser_crit","greater_crit","dagon","demon_edge","desolator","diffusal_blade","rapier","ancient_janggo","dust","eagle","energy_booster","ethereal_blade","cyclone","skadi","flying_courier","force_staff","gauntlets","gem","ghost","gloves","hand_of_midas","headdress","flask","heart","heavens_halberd","helm_of_iron_will","helm_of_the_dominator","hood_of_defiance","hyperstone","branches","javelin","sphere","maelstrom","magic_stick","magic_wand","manta","mantle","mask_of_madness","medallion_of_courage","mekansm","mithril_hammer","mjollnir","monkey_king_bar","lifesteal","mystic_staff","necronomicon","null_talisman","oblivion_staff","ward_observer","ogre_axe","orb_of_venom","orchid","pers","phase_boots","pipe","platemail","point_booster","poor_mans_shield","power_treads","quarterstaff","quelling_blade","radiance","reaver","refresher","ring_of_aquila","ring_of_basilius","ring_of_health","ring_of_protection","ring_of_regen","robe","rod_of_atos","relic","sobi_mask","sange","sange_and_yasha","satanic","sheepstick","ward_sentry","shadow_amulet","invis_sword","shivas_guard","basher","slippers","smoke_of_deceit","soul_booster","soul_ring","staff_of_wizardry","stout_shield","talisman_of_evasion","tango","tpscroll","tranquil_boots","ultimate_orb","urn_of_shadows","vanguard","veil_of_discord","vitality_booster","vladmir","void_stone","wraith_band","yasha"];
-        itemsWithActive = ['smoke_of_deceit','dust','ghost','tranquil_boots','phase_boots','power_treads','buckler','medallion_of_courage','ancient_janggo','mekansm','pipe','veil_of_discord','rod_of_atos','orchid','sheepstick','armlet','invis_sword','ethereal_blade','shivas_guard','manta','mask_of_madness','diffusal_blade','mjollnir','satanic','ring_of_basilius','ring_of_aquila'];
+        itemsWithActive = ['heart','smoke_of_deceit','dust','ghost','tranquil_boots','phase_boots','power_treads','buckler','medallion_of_courage','ancient_janggo','mekansm','pipe','veil_of_discord','rod_of_atos','orchid','sheepstick','armlet','invis_sword','ethereal_blade','shivas_guard','manta','mask_of_madness','diffusal_blade','mjollnir','satanic','ring_of_basilius','ring_of_aquila'];
+        self.hero = h;
         self.hasInventory = ko.observable(true);
         self.items = ko.observableArray();
         self.activeItems = ko.observableArray([]);
@@ -78,7 +79,7 @@ var HEROCALCULATOR = (function (my) {
                     enabled: ko.observable(true)
                 }
                 self.items.push(new_item);
-                if (data.selectedItem() === 'ring_of_aquila' || data.selectedItem() === 'ring_of_basilius') {
+                if (data.selectedItem() === 'ring_of_aquila' || data.selectedItem() === 'ring_of_basilius' || data.selectedItem() === 'heart') {
                     self.toggleItem(undefined, new_item, undefined);
                 }
             }
@@ -563,15 +564,20 @@ var HEROCALCULATOR = (function (my) {
                             totalAttribute += parseInt(attribute.value[0]);
                         break;
                         case 'bonus_health_regen':
-                                if (item == 'tranquil_boots' && !isActive) {
-                                    totalAttribute += parseInt(attribute.value[0]);
-                                }
-                                else if (item != 'tranquil_boots') {
-                                    totalAttribute += parseInt(attribute.value[0]);
-                                }
+                            if (item == 'tranquil_boots' && !isActive) {
+                                totalAttribute += parseInt(attribute.value[0]);
+                            }
+                            else if (item != 'tranquil_boots') {
+                                totalAttribute += parseInt(attribute.value[0]);
+                            }
                         break;
                         case 'hp_regen':
                             totalAttribute += parseInt(attribute.value[0]);
+                        break;
+                        case 'health_regen_rate':
+                            if (item == 'heart' && isActive) {
+                                totalAttribute += (parseInt(attribute.value[0]) / 100) * self.hero.health();
+                            }
                         break;
                     }
                 }

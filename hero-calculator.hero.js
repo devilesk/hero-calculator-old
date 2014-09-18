@@ -50,7 +50,7 @@ var HEROCALCULATOR = (function (my) {
         });
         self.selectedHero = ko.observable(self.availableHeroes()[h]);
         self.selectedHeroLevel = ko.observable(1);
-        self.inventory = new my.InventoryViewModel();
+        self.inventory = new my.InventoryViewModel(self);
         self.buffs = new my.BuffViewModel();
         self.buffs.hasScepter = self.inventory.hasScepter;
         self.debuffs = new my.BuffViewModel();
@@ -1061,13 +1061,15 @@ var HEROCALCULATOR = (function (my) {
         };
         
         self.getDamageAmpReduc = function (initialDamage, skipBracket4) {
+            console.log('start getDamageAmpReduc', initialDamage, skipBracket4);
             var damage = initialDamage;
             var sources = self.damageAmplification.getDamageMultiplierSources();
             $.extend(sources, self.damageReduction.getDamageMultiplierSources());
+            console.log(sources);
             var result = [];
             if (!skipBracket4) {
                 result.push({
-                    label: 'Initial Damage',
+                    label: 'Initial Damage Instance',
                     damageType: 'physical',
                     value: damage
                 });
@@ -1079,38 +1081,35 @@ var HEROCALCULATOR = (function (my) {
                 if (sources[self.damageBrackets[1][i]] != undefined) {
                     multiplier += sources[self.damageBrackets[1][i]].multiplier;
                     label += sources[self.damageBrackets[1][i]].displayname + ', ';
-                }
-                damage *= multiplier;
-                if (label != '') {
+                    damage *= multiplier;
                     result.push({
-                        label: 'After ' + label.substring(0, label.length - 2) + ' Reductions',
+                        label: 'After ' + label.substring(0, label.length - 2),
                         damageType: sources[self.damageBrackets[1][i]].damageType,
                         value: damage
                     });
+                    console.log('damage', initialDamage, damage, multiplier);
                 }
             }
-            
+            console.log('damage', initialDamage, damage, multiplier);
             // Bracket 2
-            var multiplier = 1;
-            var label = '';
-            for (var i = 0; i < self.damageBrackets[1].length; i++) {
-                if (sources[self.damageBrackets[1][i]] != undefined) {
-                    multiplier += sources[self.damageBrackets[1][i]].multiplier;
-                    label += sources[self.damageBrackets[1][i]].displayname + ', ';
-                }
-                damage *= multiplier;
-                if (label != '') {
+            multiplier = 1;
+            label = '';
+            for (var i = 0; i < self.damageBrackets[2].length; i++) {
+                if (sources[self.damageBrackets[2][i]] != undefined) {
+                    multiplier += sources[self.damageBrackets[2][i]].multiplier;
+                    label += sources[self.damageBrackets[2][i]].displayname + ', ';
+                    damage *= multiplier;
                     result.push({
-                        label: 'After ' + label.substring(0, label.length - 2) + ' Reductions',
-                        damageType: sources[self.damageBrackets[1][i]].damageType,
+                        label: 'After ' + label.substring(0, label.length - 2),
+                        damageType: sources[self.damageBrackets[2][i]].damageType,
                         value: damage
                     });
                 }
             }
-            
+            console.log('damage', initialDamage, damage);
             // Bracket 3
-            var multiplier = 0;
-            var label = '';
+            multiplier = 0;
+            label = '';
             if (sources['abaddon_aphotic_shield'] != undefined) {
                 multiplier += sources['abaddon_aphotic_shield'].multiplier;
                 label += sources['abaddon_aphotic_shield'].displayname + ', ';
@@ -1118,12 +1117,12 @@ var HEROCALCULATOR = (function (my) {
             damage -= multiplier;
             if (label != '') {
                 result.push({
-                    label: 'After ' + label.substring(0, label.length - 2) + ' Reductions',
+                    label: 'After ' + label.substring(0, label.length - 2),
                     damageType: sources['abaddon_aphotic_shield'].damageType,
                     value: damage
                 });
             }
-            
+            console.log('damage', initialDamage, damage);
             // Bracket 4
             var damageBracket4 = 0;
             var damageBracket4total = 0;
@@ -1139,7 +1138,7 @@ var HEROCALCULATOR = (function (my) {
                 var resultBracket4 = self.getDamageAmpReduc(damageBracket4, true);
                 if (sources['shadow_demon_soul_catcher'] != undefined) {
                     result.push({
-                        label: sources['shadow_demon_soul_catcher'].displayname,
+                        label: sources['shadow_demon_soul_catcher'].displayname + ' Damage Instance',
                         damageType: sources['shadow_demon_soul_catcher'].damageType,
                         value: damageBracket4
                     });
@@ -1163,7 +1162,7 @@ var HEROCALCULATOR = (function (my) {
                 var resultBracket4 = self.getDamageAmpReduc(damageBracket4, true);
                 if (sources['chen_penitence'] != undefined) {
                     result.push({
-                        label: sources['chen_penitence'].displayname,
+                        label: sources['chen_penitence'].displayname + ' Damage Instance',
                         damageType: sources['chen_penitence'].damageType,
                         value: damageBracket4
                     });
@@ -1176,7 +1175,7 @@ var HEROCALCULATOR = (function (my) {
                     }
                 }            
             }
-            
+            console.log('damage', initialDamage, damage);
             if (!skipBracket4) {
                 result.push({
                     label: 'Total Damage',
