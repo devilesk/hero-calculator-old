@@ -160,6 +160,7 @@ var HEROCALCULATOR = (function (my) {
         for (var i = 0; i < item.attributes.length; i++) {
             if (item.attributes[i].tooltip != null) {
                 var attributeTooltip = item.attributes[i].tooltip;
+                attributeTooltip = attributeTooltip.replace(/\\n/g, '');
                 var attributeValue = item.attributes[i].value[0];
                 for (var j = 1; j < item.attributes[i].value.length; j++) {
                     attributeValue += ' / ' + item.attributes[i].value[j];
