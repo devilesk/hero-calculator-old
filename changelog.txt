@@ -1,5 +1,7 @@
 2014-09-18
 - Added Heart of Tarrasque passive health regen.
+- Fixed enemies not being set to the correct tab.
+- Fixed unit enemy tab not being set.
 
 2014-09-14
 - Small ui tweaks and ui code refactored.
