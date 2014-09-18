@@ -31,8 +31,9 @@ var HEROCALCULATOR = (function (my) {
         ];
 
         for (var i = 0; i < 4; i++) {
-            self.heroes[i].enemy = ko.observable(self.heroes[1 - (i % 2)]);
+            self.heroes[i].enemy = ko.observable(self.heroes[i < 2 ? 2 : 0]);
             self.heroes[i].unit = ko.observable(new my.UnitViewModel(0, self.heroes[i]));
+            self.heroes[i].unit().enemy = ko.observable(self.heroes[i < 2 ? 2 : 0]);
             self.heroes[i].clone = ko.observable(new my.CloneViewModel(0, self.heroes[i]));
             self.heroes[i].heroCompare = ko.observable(self.heroes[1 - (i % 2) + (i < 2 ? 0 : 2)]);
             self.heroes[i].unit().selectedUnit(self.heroes[i].unit().availableUnits()[0]);
