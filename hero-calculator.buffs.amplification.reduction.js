@@ -44,9 +44,29 @@ var HEROCALCULATOR = (function (my) {
                 var ability = self.abilities()[i];
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
                         switch (ability.name()) {
+                            case 'bristleback_bristleback':
+                                console.log(ability);
+                                sources[ability.name()] = {
+                                    'multiplier': ability.damageReduction() / 100,
+                                    'damageType': 'physical',
+                                    'displayname': ability.displayname()
+                                }
+                            break;
                             case 'slardar_sprint':
+                                sources[ability.name()] = {
+                                    'multiplier': self.getAbilityAttributeValue(ability.attributes(), 'bonus_damage', ability.level()) / 100,
+                                    'damageType': 'physical',
+                                    'displayname': ability.displayname()
+                                }
+                            break;
                             case 'undying_flesh_golem':
                             case 'medusa_stone_gaze':
+                                sources[ability.name()] = {
+                                    'multiplier': self.getAbilityAttributeValue(ability.attributes(), 'bonus_physical_damage', ability.level()) / 100,
+                                    'damageType': 'physical',
+                                    'displayname': ability.displayname()
+                                }
+                            break;
                             case 'chen_penitence':
                                 sources[ability.name()] = {
                                     'multiplier': self.getAbilityAttributeValue(ability.attributes(), 'bonus_damage_taken', ability.level()) / 100,
