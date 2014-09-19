@@ -1219,18 +1219,19 @@
                         <div class="col-md-3 control-label">
                             <label for="buffampselect">Amplification</label>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <select id="buffampselect" class="form-control" data-bind="options: damageAmplification.availableBuffs , optionsText: 'buffDisplayName', value: damageAmplification.selectedBuff"></select>
                         </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-default" data-bind="click: damageAmplification.addBuff">Add Ability</button>
+                        <div class="col-md-4">
+                            <button class="btn btn-default" data-bind="click: damageAmplification.addBuff">Add</button>
+                            <button class="btn btn-default" data-bind="click: function(data,event) { damageAmplification.removeBuff(data, event, damageAmplification.selectedBuff().buffName) }">Remove</button>
                         </div>
                 </div>
             </div>
             <div class="row" data-bind="foreach: damageAmplification.buffs">
                 <div data-bind="css: {row: $data.data.isDetail() || ($index() < $parent.damageAmplification.buffs().length-1 && $parent.damageAmplification.buffs()[$index()+1].data.isDetail()), row2: $data.data.isDetail() || ($index() < $parent.damageAmplification.buffs().length-1 && $parent.damageAmplification.buffs()[$index()+1].data.isDetail()) }">
                     <div class="col-md-3 text-center bottom-buffer row2" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
-                        <img class="img-rounded ability" data-bind="css: { ability_active: $data.data.isActive() || $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.data.isActive() && $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1 }, attr:{src: '/media/images/spellicons/' + $data.data.name() + '.png'}, click: function(data, event) { $parent.damageAmplification.toggleBuff($index, data.data, event); }"/>
+                        <img style="padding:0px;margin-bottom:1px;" class="img-rounded ability" data-bind="css: { ability_active: $data.data.isActive() || $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.data.isActive() && $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1, btn: $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1, 'btn-default': $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1}, attr:{src: '/media/images/spellicons/' + $data.data.name() + '.png'}, click: function(data, event) { $parent.damageAmplification.toggleBuff($index, data.data, event); }, event: { dblclick: function(data,event) { $parent.damageAmplification.removeBuff(data, event, $data.data.name()) } }"/>
                         <div class="progress" style="position:relative">
                             <div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data.data) > 0, text: $data.data.level() + '/' + $parent.getAbilityLevelMax($data.data)"></div>
                             <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;" data-bind="attr: { 'aria-valuenow': ($parent.getAbilityLevelMax($data.data) > 0 ? $data.data.level()/$parent.getAbilityLevelMax($data.data)*100 : 0) }, style: { width: ($parent.getAbilityLevelMax($data.data) > 0 ? $data.data.level()/$parent.getAbilityLevelMax($data.data)*100 : 0) + '%' }"></div>
@@ -1259,18 +1260,19 @@
                         <div class="col-md-3 control-label">
                             <label for="buffreductionselect">Reduction</label>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <select id="buffreductionselect" class="form-control" data-bind="options: damageReduction.availableDebuffs , optionsText: 'buffDisplayName', value: damageReduction.selectedBuff"></select>
                         </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-default" data-bind="click: damageReduction.addBuff">Add Ability</button>
+                        <div class="col-md-4">
+                            <button class="btn btn-default" data-bind="click: damageReduction.addBuff">Add</button>
+                            <button class="btn btn-default" data-bind="click: function(data,event) { damageReduction.removeBuff(data, event, damageReduction.selectedBuff().buffName) }">Remove</button>
                         </div>
                 </div>
             </div>
             <div class="row" data-bind="foreach: damageReduction.buffs">
                 <div data-bind="css: {row: $data.data.isDetail() || ($index() < $parent.damageReduction.buffs().length-1 && $parent.damageReduction.buffs()[$index()+1].data.isDetail()), row2: $data.data.isDetail() || ($index() < $parent.damageReduction.buffs().length-1 && $parent.damageReduction.buffs()[$index()+1].data.isDetail()) }">
                     <div class="col-md-3 text-center bottom-buffer row2" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
-                        <img class="img-rounded ability" data-bind="css: { ability_active: $data.data.isActive() || $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.data.isActive() && $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1 }, attr:{src: '/media/images/spellicons/' + $data.data.name() + '.png'}, click: function(data, event) { $parent.damageReduction.toggleBuff($index, data.data, event); }"/>
+                        <img style="padding:0px;margin-bottom:1px;" class="img-rounded ability" data-bind="css: { ability_active: $data.data.isActive() || $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.data.isActive() && $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1, btn: $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1, 'btn-default': $data.data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1}, attr:{src: '/media/images/spellicons/' + $data.data.name() + '.png'}, click: function(data, event) { $parent.damageReduction.toggleBuff($index, data.data, event); }, event: { dblclick: function(data,event) { $parent.damageReduction.removeBuff(data, event, $data.data.name()) } }"/>
                         <div class="progress" style="position:relative">
                             <div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data.data) > 0, text: $data.data.level() + '/' + $parent.getAbilityLevelMax($data.data)"></div>
                             <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;" data-bind="attr: { 'aria-valuenow': ($parent.getAbilityLevelMax($data.data) > 0 ? $data.data.level()/$parent.getAbilityLevelMax($data.data)*100 : 0) }, style: { width: ($parent.getAbilityLevelMax($data.data) > 0 ? $data.data.level()/$parent.getAbilityLevelMax($data.data)*100 : 0) + '%' }"></div>
