@@ -1207,7 +1207,7 @@ var HEROCALCULATOR = (function (my) {
         self.selectedItemBuff = ko.observable('assault');
 
         self.itemDebuffOptions = ko.observableArray([]);        
-        var itemDebuffs = ['assault', 'shivas_guard', 'desolator'];
+        var itemDebuffs = ['assault', 'shivas_guard', 'desolator', 'medallion_of_courage'];
         for (i in itemDebuffs) {
             self.itemDebuffOptions.push(new my.ItemInput(itemDebuffs[i], my.itemData['item_' + itemDebuffs[i]].displayname));
         }
