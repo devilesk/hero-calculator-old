@@ -67,13 +67,21 @@ var HEROCALCULATOR = (function (my) {
                 switch (args[i].controlType) {
                     case 'input':
                         v = ko.observable(0).extend({ numeric: 2 });
+                        v.controlValueType = args[i].controlValueType;
                         v_list.push(v);
                         result.data.push({ labelName: args[i].label.toUpperCase() + ':', controlVal: v, controlType: args[i].controlType, display: args[i].display });
                     break;
                     case 'checkbox':
                         v = ko.observable(false);
+                        v.controlValueType = args[i].controlValueType;
                         v_list.push(v);
                         result.data.push({ labelName: args[i].label.toUpperCase() + '?', controlVal: v, controlType: args[i].controlType, display: args[i].display });
+                    break;
+                    case 'radio':
+                        v = ko.observable(args[i].controlOptions[0].value);
+                        v.controlValueType = args[i].controlValueType;
+                        v_list.push(v);
+                        result.data.push({ labelName: args[i].label.toUpperCase() + '?', controlVal: v, controlType: args[i].controlType, display: args[i].display, controlOptions: args[i].controlOptions });
                     break;
                     case 'text':
                         // single input abilities
@@ -145,7 +153,15 @@ var HEROCALCULATOR = (function (my) {
                         var returnVal = fn(v(), attributeValue(), parent, index, abilityList);
                     }
                     else {
-                        var returnVal = fn(parseFloat(v()), attributeValue(), parent, index, abilityList);
+                        if (v.controlValueType == undefined) {
+                            var returnVal = fn(parseFloat(v()), attributeValue(), parent, index, abilityList);
+                        }
+                        else if (v.controlValueType == 'string') {
+                            var returnVal = fn(v(), attributeValue(), parent, index, abilityList);
+                        }
+                        else {
+                            var returnVal = fn(parseFloat(v()), attributeValue(), parent, index, abilityList);
+                        }
                     }
                     if (returnProperty != undefined) {
                         self.abilities()[index][returnProperty](returnVal);
@@ -1237,7 +1253,7 @@ var HEROCALCULATOR = (function (my) {
                 }
                 else if (ability.damageReduction != undefined) {
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
-                        // wisp_overcharge
+                        // wisp_overcharge,bristleback_bristleback
                         totalAttribute *= (1 + ability.damageReduction()/100);
                     }
                 }

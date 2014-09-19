@@ -1,6 +1,7 @@
 2014-09-19
 - Added Medallion of Courage to debuffs section.
 - Added Undying Decay.
+- Added Bristleback Bristleback.
 
 2014-09-18
 - Added Heart of Tarrasque passive health regen.

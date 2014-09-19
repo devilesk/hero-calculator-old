@@ -301,6 +301,54 @@ var HEROCALCULATOR = (function (my) {
                 }
             }
         ],
+        'bristleback_bristleback': [
+            {
+                label: 'Damage From',
+                controlType: 'radio',
+                controlValueType: 'string',
+                controlOptions: [
+                    {text: 'Back', value: 'back'},
+                    {text: 'Side', value: 'side'}
+                ]
+            },
+            {
+                attributeName: 'back_damage_reduction',
+                label: '%DAMAGE REDUCTION:',
+                ignoreTooltip: true,
+                display: 'ability',
+                controlType: 'text',
+                fn: function(v,a,parent,index) {
+                    console.log(v, a, parent, index);
+                    if (v == 'back') {
+                        var total = parent.ability().getAbilityAttributeValue(parent.ability().abilities()[index].attributes(), 'back_damage_reduction', parent.ability().abilities()[index].level());
+                    }
+                    else {
+                        var total = parent.ability().getAbilityAttributeValue(parent.ability().abilities()[index].attributes(), 'side_damage_reduction', parent.ability().abilities()[index].level());
+                    }
+                    return -total;
+                },
+                returnProperty: 'damageReduction'
+            },
+            {
+                attributeName: 'back_damage_reduction',
+                label: '%DAMAGE REDUCTION:',
+                ignoreTooltip: true,
+                display: 'buff',
+                controlType: 'text',
+                fn: function(v,a,parent,index) {
+                    console.log(v, a, parent, index);
+                    console.log(parent.damageReduction.abilities());
+                    if (v == 'back') {
+                        var total = parent.damageReduction.getAbilityAttributeValue(parent.damageReduction.abilities()[index].attributes(), 'back_damage_reduction', parent.damageReduction.abilities()[index].level());
+                    }
+                    else {
+                        var total = parent.damageReduction.getAbilityAttributeValue(parent.damageReduction.abilities()[index].attributes(), 'side_damage_reduction', parent.damageReduction.abilities()[index].level());
+                    }
+                    return -total;
+                },
+                returnProperty: 'damageReduction'
+            }
+        ],
         'bristleback_warpath': [
             {
                 label: 'Stacks',
