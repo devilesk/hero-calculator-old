@@ -1386,6 +1386,18 @@
     <div data-bind="if: controlType == 'text' && (display == undefined || display != 'buff')">
         <div class="col-md-6"><p class="form-control-static" data-bind="html: controlVal"></p></div>
     </div>
+    <div data-bind="if: controlType == 'radio' && (display == undefined || display != 'buff')">
+        <div class="col-md-6">
+            <!-- ko foreach: controlOptions -->
+            <div class="radio">
+                <label>
+                    <input type="radio" data-bind="attr: {'id': $parent.labelName + value, value: value}, checked: $parent.controlVal">
+                    <span data-bind="text: text"></span>
+                </label>
+            </div>
+            <!-- /ko -->
+        </div>
+    </div>
 </div>
 </div>
 </div>
@@ -1404,6 +1416,18 @@
     </div>
     <div data-bind="if: controlType == 'text' && (display == undefined || display == 'buff')">
         <div class="col-md-6"><p class="form-control-static" data-bind="html: controlVal"></p></div>
+    </div>
+    <div data-bind="if: controlType == 'radio' && (display == undefined || display == 'buff')">
+        <div class="col-md-6">
+            <!-- ko foreach: controlOptions -->
+            <div class="radio">
+                <label>
+                    <input type="radio" data-bind="attr: {'id': $parent.labelName + value, value: value}, checked: $parent.controlVal">
+                    <span data-bind="text: text"></span>
+                </label>
+            </div>
+            <!-- /ko -->
+        </div>
     </div>
 </div>
 </div>
