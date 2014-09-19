@@ -2502,17 +2502,19 @@ var HEROCALCULATOR = (function (my) {
         ],
         'undying_decay': [
             {
-                label: 'Duration',
+                label: 'Stacks',
                 controlType: 'input'
             },
             {
-                attributeName: 'damage',
-                label: 'Total Damage',
+                attributeName: 'str_steal',
+                label: 'STRENGTH STOLEN:',
+                ignoreTooltip: true,
                 controlType: 'text',
                 fn: function(v,a) {
                     return v*a;
-                }
-            }
+                },
+                returnProperty: 'bonusStrength'
+            },
         ],
         'undying_soul_rip': [
             {

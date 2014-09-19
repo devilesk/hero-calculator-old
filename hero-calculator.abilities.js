@@ -255,6 +255,68 @@ var HEROCALCULATOR = (function (my) {
             return totalAttribute;
         });
         
+        self.getStrengthReduction = ko.computed(function () {
+            var totalAttribute = 0;
+            for (var i = 0; i < self.abilities().length; i++) {
+                var ability = self.abilities()[i];
+                if (!(ability.name() in self.abilityData)) {
+                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
+                            var attribute = self.abilities()[i].attributes()[j];
+                            /*switch(attribute.name()) {
+                                // invoker_quas
+                                case 'bonus_strength':
+                                    totalAttribute += parseInt(attribute.value()[ability.level()-1]);
+                                break;
+                            }*/
+                        }
+                    }
+                }
+                else if (ability.bonusStrength != undefined && ability.name() == 'undying_decay') {
+                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        // undying_decay
+                        totalAttribute-=ability.bonusStrength();
+                    }
+                }
+            }
+            return totalAttribute;
+        });
+        
+        self.getStrength = ko.computed(function () {
+            var totalAttribute = 0;
+            for (var i = 0; i < self.abilities().length; i++) {
+                var ability = self.abilities()[i];
+                if (!(ability.name() in self.abilityData)) {
+                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
+                            var attribute = self.abilities()[i].attributes()[j];
+                            /*switch(attribute.name()) {
+                                // invoker_quas
+                                case 'bonus_strength':
+                                    totalAttribute += parseInt(attribute.value()[ability.level()-1]);
+                                break;
+                            }*/
+                        }
+                    }
+                }
+                else {
+                    if (ability.bonusStrength != undefined) {
+                        if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                            // pudge_flesh_heap,invoker_quas,morphling_morph_str,morphling_morph_agi,undying_decay
+                            totalAttribute+=ability.bonusStrength();
+                        }
+                    }
+                    if (ability.bonusStrength2 != undefined) {
+                        if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                            // morphling_morph_str
+                            totalAttribute+=ability.bonusStrength2();
+                        }
+                    }
+                }
+            }
+            return totalAttribute;
+        });
+        
         self.getAgility = ko.computed(function () {
             var totalAttribute = 0;
             for (var i = 0; i < self.abilities().length; i++) {
@@ -896,7 +958,6 @@ var HEROCALCULATOR = (function (my) {
                 else if (ability.baseDamageMultiplier != undefined) {
                     // earthshaker_enchant_totem
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
-                        console.log(ability.name(), ability.baseDamageMultiplier, ability.baseDamage());
                         totalMultiplier += ability.baseDamageMultiplier()/100;
                         /*totalAttribute += ability.baseDamage();
                         sources[ability.name()] = {
@@ -1184,40 +1245,6 @@ var HEROCALCULATOR = (function (my) {
             return totalAttribute;
         });
 
-        self.getStrength = ko.computed(function () {
-            var totalAttribute = 0;
-            for (var i = 0; i < self.abilities().length; i++) {
-                var ability = self.abilities()[i];
-                if (!(ability.name() in self.abilityData)) {
-                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
-                        for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
-                            var attribute = self.abilities()[i].attributes()[j];
-                            /*switch(attribute.name()) {
-                                // invoker_quas
-                                case 'bonus_strength':
-                                    totalAttribute += parseInt(attribute.value()[ability.level()-1]);
-                                break;
-                            }*/
-                        }
-                    }
-                }
-                else {
-                    if (ability.bonusStrength != undefined) {
-                        if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
-                            // pudge_flesh_heap,invoker_quas,morphling_morph_str,morphling_morph_agi
-                            totalAttribute+=ability.bonusStrength();
-                        }
-                    }
-                    if (ability.bonusStrength2 != undefined) {
-                        if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
-                            // pudge_flesh_heap,invoker_quas,morphling_morph_str,morphling_morph_agi
-                            totalAttribute+=ability.bonusStrength2();
-                        }
-                    }
-                }
-            }
-            return totalAttribute;
-        });
         self.getCritSource = ko.computed(function () {
             var sources = {};
             for (var i = 0; i < self.abilities().length; i++) {

@@ -236,6 +236,7 @@ var HEROCALCULATOR = (function (my) {
                     + self.inventory.getAttributes('str') 
                     + self.ability().getAttributeBonusLevel() * 2
                     + self.ability().getStrength()
+                    + self.enemy().ability().getStrengthReduction()
                     + self.enemy().ability().getAllStatsReduction()
                     + self.debuffs.getAllStatsReduction()
                    ).toFixed(2);
@@ -698,8 +699,17 @@ var HEROCALCULATOR = (function (my) {
                 case 'pure':
                     result = value;
                 break;
+                case 'composite':
+                    if (self.enemy().totalArmorPhysical() >= 0) {
+                        result = value * (1 - (0.06 * self.enemy().totalArmorPhysical()) / (1 + 0.06 * self.enemy().totalArmorPhysical()));
+                    }
+                    else {
+                        result = value * (1 + (1 - Math.pow(0.94, -self.enemy().totalArmorPhysical())));
+                    }
+                    result *= (1 - self.enemy().totalMagicResistance() / 100);
+                break;
             }
-			result = result * self.enemy().ability().getDamageReduction() * self.enemy().buffs.getDamageReduction();
+			result *= self.enemy().ability().getDamageReduction() * self.enemy().buffs.getDamageReduction();
 			return result;
         }
             
@@ -1061,11 +1071,9 @@ var HEROCALCULATOR = (function (my) {
         };
         
         self.getDamageAmpReduc = function (initialDamage, skipBracket4) {
-            console.log('start getDamageAmpReduc', initialDamage, skipBracket4);
             var damage = initialDamage;
             var sources = self.damageAmplification.getDamageMultiplierSources();
             $.extend(sources, self.damageReduction.getDamageMultiplierSources());
-            console.log(sources);
             var result = [];
             if (!skipBracket4) {
                 result.push({
@@ -1087,10 +1095,8 @@ var HEROCALCULATOR = (function (my) {
                         damageType: sources[self.damageBrackets[1][i]].damageType,
                         value: damage
                     });
-                    console.log('damage', initialDamage, damage, multiplier);
                 }
             }
-            console.log('damage', initialDamage, damage, multiplier);
             // Bracket 2
             multiplier = 1;
             label = '';
@@ -1106,7 +1112,6 @@ var HEROCALCULATOR = (function (my) {
                     });
                 }
             }
-            console.log('damage', initialDamage, damage);
             // Bracket 3
             multiplier = 0;
             label = '';
@@ -1122,11 +1127,40 @@ var HEROCALCULATOR = (function (my) {
                     value: damage
                 });
             }
-            console.log('damage', initialDamage, damage);
             // Bracket 4
-            var damageBracket4 = 0;
+            //var damageBracket4 = 0;
             var damageBracket4total = 0;
+            
+            function applyBracket4Damage(ability) {
+                var damageBracket4 = damage,
+                    multiplier = 0,
+                    label = '';
+                if (sources[ability] != undefined) {
+                    multiplier += sources[ability].multiplier;
+                }
+                damageBracket4 *= multiplier;
+                var resultBracket4 = self.getDamageAmpReduc(damageBracket4, true);
+                if (sources[ability] != undefined) {
+                    result.push({
+                        label: sources[ability].displayname + ' Damage Instance',
+                        damageType: sources[ability].damageType,
+                        value: damageBracket4
+                    });
+                }
+                damageBracket4 = resultBracket4.value;
+                damageBracket4total += resultBracket4.value;
+                if (sources[ability] != undefined) {
+                    for (var i = 0; i < resultBracket4.sources.length; i++) {
+                        result.push(resultBracket4.sources[i]);
+                    }
+                }
+            }
+            
             if (!skipBracket4) {
+                applyBracket4Damage('shadow_demon_soul_catcher');
+                applyBracket4Damage('medusa_stone_gaze');
+                applyBracket4Damage('chen_penitence');
+                /*
                 damageBracket4 = damage;
                 var multiplier = 0;
                 var label = '';
@@ -1134,7 +1168,6 @@ var HEROCALCULATOR = (function (my) {
                     multiplier += sources['shadow_demon_soul_catcher'].multiplier;
                 }
                 damageBracket4 *= multiplier;
-                
                 var resultBracket4 = self.getDamageAmpReduc(damageBracket4, true);
                 if (sources['shadow_demon_soul_catcher'] != undefined) {
                     result.push({
@@ -1158,7 +1191,6 @@ var HEROCALCULATOR = (function (my) {
                     multiplier += sources['chen_penitence'].multiplier;
                 }
                 damageBracket4 *= multiplier;
-                
                 var resultBracket4 = self.getDamageAmpReduc(damageBracket4, true);
                 if (sources['chen_penitence'] != undefined) {
                     result.push({
@@ -1173,9 +1205,9 @@ var HEROCALCULATOR = (function (my) {
                     for (var i = 0; i < resultBracket4.sources.length; i++) {
                         result.push(resultBracket4.sources[i]);
                     }
-                }            
+                }*/
             }
-            console.log('damage', initialDamage, damage);
+            
             if (!skipBracket4) {
                 result.push({
                     label: 'Total Damage',
