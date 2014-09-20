@@ -2576,14 +2576,6 @@ var HEROCALCULATOR = (function (my) {
                 returnProperty: 'movementSpeedPctReduction'
             },
             {
-                attributeName: 'speed_slow',
-                label: 'DAMAGE/HEAL:',
-                controlType: 'text',
-                fn: function(v,a) {
-                    return -a;
-                }
-            },
-            {
                 attributeName: 'max_damage_amp',
                 label: '%DAMAGE AMP:',
                 ignoreTooltip: true,
