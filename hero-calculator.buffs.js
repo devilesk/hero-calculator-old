@@ -142,6 +142,7 @@ var HEROCALCULATOR = (function (my) {
             new my.BuffOption('tinker', 'tinker_laser'),
             new my.BuffOption('treant', 'treant_leech_seed'),
             new my.BuffOption('tusk', 'tusk_frozen_sigil'),
+            new my.BuffOption('undying', 'undying_flesh_golem'),
             new my.BuffOption('ursa', 'ursa_earthshock'),
             new my.BuffOption('vengefulspirit', 'vengefulspirit_wave_of_terror'),
             new my.BuffOption('venomancer', 'venomancer_venomous_gale'),
@@ -184,6 +185,7 @@ var HEROCALCULATOR = (function (my) {
                 a.bonusAgility2 = ko.observable(0);
                 a.bonusInt = ko.observable(0);
                 a.bonusAllStatsReduction = ko.observable(0);
+				a.damageAmplification = ko.observable(0);
 				a.damageReduction = ko.observable(0);
                 a.evasion = ko.observable(0);
                 a.magicResist = ko.observable(0);

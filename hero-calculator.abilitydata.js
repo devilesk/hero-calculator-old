@@ -315,34 +315,16 @@ var HEROCALCULATOR = (function (my) {
                 attributeName: 'back_damage_reduction',
                 label: '%DAMAGE REDUCTION:',
                 ignoreTooltip: true,
-                display: 'ability',
                 controlType: 'text',
                 fn: function(v,a,parent,index) {
-                    console.log(v, a, parent, index);
+                    var ability = _.find(this.abilities(), function(b) {
+                        return b.name() == 'bristleback_bristleback';
+                    });
                     if (v == 'back') {
-                        var total = parent.ability().getAbilityAttributeValue(parent.ability().abilities()[index].attributes(), 'back_damage_reduction', parent.ability().abilities()[index].level());
+                        var total = this.getAbilityAttributeValue(ability.attributes(), 'back_damage_reduction', ability.level());
                     }
                     else {
-                        var total = parent.ability().getAbilityAttributeValue(parent.ability().abilities()[index].attributes(), 'side_damage_reduction', parent.ability().abilities()[index].level());
-                    }
-                    return -total;
-                },
-                returnProperty: 'damageReduction'
-            },
-            {
-                attributeName: 'back_damage_reduction',
-                label: '%DAMAGE REDUCTION:',
-                ignoreTooltip: true,
-                display: 'buff',
-                controlType: 'text',
-                fn: function(v,a,parent,index) {
-                    console.log(v, a, parent, index);
-                    console.log(parent.damageReduction.abilities());
-                    if (v == 'back') {
-                        var total = parent.damageReduction.getAbilityAttributeValue(parent.damageReduction.abilities()[index].attributes(), 'back_damage_reduction', parent.damageReduction.abilities()[index].level());
-                    }
-                    else {
-                        var total = parent.damageReduction.getAbilityAttributeValue(parent.damageReduction.abilities()[index].attributes(), 'side_damage_reduction', parent.damageReduction.abilities()[index].level());
+                        var total = this.getAbilityAttributeValue(ability.attributes(), 'side_damage_reduction', ability.level());
                     }
                     return -total;
                 },
@@ -2577,6 +2559,55 @@ var HEROCALCULATOR = (function (my) {
                 fn: function(v,a) {
                     return v*a;
                 }
+            }
+        ],
+        'undying_flesh_golem': [
+            {
+                label: 'Distance',
+                controlType: 'input'
+            },
+            {
+                attributeName: 'speed_slow',
+                label: 'DAMAGE/HEAL:',
+                controlType: 'text',
+                fn: function(v,a) {
+                    return -a;
+                },
+                returnProperty: 'movementSpeedPctReduction'
+            },
+            {
+                attributeName: 'speed_slow',
+                label: 'DAMAGE/HEAL:',
+                controlType: 'text',
+                fn: function(v,a) {
+                    return -a;
+                }
+            },
+            {
+                attributeName: 'max_damage_amp',
+                label: '%DAMAGE AMP:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a,parent,index) {
+                    var ability = _.find(this.abilities(), function(b) {
+                        return b.name() == 'undying_flesh_golem';
+                    });
+                    var minRadius = this.getAbilityAttributeValue(ability.attributes(), 'full_power_radius', ability.level());
+                    var maxRadius = this.getAbilityAttributeValue(ability.attributes(), 'radius', ability.level());
+                    var value = Math.min(Math.max(v, minRadius), maxRadius);
+                    if (parent.inventory.hasScepter()) {
+                        var maxAmp = this.getAbilityAttributeValue(ability.attributes(), 'max_damage_amp_scepter', ability.level());
+                        var minAmp = this.getAbilityAttributeValue(ability.attributes(), 'min_damage_amp_scepter', ability.level());
+                    }
+                    else {
+                        var maxAmp = this.getAbilityAttributeValue(ability.attributes(), 'max_damage_amp', ability.level());
+                        var minAmp = this.getAbilityAttributeValue(ability.attributes(), 'min_damage_amp', ability.level());
+                    }
+                    var scale = 1 - ((value - minRadius) / (maxRadius - minRadius));
+                    var mult = (maxAmp - minAmp) * scale + minAmp;
+                    return mult;
+                },
+                returnProperty: 'damageAmplification'
             }
         ],
         'ursa_fury_swipes': [

@@ -20,7 +20,8 @@ var HEROCALCULATOR = (function (my) {
             new my.UnitOption('npc_dota_brewmaster_storm_','Brewmaster Storm Warrior',3,'/media/images/units/npc_dota_brewmaster_storm.png', self.selectedUnitLevel),
             new my.UnitOption('npc_dota_necronomicon_archer_','Necronomicon Archer',3,'/media/images/units/npc_dota_necronomicon_archer.png', self.selectedUnitLevel),
             new my.UnitOption('npc_dota_necronomicon_warrior_','Necronomicon Warrior',3,'/media/images/units/npc_dota_necronomicon_warrior.png', self.selectedUnitLevel),
-            new my.UnitOption('npc_dota_lycan_wolf','Lycan Wolf',4,'/media/images/units/npc_dota_lycan_wolf.png', self.selectedUnitLevel)
+            new my.UnitOption('npc_dota_lycan_wolf','Lycan Wolf',4,'/media/images/units/npc_dota_lycan_wolf.png', self.selectedUnitLevel),
+            new my.UnitOption('npc_dota_visage_familiar','Visage Familiar',3,'/media/images/units/npc_dota_visage_familiar.png', self.selectedUnitLevel)
         ]);
         self.selectedUnit = ko.observable(self.availableUnits()[h]);
         self.selectedUnit.subscribe(function(newValue) {
@@ -265,13 +266,14 @@ var HEROCALCULATOR = (function (my) {
         self.totalMagicResistance = ko.computed(function() {
             return (1 - self.totalMagicResistanceProduct());
         });
-        /*self.bat = ko.computed(function() {
+        self.bat = ko.computed(function() {
             var abilityBAT = self.ability().getBAT();
             if (abilityBAT > 0) {
                 return abilityBAT;
             }
             return my.unitData[self.selectedUnit().heroName()].attackrate;
         });
+        /*
         self.ias = ko.computed(function() {
             var val = parseFloat(self.totalAgi()) 
                     + self.inventory.getAttackSpeed() 

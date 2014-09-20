@@ -28,6 +28,7 @@ var HEROCALCULATOR = (function (my) {
             self.abilities()[i].bonusAgility2 = ko.observable(0);
             self.abilities()[i].bonusInt = ko.observable(0);
             self.abilities()[i].bonusAllStatsReduction = ko.observable(0);
+            self.abilities()[i].damageAmplification = ko.observable(0);
             self.abilities()[i].damageReduction = ko.observable(0);
             self.abilities()[i].evasion = ko.observable(0);
             self.abilities()[i].magicResist = ko.observable(0);
@@ -89,19 +90,25 @@ var HEROCALCULATOR = (function (my) {
                             if (args[i].noLevel) {
                                 var attributeValue = function (attributeName) {
                                     return {fn: ko.computed(function () {
-                                        return self.getAbilityAttributeValue(self.abilities()[index].attributes(), attributeName, 0);
+                                        var _ability = _.find(self.abilities(), function(b) {
+                                            return b.name() == data;
+                                        });
+                                        return self.getAbilityAttributeValue(_ability.attributes(), attributeName, 0);
                                     })};
                                 };
                             }
                             else {
                                 var attributeValue = function (attributeName) {
                                     return {fn: ko.computed(function () {
-                                        return self.getAbilityAttributeValue(self.abilities()[index].attributes(), attributeName, self.abilities()[index].level());
+                                        var _ability = _.find(self.abilities(), function(b) {
+                                            return b.name() == data;
+                                        });
+                                        return self.getAbilityAttributeValue(_ability.attributes(), attributeName, _ability.level());
                                     })};
                                 };
                             }
                             var g = attributeValue(args[i].attributeName)
-                            var r = self.getComputedFunction(v, g.fn, args[i].fn, parent, index, self, args[i].returnProperty);
+                            var r = self.getComputedFunction(v, g.fn, args[i].fn, parent, index, self, args[i].returnProperty, undefined, data);
                             if (tooltip == '' || args[i].ignoreTooltip) {
                                 var tooltip = args[i].label;
                             }
@@ -127,7 +134,7 @@ var HEROCALCULATOR = (function (my) {
                                 };
                             }
                             var g = attributeValue(args[i].attributeName)
-                            var r = self.getComputedFunction(v_list, g.fn, args[i].fn, parent, index, self, args[i].returnProperty,args[i].controls);
+                            var r = self.getComputedFunction(v_list, g.fn, args[i].fn, parent, index, self, args[i].returnProperty, args[i].controls, data);
                             if (tooltip == '' || args[i].ignoreTooltip) {
                                 var tooltip = args[i].label;
                             }
@@ -143,18 +150,18 @@ var HEROCALCULATOR = (function (my) {
             return result;
         }
 
-        self.getComputedFunction = function (v, attributeValue, fn, parent, index, abilityList, returnProperty, controls) {
+        self.getComputedFunction = function (v, attributeValue, fn, parent, index, abilityList, returnProperty, controls, abilityName) {
             return ko.computed(function () {
                 if (controls == undefined) {
                     if (v == undefined) {
-                        var returnVal = fn(v, attributeValue(), parent, index, abilityList);
+                        var returnVal = fn.call(this, v, attributeValue(), parent, index, abilityList);
                     }
                     else if (typeof v() == 'boolean') {
                         var returnVal = fn(v(), attributeValue(), parent, index, abilityList);
                     }
                     else {
                         if (v.controlValueType == undefined) {
-                            var returnVal = fn(parseFloat(v()), attributeValue(), parent, index, abilityList);
+                            var returnVal = fn.call(this, parseFloat(v()), attributeValue(), parent, index, abilityList);
                         }
                         else if (v.controlValueType == 'string') {
                             var returnVal = fn(v(), attributeValue(), parent, index, abilityList);
@@ -164,7 +171,10 @@ var HEROCALCULATOR = (function (my) {
                         }
                     }
                     if (returnProperty != undefined) {
-                        self.abilities()[index][returnProperty](returnVal);
+                        var _ability = _.find(self.abilities(), function(b) {
+                            return b.name() == abilityName;
+                        });
+                        _ability[returnProperty](returnVal);
                     }
                     return returnVal;
                 }
@@ -180,11 +190,14 @@ var HEROCALCULATOR = (function (my) {
                     }
                     var returnVal = fn(v_list, attributeValue(), parent, index, abilityList);
                     if (returnProperty != undefined) {
-                        self.abilities()[index][returnProperty](returnVal);
+                        var _ability = _.find(self.abilities(), function(b) {
+                            return b.name() == abilityName;
+                        });
+                        _ability[returnProperty](returnVal);
                     }
                     return returnVal;
                 }
-            });
+            }, this);
         }
 
         self.getAbilityAttributeValue = function (attributes, attributeName, level) {
@@ -1233,6 +1246,33 @@ var HEROCALCULATOR = (function (my) {
             }
             return totalAttribute;
         });
+
+        self.getDamageAmplification = ko.computed(function () {
+            var totalAttribute = 1;
+            for (var i = 0; i < self.abilities().length; i++) {
+                var ability = self.abilities()[i];
+                if (!(ability.name() in self.abilityData)) {
+                    /*if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
+                            var attribute = self.abilities()[i].attributes()[j];
+                            switch(attribute.name()) {
+                                // bane_enfeeble
+                                case 'enfeeble_attack_reduction':
+                                    totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                break;
+                            }
+                        }
+                    }*/
+                }
+                else if (ability.damageAmplification != undefined) {
+                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        // undying_flesh_golem
+                        totalAttribute *= (1 + ability.damageAmplification()/100);
+                    }
+                }
+            }
+            return totalAttribute;
+        });
 		
         self.getDamageReduction = ko.computed(function () {
             var totalAttribute = 1;
@@ -1884,6 +1924,7 @@ var HEROCALCULATOR = (function (my) {
                         // venomancer_poison_sting,viper_viper_strike,viper_corrosive_skin,viper_poison_attack,venomancer_venomous_gale,treant_leech_seed
                         // lich_chain_frost,sniper_shrapnel,centaur_stampede,huskar_life_break,jakiro_dual_breath,meepo_geostrike,sandking_epicenter
                         // earth_spirit_rolling_boulder,invoker_ghost_walk,invoker_ice_wall,elder_titan_earth_splitter
+                        // undying_flesh_golem
                         totalAttribute+=ability.movementSpeedPctReduction()/100;
                     }
                 }
