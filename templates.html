@@ -1297,12 +1297,29 @@
                 </div>
             </div>
             
-            <h4>Calculations</h4>
+            <h4>Calculations <a class="btn btn-default btn-xs" data-bind="click: toggleDamageAmpCalcDetails, text: !showDamageAmpCalcDetails() ? 'Show details' : 'Hide details'"></a></h4>
             <table class="table">
-                <tbody data-bind="foreach: damageInputModified().sources">
+                <tbody>
+                    <!-- ko foreach: damageInputModified().data -->
+                    <tr data-bind="visible: $parent.showDamageAmpCalcDetails()">
+                        <td><span style="text-decoration: underline;" data-bind="text: $data.label + ' damage'"></span></td>
+                        <td class="text-right"><span data-bind="html: Math.round($data.value * 100) / 100, style: {color: $parent.getDamageTypeColor($data.damageType)}"></span></td>
+                    </tr>
+                        <!-- ko foreach: $data.data -->
+                        <tr data-bind="visible: $parentContext.$parent.showDamageAmpCalcDetails()">
+                            <td><span data-bind="text: $data.label"></span></td>
+                            <td class="text-right"><span data-bind="html: Math.round($data.value * 100) / 100, diffStyle: $data.value"></span></td>
+                        </tr>
+                        <!-- /ko -->
+                    <tr data-bind="css: {subtotal: $parent.showDamageAmpCalcDetails()}">
+                        <td data-bind="visible: $parent.showDamageAmpCalcDetails()"><span data-bind="text: $data.label + ' damage subtotal'"></span></td>
+                        <td data-bind="visible: !$parent.showDamageAmpCalcDetails()"><span data-bind="text: $data.label + ' damage'"></span></td>
+                        <td class="text-right"><span data-bind="html: Math.round($data.total * 100) / 100, style: {color: $parent.getDamageTypeColor($data.damageType)}"></span></td>
+                    </tr>
+                    <!-- /ko -->
                     <tr>
-                        <td><span data-bind="text: $data.label"></span></td>
-                        <td class="text-right"><span data-bind="text: Math.round($data.value * 100) / 100, style: {color: $parent.getDamageTypeColor($data.damageType)}"></span></td>
+                        <td><strong data-bind="text: damageInputModified().label + ' damage'"></strong></td>
+                        <td class="text-right"><strong data-bind="html: Math.round(damageInputModified().total * 100) / 100, style: {color: getDamageTypeColor(damageInputModified().damageType)}"></strong></td>
                     </tr>
                 </tbody>
             </table>

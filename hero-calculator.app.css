@@ -11,6 +11,11 @@ table tr td:first-child {
     line-height: 20px;
 }
 
+.subtotal td {
+    font-weight: bold;
+    border-bottom: 3px solid #202125;
+}
+
 .indent {
     text-indent: 10px;
 }
