@@ -11,6 +11,14 @@ var HEROCALCULATOR = (function (my) {
         this.heroDisplayName = displayname;
     };
     
+    my.DamageInstance = function (label, damageType, value, data, total) {
+        this.label = label || '';
+        this.damageType = damageType || '';
+        this.value = parseFloat(value) || 0;
+        this.data = data || [];
+        this.total = parseFloat(total) || 0;
+    }
+    
     function createHeroOptions() {
         var options = [];
         for (h in my.heroData) {
@@ -138,6 +146,10 @@ var HEROCALCULATOR = (function (my) {
         self.showStatDetails = ko.observable(false);
         self.toggleStatDetails = function () {
             self.showStatDetails(!self.showStatDetails());
+        };
+        self.showDamageAmpCalcDetails = ko.observable(false);
+        self.toggleDamageAmpCalcDetails = function () {
+            self.showDamageAmpCalcDetails(!self.showDamageAmpCalcDetails());
         };
         
         self.availableSkillPoints = ko.computed(function () {
@@ -439,12 +451,16 @@ var HEROCALCULATOR = (function (my) {
             var ehp = (self.health() * (1 + .06 * self.totalArmorPhysical())) / (1 - (1 - (self.inventory.getEvasion() * self.ability().getEvasion())))
             ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
 			ehp *= (1 / self.ability().getDamageReduction());
+			ehp *= (1 / self.enemy().ability().getDamageAmplification());
+			ehp *= (1 / self.debuffs.getDamageAmplification());
             return ehp.toFixed(2);
         });
         self.ehpMagical = ko.computed(function () {
             var ehp = self.health() / self.totalMagicResistanceProduct();
             ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
 			ehp *= (1 / self.ability().getDamageReduction());
+			ehp *= (1 / self.enemy().ability().getDamageAmplification());
+            ehp *= (1 / self.debuffs.getDamageAmplification());
             return ehp.toFixed(2);
         });
         self.bash = ko.computed(function () {
@@ -709,7 +725,8 @@ var HEROCALCULATOR = (function (my) {
                     result *= (1 - self.enemy().totalMagicResistance() / 100);
                 break;
             }
-			result *= self.enemy().ability().getDamageReduction() * self.enemy().buffs.getDamageReduction();
+			result *= self.ability().getDamageAmplification() * self.debuffs.getDamageAmplification();
+            result *= self.enemy().ability().getDamageReduction() * self.enemy().buffs.getDamageReduction();
 			return result;
         }
             
@@ -1070,156 +1087,79 @@ var HEROCALCULATOR = (function (my) {
             return initialDamage * multiplier;
         };
         
-        self.getDamageAmpReduc = function (initialDamage, skipBracket4) {
-            var damage = initialDamage;
-            var sources = self.damageAmplification.getDamageMultiplierSources();
-            $.extend(sources, self.damageReduction.getDamageMultiplierSources());
-            var result = [];
-            if (!skipBracket4) {
-                result.push({
-                    label: 'Initial Damage Instance',
-                    damageType: 'physical',
-                    value: damage
-                });
+        self.processDamageAmpReducBracket = function (index, sources, damage) {
+            var prevDamage = damage,
+                multiplier = 1,
+                data = [];
+                
+            for (var i = 0; i < self.damageBrackets[index].length; i++) {
+                if (sources[self.damageBrackets[index][i]] != undefined) {
+                    multiplier += sources[self.damageBrackets[index][i]].multiplier;
+                    prevDamage = damage;
+                    damage *= multiplier;
+                    data.push(new my.DamageInstance(
+                        sources[self.damageBrackets[index][i]].displayname,
+                        sources[self.damageBrackets[index][i]].damageType,
+                        damage - prevDamage,
+                        [],
+                        damage
+                    ));
+                }
             }
+            return data;
+        }
+        
+        self.getDamageAmpReducInstance = function(sources, initialDamage, ability, damageType) {
+            var data = [],
+                damage = initialDamage,
+                prevDamage = initialDamage,
+                label = ability == 'initial' ? 'Initial' : sources[ability].displayname;
+            
             // Bracket 1
-            var multiplier = 1;
-            var label = '';
-            for (var i = 0; i < self.damageBrackets[1].length; i++) {
-                if (sources[self.damageBrackets[1][i]] != undefined) {
-                    multiplier += sources[self.damageBrackets[1][i]].multiplier;
-                    label += sources[self.damageBrackets[1][i]].displayname + ', ';
-                    damage *= multiplier;
-                    result.push({
-                        label: 'After ' + label.substring(0, label.length - 2),
-                        damageType: sources[self.damageBrackets[1][i]].damageType,
-                        value: damage
-                    });
-                }
-            }
+            data = data.concat(self.processDamageAmpReducBracket(1, sources, damage));
+            damage = data[data.length - 1] ? data[data.length - 1].total : damage;
+            
             // Bracket 2
-            multiplier = 1;
-            label = '';
-            for (var i = 0; i < self.damageBrackets[2].length; i++) {
-                if (sources[self.damageBrackets[2][i]] != undefined) {
-                    multiplier += sources[self.damageBrackets[2][i]].multiplier;
-                    label += sources[self.damageBrackets[2][i]].displayname + ', ';
-                    damage *= multiplier;
-                    result.push({
-                        label: 'After ' + label.substring(0, label.length - 2),
-                        damageType: sources[self.damageBrackets[2][i]].damageType,
-                        value: damage
-                    });
-                }
-            }
+            data = data.concat(self.processDamageAmpReducBracket(2, sources, damage));
+            damage = data[data.length - 1] ? data[data.length - 1].total : damage;
+            
             // Bracket 3
-            multiplier = 0;
-            label = '';
+            var multiplier = 0;
             if (sources['abaddon_aphotic_shield'] != undefined) {
                 multiplier += sources['abaddon_aphotic_shield'].multiplier;
-                label += sources['abaddon_aphotic_shield'].displayname + ', ';
+                prevDamage = damage;
+                damage -= multiplier;
+                data.push(new my.DamageInstance(
+                    sources['abaddon_aphotic_shield'].displayname,
+                    sources['abaddon_aphotic_shield'].damageType,
+                    damage - prevDamage,
+                    [],
+                    damage
+                ));
             }
-            damage -= multiplier;
-            if (label != '') {
-                result.push({
-                    label: 'After ' + label.substring(0, label.length - 2),
-                    damageType: sources['abaddon_aphotic_shield'].damageType,
-                    value: damage
-                });
-            }
-            // Bracket 4
-            //var damageBracket4 = 0;
-            var damageBracket4total = 0;
+            return new my.DamageInstance(label, damageType, initialDamage, data, data[data.length - 1] ? data[data.length - 1].total : damage);
+        }
+        
+        self.getDamageAmpReduc = function (initialDamage) {
+            var instances = [],
+                sources = self.damageAmplification.getDamageMultiplierSources();
+            $.extend(sources, self.damageReduction.getDamageMultiplierSources());
+            // Initial damage instance
+            instances.push(self.getDamageAmpReducInstance(sources, initialDamage, 'initial', 'physical'));
             
-            function applyBracket4Damage(ability) {
-                var damageBracket4 = damage,
-                    multiplier = 0,
-                    label = '';
-                if (sources[ability] != undefined) {
-                    multiplier += sources[ability].multiplier;
-                }
-                damageBracket4 *= multiplier;
-                var resultBracket4 = self.getDamageAmpReduc(damageBracket4, true);
-                if (sources[ability] != undefined) {
-                    result.push({
-                        label: sources[ability].displayname + ' Damage Instance',
-                        damageType: sources[ability].damageType,
-                        value: damageBracket4
-                    });
-                }
-                damageBracket4 = resultBracket4.value;
-                damageBracket4total += resultBracket4.value;
-                if (sources[ability] != undefined) {
-                    for (var i = 0; i < resultBracket4.sources.length; i++) {
-                        result.push(resultBracket4.sources[i]);
-                    }
+            // Bracket 4 damage instances
+            var b4 = ['shadow_demon_soul_catcher', 'medusa_stone_gaze', 'chen_penitence'];
+            for (var i = 0; i < b4.length; i++) {
+                if (sources[b4[i]] != undefined) {
+                    instances.push(self.getDamageAmpReducInstance(sources, initialDamage * sources[b4[i]].multiplier, b4[i], sources[b4[i]].damageType));
                 }
             }
-            
-            if (!skipBracket4) {
-                applyBracket4Damage('shadow_demon_soul_catcher');
-                applyBracket4Damage('medusa_stone_gaze');
-                applyBracket4Damage('chen_penitence');
-                /*
-                damageBracket4 = damage;
-                var multiplier = 0;
-                var label = '';
-                if (sources['shadow_demon_soul_catcher'] != undefined) {
-                    multiplier += sources['shadow_demon_soul_catcher'].multiplier;
-                }
-                damageBracket4 *= multiplier;
-                var resultBracket4 = self.getDamageAmpReduc(damageBracket4, true);
-                if (sources['shadow_demon_soul_catcher'] != undefined) {
-                    result.push({
-                        label: sources['shadow_demon_soul_catcher'].displayname + ' Damage Instance',
-                        damageType: sources['shadow_demon_soul_catcher'].damageType,
-                        value: damageBracket4
-                    });
-                }
-                damageBracket4 = resultBracket4.value;
-                damageBracket4total += resultBracket4.value;
-                if (sources['shadow_demon_soul_catcher'] != undefined) {
-                    for (var i = 0; i < resultBracket4.sources.length; i++) {
-                        result.push(resultBracket4.sources[i]);
-                    }
-                }
-                
-                damageBracket4 = damage;
-                var multiplier = 0;
-                var label = '';
-                if (sources['chen_penitence'] != undefined) {
-                    multiplier += sources['chen_penitence'].multiplier;
-                }
-                damageBracket4 *= multiplier;
-                var resultBracket4 = self.getDamageAmpReduc(damageBracket4, true);
-                if (sources['chen_penitence'] != undefined) {
-                    result.push({
-                        label: sources['chen_penitence'].displayname + ' Damage Instance',
-                        damageType: sources['chen_penitence'].damageType,
-                        value: damageBracket4
-                    });
-                }
-                damageBracket4 = resultBracket4.value;
-                damageBracket4total += resultBracket4.value;
-                if (sources['chen_penitence'] != undefined) {
-                    for (var i = 0; i < resultBracket4.sources.length; i++) {
-                        result.push(resultBracket4.sources[i]);
-                    }
-                }*/
-            }
-            
-            if (!skipBracket4) {
-                result.push({
-                    label: 'Total Damage',
-                    damageType: 'physical',
-                    value: damage + damageBracket4total
-                });
-            }
-            return { value: damage + damageBracket4total, sources: result };
+        
+            return new my.DamageInstance('Total', 'physical', initialDamage, instances, _.reduce(instances, function(memo, i) {return parseFloat(memo) + parseFloat(i.total);}, 0));
         };
         
         self.damageInputModified = ko.computed(function () {
-            return self.getDamageAmpReduc(self.damageInputValue(), false);
+            return self.getDamageAmpReduc(self.damageInputValue());
         });
         
         self.addIllusion = function (data, event) {
