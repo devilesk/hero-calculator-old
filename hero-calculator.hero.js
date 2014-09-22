@@ -444,11 +444,11 @@ var HEROCALCULATOR = (function (my) {
                 return (e * 100).toFixed(2);
             }
             else {
-                return ((1-(self.inventory.getEvasion() * self.ability().getEvasion())) * 100).toFixed(2);
+                return ((1-(self.inventory.getEvasion() * self.ability().getEvasion() * self.ability().getEvasionBacktrack())) * 100).toFixed(2);
             }
         });
         self.ehpPhysical = ko.computed(function () {
-            var ehp = (self.health() * (1 + .06 * self.totalArmorPhysical())) / (1 - (1 - (self.inventory.getEvasion() * self.ability().getEvasion())))
+            var ehp = (self.health() * (1 + .06 * self.totalArmorPhysical())) / (1 - (1 - (self.inventory.getEvasion() * self.ability().getEvasion() * self.ability().getEvasionBacktrack())))
             ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
 			ehp *= (1 / self.ability().getDamageReduction());
 			ehp *= (1 / self.enemy().ability().getDamageAmplification());
@@ -459,6 +459,7 @@ var HEROCALCULATOR = (function (my) {
             var ehp = self.health() / self.totalMagicResistanceProduct();
             ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
 			ehp *= (1 / self.ability().getDamageReduction());
+			ehp *= (1 / self.ability().getEvasionBacktrack());
 			ehp *= (1 / self.enemy().ability().getDamageAmplification());
             ehp *= (1 / self.debuffs.getDamageAmplification());
             return ehp.toFixed(2);
@@ -1114,6 +1115,10 @@ var HEROCALCULATOR = (function (my) {
                 damage = initialDamage,
                 prevDamage = initialDamage,
                 label = ability == 'initial' ? 'Initial' : sources[ability].displayname;
+
+            // Bracket 0
+            data = data.concat(self.processDamageAmpReducBracket(0, sources, damage));
+            damage = data[data.length - 1] ? data[data.length - 1].total : damage;
             
             // Bracket 1
             data = data.concat(self.processDamageAmpReducBracket(1, sources, damage));
@@ -1142,8 +1147,11 @@ var HEROCALCULATOR = (function (my) {
         
         self.getDamageAmpReduc = function (initialDamage) {
             var instances = [],
-                sources = self.damageAmplification.getDamageMultiplierSources();
-            $.extend(sources, self.damageReduction.getDamageMultiplierSources());
+                sources = {},
+                sourcesAmp = self.damageReduction.getDamageMultiplierSources(),
+                sourcesReduc = self.damageAmplification.getDamageMultiplierSources();
+            $.extend(sources, sourcesAmp);
+            $.extend(sources, sourcesReduc);
             // Initial damage instance
             instances.push(self.getDamageAmpReducInstance(sources, initialDamage, 'initial', 'physical'));
             

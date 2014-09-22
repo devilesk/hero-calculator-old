@@ -11,8 +11,8 @@ var HEROCALCULATOR = (function (my) {
         ]);
         self.availableDebuffs = ko.observableArray([
             new my.BuffOption('medusa', 'medusa_mana_shield'),
-            new my.BuffOption('templar_assassin', 'templar_assassin_refraction'),
-            new my.BuffOption('faceless_void', 'faceless_void_backtrack'),
+            //new my.BuffOption('templar_assassin', 'templar_assassin_refraction'),
+            //new my.BuffOption('faceless_void', 'faceless_void_backtrack'),
             new my.BuffOption('nyx_assassin', 'nyx_assassin_spiked_carapace'),
             new my.BuffOption('spectre', 'spectre_dispersion'),
             new my.BuffOption('wisp', 'wisp_overcharge'),
@@ -20,7 +20,7 @@ var HEROCALCULATOR = (function (my) {
             new my.BuffOption('abaddon', 'abaddon_borrowed_time'),
             new my.BuffOption('abaddon', 'abaddon_aphotic_shield'),
             new my.BuffOption('kunkka', 'kunkka_ghostship'),
-            new my.BuffOption('treant', 'treant_living_armor'),
+            //new my.BuffOption('treant', 'treant_living_armor'),
             new my.BuffOption('dazzle', 'dazzle_shallow_grave')
         ]);
         self.selectedBuff = ko.observable(self.availableBuffs()[0]);
@@ -88,8 +88,8 @@ var HEROCALCULATOR = (function (my) {
                             break;
                             case 'medusa_mana_shield':
                                 sources[ability.name()] = {
-                                    'multiplier': -.5,
-                                    'damageType': 'percentreduction',
+                                    'multiplier': ability.damageReduction() / 100,
+                                    'damageType': 'physical',
                                     'displayname': ability.displayname()
                                 }                            
                             break;
@@ -107,6 +107,13 @@ var HEROCALCULATOR = (function (my) {
                                     'displayname': ability.displayname()
                                 }                                
                             break;
+                            /*case 'faceless_void_backtrack':
+                                sources[ability.name()] = {
+                                    'multiplier': -self.getAbilityAttributeValue(ability.attributes(), 'dodge_chance_pct', ability.level()) / 100,
+                                    'damageType': 'percentreduction',
+                                    'displayname': ability.displayname()
+                                }                                
+                            break;*/
                         }
                     }
             }

@@ -157,17 +157,17 @@ var HEROCALCULATOR = (function (my) {
                         var returnVal = fn.call(this, v, attributeValue(), parent, index, abilityList);
                     }
                     else if (typeof v() == 'boolean') {
-                        var returnVal = fn(v(), attributeValue(), parent, index, abilityList);
+                        var returnVal = fn.call(this, v(), attributeValue(), parent, index, abilityList);
                     }
                     else {
                         if (v.controlValueType == undefined) {
                             var returnVal = fn.call(this, parseFloat(v()), attributeValue(), parent, index, abilityList);
                         }
                         else if (v.controlValueType == 'string') {
-                            var returnVal = fn(v(), attributeValue(), parent, index, abilityList);
+                            var returnVal = fn.call(this, v(), attributeValue(), parent, index, abilityList);
                         }
                         else {
-                            var returnVal = fn(parseFloat(v()), attributeValue(), parent, index, abilityList);
+                            var returnVal = fn.call(this, parseFloat(v()), attributeValue(), parent, index, abilityList);
                         }
                     }
                     if (returnProperty != undefined) {
@@ -188,7 +188,7 @@ var HEROCALCULATOR = (function (my) {
                             v_list.push(parseFloat(v[controls[i]]()));
                         }
                     }
-                    var returnVal = fn(v_list, attributeValue(), parent, index, abilityList);
+                    var returnVal = fn.call(this, v_list, attributeValue(), parent, index, abilityList);
                     if (returnProperty != undefined) {
                         var _ability = _.find(self.abilities(), function(b) {
                             return b.name() == abilityName;
@@ -1098,11 +1098,11 @@ var HEROCALCULATOR = (function (my) {
                 }
                 else if (ability.bonusDamage != undefined && ability.bonusDamage() != 0) {
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
-                        // nevermore_necromastery,ursa_fury_swipes,ursa_enrage,invoker_alacrity,invoker_exort,elder_titan_ancestral_spirit
+                        // nevermore_necromastery,ursa_fury_swipes,ursa_enrage,invoker_alacrity,invoker_exort,elder_titan_ancestral_spirit,spectre_desolate
                         totalAttribute+=ability.bonusDamage();
                         sources[ability.name()] = {
                             'damage': ability.bonusDamage(),
-                            'damageType': 'physical',
+                            'damageType': ability.name() == 'spectre_desolate' ? 'pure' : 'physical',
                             'displayname': ability.displayname()
                         }
                     }
@@ -1504,6 +1504,23 @@ var HEROCALCULATOR = (function (my) {
                                 case 'dodge_chance':
                                     totalAttribute *= (1 - self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
                                 break;
+                            }
+                        }
+                    }
+                }
+            }
+            return totalAttribute;
+        });
+        
+        self.getEvasionBacktrack = ko.computed(function () {
+            var totalAttribute = 1;
+            for (var i = 0; i < self.abilities().length; i++) {
+                var ability = self.abilities()[i];
+                if (!(ability.name() in self.abilityData)) {
+                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
+                            var attribute = self.abilities()[i].attributes()[j];
+                            switch(attribute.name()) {
                                 // faceless_void_backtrack
                                 case 'dodge_chance_pct':
                                     totalAttribute *= (1 - self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
@@ -1514,7 +1531,7 @@ var HEROCALCULATOR = (function (my) {
                 }
             }
             return totalAttribute;
-        });    
+        });
         
         self.getMissChance = ko.computed(function () {
             var totalAttribute = 1;

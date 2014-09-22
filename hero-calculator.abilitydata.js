@@ -317,6 +317,7 @@ var HEROCALCULATOR = (function (my) {
                 ignoreTooltip: true,
                 controlType: 'text',
                 fn: function(v,a,parent,index) {
+                    console.log(this);
                     var ability = _.find(this.abilities(), function(b) {
                         return b.name() == 'bristleback_bristleback';
                     });
@@ -1529,6 +1530,31 @@ var HEROCALCULATOR = (function (my) {
                 }
             }
         ],
+        'medusa_mana_shield': [
+            {
+                label: 'Damage',
+                controlType: 'input'
+            },
+            {
+                attributeName: 'damage_per_mana',
+                label: 'MANA USED:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a) {
+                    return (v/a).toFixed(2);
+                }
+            },
+            {
+                attributeName: 'damage_per_mana',
+                label: '%DAMAGE REDUCTION:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a) {
+                    return -50;
+                },
+                returnProperty: 'damageReduction'
+            }
+        ],
         'meepo_poof': [
             {
                 label: 'Meepo Count',
@@ -2268,6 +2294,26 @@ var HEROCALCULATOR = (function (my) {
                 returnProperty: 'movementSpeedPctReduction'
             }
         ],
+        'spectre_desolate': [
+            {
+                label: 'Enemy Alone',
+                controlType: 'checkbox'
+            },
+            {
+                attributeName: 'bonus_damage',
+                label: 'Total Damage',
+                controlType: 'text',
+                fn: function(v,a,parent,index,abilityList) {
+                    if (v) {
+                        return a;
+                    }
+                    else {
+                        return 0;
+                    }
+                },
+                returnProperty: 'bonusDamage'
+            }
+        ],
         'spectre_dispersion': [
             {
                 label: 'Damage Taken',
@@ -2581,6 +2627,7 @@ var HEROCALCULATOR = (function (my) {
                 ignoreTooltip: true,
                 controlType: 'text',
                 fn: function(v,a,parent,index) {
+                    console.log(this);
                     var ability = _.find(this.abilities(), function(b) {
                         return b.name() == 'undying_flesh_golem';
                     });
@@ -2597,7 +2644,7 @@ var HEROCALCULATOR = (function (my) {
                     }
                     var scale = 1 - ((value - minRadius) / (maxRadius - minRadius));
                     var mult = (maxAmp - minAmp) * scale + minAmp;
-                    return mult;
+                    return mult.toFixed(2);
                 },
                 returnProperty: 'damageAmplification'
             }

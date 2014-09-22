@@ -1,3 +1,8 @@
+2014-09-21
+- Added Medusa Mana Shield
+- Added Spectre Desolate
+- Faceless Void Backtrack now affects magical EHP.
+
 2014-09-20
 - Added Undying Flesh Golem
 - Added Visage Familiar
