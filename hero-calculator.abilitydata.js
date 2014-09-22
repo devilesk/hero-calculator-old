@@ -317,7 +317,6 @@ var HEROCALCULATOR = (function (my) {
                 ignoreTooltip: true,
                 controlType: 'text',
                 fn: function(v,a,parent,index) {
-                    console.log(this);
                     var ability = _.find(this.abilities(), function(b) {
                         return b.name() == 'bristleback_bristleback';
                     });
@@ -2627,7 +2626,6 @@ var HEROCALCULATOR = (function (my) {
                 ignoreTooltip: true,
                 controlType: 'text',
                 fn: function(v,a,parent,index) {
-                    console.log(this);
                     var ability = _.find(this.abilities(), function(b) {
                         return b.name() == 'undying_flesh_golem';
                     });

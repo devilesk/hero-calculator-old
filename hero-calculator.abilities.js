@@ -1279,17 +1279,12 @@ var HEROCALCULATOR = (function (my) {
             for (var i = 0; i < self.abilities().length; i++) {
                 var ability = self.abilities()[i];
                 if (!(ability.name() in self.abilityData)) {
-                    /*if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
-                        for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
-                            var attribute = self.abilities()[i].attributes()[j];
-                            switch(attribute.name()) {
-                                // bane_enfeeble
-                                case 'enfeeble_attack_reduction':
-                                    totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
-                                break;
-                            }
+                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        // kunkka_ghostship
+                        if (ability.name() == 'kunkka_ghostship') {
+                            totalAttribute *= (1 - 50/100);
                         }
-                    }*/
+                    }
                 }
                 else if (ability.damageReduction != undefined) {
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {

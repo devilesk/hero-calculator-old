@@ -13,15 +13,15 @@ var HEROCALCULATOR = (function (my) {
             new my.BuffOption('medusa', 'medusa_mana_shield'),
             //new my.BuffOption('templar_assassin', 'templar_assassin_refraction'),
             //new my.BuffOption('faceless_void', 'faceless_void_backtrack'),
-            new my.BuffOption('nyx_assassin', 'nyx_assassin_spiked_carapace'),
+            //new my.BuffOption('nyx_assassin', 'nyx_assassin_spiked_carapace'),
             new my.BuffOption('spectre', 'spectre_dispersion'),
             new my.BuffOption('wisp', 'wisp_overcharge'),
             new my.BuffOption('bristleback', 'bristleback_bristleback'),
-            new my.BuffOption('abaddon', 'abaddon_borrowed_time'),
+            //new my.BuffOption('abaddon', 'abaddon_borrowed_time'),
             new my.BuffOption('abaddon', 'abaddon_aphotic_shield'),
-            new my.BuffOption('kunkka', 'kunkka_ghostship'),
+            //new my.BuffOption('dazzle', 'dazzle_shallow_grave'),
             //new my.BuffOption('treant', 'treant_living_armor'),
-            new my.BuffOption('dazzle', 'dazzle_shallow_grave')
+            new my.BuffOption('kunkka', 'kunkka_ghostship')
         ]);
         self.selectedBuff = ko.observable(self.availableBuffs()[0]);
         
@@ -104,6 +104,20 @@ var HEROCALCULATOR = (function (my) {
                                 sources[ability.name()] = {
                                     'multiplier': self.getAbilityAttributeValue(ability.attributes(), 'damage_absorb', ability.level()),
                                     'damageType': 'flatreduction',
+                                    'displayname': ability.displayname()
+                                }                                
+                            break;
+                            case 'kunkka_ghostship':
+                                sources[ability.name()] = {
+                                    'multiplier': -50 / 100,
+                                    'damageType': 'percentreduction',
+                                    'displayname': ability.displayname()
+                                }                                
+                            break;
+                            case 'wisp_overcharge':
+                                sources[ability.name()] = {
+                                    'multiplier': self.getAbilityAttributeValue(ability.attributes(), 'bonus_damage_pct', ability.level()) / 100,
+                                    'damageType': 'percentreduction',
                                     'displayname': ability.displayname()
                                 }                                
                             break;

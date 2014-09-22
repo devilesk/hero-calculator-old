@@ -451,6 +451,7 @@ var HEROCALCULATOR = (function (my) {
             var ehp = (self.health() * (1 + .06 * self.totalArmorPhysical())) / (1 - (1 - (self.inventory.getEvasion() * self.ability().getEvasion() * self.ability().getEvasionBacktrack())))
             ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
 			ehp *= (1 / self.ability().getDamageReduction());
+			ehp *= (1 / self.buffs.getDamageReduction());
 			ehp *= (1 / self.enemy().ability().getDamageAmplification());
 			ehp *= (1 / self.debuffs.getDamageAmplification());
             return ehp.toFixed(2);
@@ -459,6 +460,7 @@ var HEROCALCULATOR = (function (my) {
             var ehp = self.health() / self.totalMagicResistanceProduct();
             ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
 			ehp *= (1 / self.ability().getDamageReduction());
+			ehp *= (1 / self.buffs.getDamageReduction());
 			ehp *= (1 / self.ability().getEvasionBacktrack());
 			ehp *= (1 / self.enemy().ability().getDamageAmplification());
             ehp *= (1 / self.debuffs.getDamageAmplification());
@@ -1089,21 +1091,21 @@ var HEROCALCULATOR = (function (my) {
         };
         
         self.processDamageAmpReducBracket = function (index, sources, damage) {
-            var prevDamage = damage,
-                multiplier = 1,
-                data = [];
+            var multiplier = 1,
+                data = [],
+                damage = parseFloat(damage),
+                total = parseFloat(damage);
                 
             for (var i = 0; i < self.damageBrackets[index].length; i++) {
                 if (sources[self.damageBrackets[index][i]] != undefined) {
-                    multiplier += sources[self.damageBrackets[index][i]].multiplier;
-                    prevDamage = damage;
-                    damage *= multiplier;
+                    multiplier = 1 + parseFloat(sources[self.damageBrackets[index][i]].multiplier);
+                    total += (damage * multiplier) - damage;
                     data.push(new my.DamageInstance(
                         sources[self.damageBrackets[index][i]].displayname,
                         sources[self.damageBrackets[index][i]].damageType,
-                        damage - prevDamage,
+                        (damage * multiplier) - damage,
                         [],
-                        damage
+                        total
                     ));
                 }
             }
