@@ -11,6 +11,10 @@ table tr td:first-child {
     line-height: 20px;
 }
 
+.checkbox-label {
+    cursor: pointer;
+}
+
 .subtotal td {
     font-weight: bold;
     border-bottom: 3px solid #ddd;
