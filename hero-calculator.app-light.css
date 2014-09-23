@@ -102,11 +102,12 @@ table tr td:first-child {
     border: 1px solid #303239;
 }
 
-.ui-menu .ui-menu-item {
+.ui-menu .ui-menu-item, .ui-menu .ui-menu-item a {
     padding: 3px 1em 3px .4em;
+    color: black;
 }
 
-.ui-state-focus {
+.ui-state-focus, .ui-menu .ui-state-focus a {
     background-color: #2C8CE0;
     color:white;
 }

@@ -104,9 +104,10 @@ table tr td:first-child {
 
 .ui-menu .ui-menu-item {
     padding: 3px 1em 3px .4em;
+    
 }
 
-.ui-state-focus {
+.ui-state-focus, .ui-state-focus a {
     background-color: #2C8CE0;
     color: white;
 }

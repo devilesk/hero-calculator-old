@@ -8,9 +8,15 @@ var HEROCALCULATOR = (function (my) {
     my.levelitems = ['necronomicon','dagon','diffusal_blade']
     
     my.ItemInput = function (value, name) {
+        if (my.itemData['item_' + value].ItemAliases instanceof Array) {
+            var itemAlias = my.itemData['item_' + value].ItemAliases.join(' ');
+        }
+        else {
+            var itemAlias = my.itemData['item_' + value].ItemAliases;
+        }
         this.value = ko.observable(value);
         this.name = ko.observable(name);
-        this.displayname = ko.observable(name + ' ');
+        this.displayname = ko.observable(name + ' <span style="display:none">' + ';' + itemAlias + '</span>');
     };
     
     my.InventoryViewModel = function (h) {
@@ -36,6 +42,16 @@ var HEROCALCULATOR = (function (my) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
                 if ((item === 'ghost' || item === 'ethereal_blade') && self.items()[i].enabled() && isActive) {
+                    return true;
+                }
+            }
+            return false;
+        }, this);
+        self.isSheeped = ko.computed(function () {
+            for (var i = 0; i < self.items().length; i++) {
+                var item = self.items()[i].item;
+                var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
+                if (item === 'sheepstick' && self.items()[i].enabled() && isActive) {
                     return true;
                 }
             }
@@ -1207,7 +1223,7 @@ var HEROCALCULATOR = (function (my) {
         self.selectedItemBuff = ko.observable('assault');
 
         self.itemDebuffOptions = ko.observableArray([]);        
-        var itemDebuffs = ['assault', 'shivas_guard', 'desolator', 'medallion_of_courage'];
+        var itemDebuffs = ['assault', 'shivas_guard', 'desolator', 'medallion_of_courage', 'sheepstick'];
         for (i in itemDebuffs) {
             self.itemDebuffOptions.push(new my.ItemInput(itemDebuffs[i], my.itemData['item_' + itemDebuffs[i]].displayname));
         }

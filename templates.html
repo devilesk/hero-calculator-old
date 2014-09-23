@@ -503,7 +503,7 @@
                         <div class="form-group">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <input class="form-control" id="auto2" data-bind="attr: {id: id() + '-auto2' }, jqAuto: { autoFocus: true }, jqAutoSource: buffs.itemBuffs.itemBuffOptions, jqAutoValue: buffs.itemBuffs.selectedItemBuff, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
+                                    <input class="form-control" id="auto2" data-bind="attr: {id: id() + '-auto2' }, jqAuto: { autoFocus: true, html: true }, jqAutoSource: buffs.itemBuffs.itemBuffOptions, jqAutoValue: buffs.itemBuffs.selectedItemBuff, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" data-bind="jqAutoCombo: id() + '-auto2'">...</button>
                                     </span>
@@ -567,7 +567,7 @@
                         <div class="form-group">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <input class="form-control" id="auto3" data-bind="attr: {id: id() + '-auto3' }, jqAuto: { autoFocus: true }, jqAutoSource: debuffs.itemBuffs.itemDebuffOptions, jqAutoValue: debuffs.itemBuffs.selectedItemDebuff, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
+                                    <input class="form-control" id="auto3" data-bind="attr: {id: id() + '-auto3' }, jqAuto: { autoFocus: true, html: true }, jqAutoSource: debuffs.itemBuffs.itemDebuffOptions, jqAutoValue: debuffs.itemBuffs.selectedItemDebuff, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" data-bind="jqAutoCombo: id() + '-auto3'">...</button>
                                     </span>
@@ -820,7 +820,7 @@
                         <div class="form-group">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <input class="form-control" id="auto2" data-bind="attr: {id: id() + '-auto2' }, jqAuto: { autoFocus: true }, jqAutoSource: buffs.itemBuffs.itemBuffOptions, jqAutoValue: buffs.itemBuffs.selectedItemBuff, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
+                                    <input class="form-control" id="auto2" data-bind="attr: {id: id() + '-auto2' }, jqAuto: { autoFocus: true, html: true }, jqAutoSource: buffs.itemBuffs.itemBuffOptions, jqAutoValue: buffs.itemBuffs.selectedItemBuff, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" data-bind="jqAutoCombo: id() + '-auto2'">...</button>
                                     </span>
@@ -884,7 +884,7 @@
                         <div class="form-group">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <input class="form-control" id="auto3" data-bind="attr: {id: id() + '-auto3' }, jqAuto: { autoFocus: true }, jqAutoSource: debuffs.itemBuffs.itemDebuffOptions, jqAutoValue: debuffs.itemBuffs.selectedItemDebuff, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
+                                    <input class="form-control" id="auto3" data-bind="attr: {id: id() + '-auto3' }, jqAuto: { autoFocus: true, html: true }, jqAutoSource: debuffs.itemBuffs.itemDebuffOptions, jqAutoValue: debuffs.itemBuffs.selectedItemDebuff, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" data-bind="jqAutoCombo: id() + '-auto3'">...</button>
                                     </span>
@@ -1143,7 +1143,7 @@
 
             <div class="form-group" data-bind="visible: displayShop()">
                 <div class="input-group">
-                    <input class="form-control" id="auto" data-bind="jqAuto: { autoFocus: true }, jqAutoSource: selectedTab().data.inventory.itemOptions, jqAutoValue: selectedItem, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
+                    <input class="form-control" id="auto" data-bind="jqAuto: { autoFocus: true, html: true }, jqAutoSource: selectedTab().data.inventory.itemOptions, jqAutoValue: selectedItem, jqAutoSourceLabel: 'displayname', jqAutoSourceInputValue: 'name', jqAutoSourceValue: 'value'" />
                     <span class="input-group-btn">
                         <button class="btn btn-default" data-bind="jqAutoCombo: 'auto'">...</button>
                     </span>
@@ -1203,7 +1203,6 @@
     <div class="col-md-12">
         <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('damageamp'); }, css: { section_disabled: !sectionDisplay().damageamp() }">Damage Amplification & Reduction</h3>
         <div data-bind="visible: sectionDisplay().damageamp()">
-            <h4 style="color:red">Under Construction</h4>
             <div class="form-horizontal">
                 <div class="form-group">
                         <div class="col-md-3 control-label">
