@@ -1574,6 +1574,7 @@ var HEROCALCULATOR = (function (my) {
             },
             {
                 label: 'DAMAGE:',
+                ignoreTooltip: true,
                 controlType: 'text',
                 fn: function(v,a,parent,index,abilityList) {
                     return abilityList.getAbilityPropertyValue(abilityList.abilities()[index], 'damage')*v;

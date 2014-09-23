@@ -318,6 +318,7 @@ var HEROCALCULATOR = (function (my) {
 			}
 		});
         self.totalMovementSpeed = ko.computed(function () {
+            var MIN_MOVESPEED = 100;
             var ms = (self.ability().setMovementSpeed() > 0 ? self.ability().setMovementSpeed() : self.buffs.setMovementSpeed());
             if (ms > 0) {
                 return ms;
@@ -333,17 +334,20 @@ var HEROCALCULATOR = (function (my) {
                     obj.value += memo.value;
                     return obj;
                 }, {value:0, excludeList:[]});
-                return ((self.heroData().movementspeed + self.inventory.getMovementSpeedFlat()+ self.ability().getMovementSpeedFlat()) * 
-                        (1 //+ self.inventory.getMovementSpeedPercent() 
-                           + movementSpeedPercent.value
-                           + movementSpeedPercentReduction.value
-                           + self.ability().getMovementSpeedPercent() 
-                           //+ self.enemy().inventory.getMovementSpeedPercentReduction() 
-                           + self.enemy().ability().getMovementSpeedPercentReduction() 
-                           + self.buffs.getMovementSpeedPercent() 
-                           + self.debuffs.getMovementSpeedPercentReduction()
-                           + self.unit().ability().getMovementSpeedPercent() 
-                        )).toFixed(2);
+                return Math.max(
+                    self.enemy().inventory.isSheeped() || self.debuffs.itemBuffs.isSheeped() ? 140 :
+                    (self.heroData().movementspeed + self.inventory.getMovementSpeedFlat()+ self.ability().getMovementSpeedFlat()) * 
+                    (1 //+ self.inventory.getMovementSpeedPercent() 
+                       + movementSpeedPercent.value
+                       + movementSpeedPercentReduction.value
+                       + self.ability().getMovementSpeedPercent() 
+                       //+ self.enemy().inventory.getMovementSpeedPercentReduction() 
+                       + self.enemy().ability().getMovementSpeedPercentReduction() 
+                       + self.buffs.getMovementSpeedPercent() 
+                       + self.debuffs.getMovementSpeedPercentReduction()
+                       + self.unit().ability().getMovementSpeedPercent() 
+                    )
+                , MIN_MOVESPEED).toFixed(2);
             }
         });
         self.totalTurnRate = ko.computed(function () {
@@ -439,6 +443,7 @@ var HEROCALCULATOR = (function (my) {
             return ((1 + self.ias() / 100) / self.bat()).toFixed(2);
         });
         self.evasion = ko.computed(function () {
+            if (self.enemy().inventory.isSheeped() || self.debuffs.itemBuffs.isSheeped()) return 0;
             var e = self.ability().setEvasion();
             if (e) {
                 return (e * 100).toFixed(2);
@@ -448,7 +453,8 @@ var HEROCALCULATOR = (function (my) {
             }
         });
         self.ehpPhysical = ko.computed(function () {
-            var ehp = (self.health() * (1 + .06 * self.totalArmorPhysical())) / (1 - (1 - (self.inventory.getEvasion() * self.ability().getEvasion() * self.ability().getEvasionBacktrack())))
+            var evasion = self.enemy().inventory.isSheeped() || self.debuffs.itemBuffs.isSheeped() ? 1 : self.inventory.getEvasion() * self.ability().getEvasion();
+            var ehp = (self.health() * (1 + .06 * self.totalArmorPhysical())) / (1 - (1 - (evasion * self.ability().getEvasionBacktrack())))
             ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
 			ehp *= (1 / self.ability().getDamageReduction());
 			ehp *= (1 / self.buffs.getDamageReduction());
@@ -1027,49 +1033,6 @@ var HEROCALCULATOR = (function (my) {
             }
             return (total).toFixed(2);
         });
-        
-        self.damageBrackets = [
-            [
-                {name: 'medusa_mana_shield', source: self.damageReduction, value: -.5},
-                {name: 'templar_assassin_refraction', source: self.damageReduction, value: -1},
-                {name: 'faceless_void_backtrack', source: self.damageReduction, value: -1},
-                {name: 'nyx_assassin_spiked_carapace', source: self.damageReduction, value: -1}
-            ],
-            [
-                {
-                    name: 'spectre_dispersion',
-                    source: self.damageReduction,
-                    value: -self.damageReduction.getAbilityDamageAmpValue('spectre_dispersion', 'damage_reflection_pct')
-                },
-                {
-                    name: 'wisp_overcharge',
-                    source: self.damageReduction,
-                    value: self.damageReduction.getAbilityDamageAmpValue('wisp_overcharge', 'bonus_damage_pct')
-                },
-                {name: 'slardar_sprint', source: self.damageAmplification, value: .5},
-                {name: 'bristleback_bristleback', source: self.damageReduction, value: -.5},
-                {name: 'undying_flesh_golem', source: self.damageAmplification, value: .5}
-            ],
-            [
-                {name: 'abaddon_borrowed_time', source: self.damageReduction, value: .5},
-                {
-                    name: 'abaddon_aphotic_shield',
-                    source: self.damageReduction,
-                    value: self.damageReduction.getAbilityDamageAmpValue('abaddon_aphotic_shield', 'damage_absorb'),
-                    type: 'absorb'
-                },
-                {name: 'kunkka_ghostship', source: self.damageReduction, value: .5},
-                {name: 'treant_living_armor', source: self.damageReduction, value: .5}
-            ],
-            [
-                {name: 'chen_penitence', source: self.damageAmplification, value: .5},
-                {name: 'medusa_stone_gaze', source: self.damageAmplification, value: .5},
-                {name: 'shadow_demon_soul_catcher', source: self.damageAmplification, value: .5}
-            ],
-            [
-                {name: 'dazzle_shallow_grave', source: self.damageReduction, value: .5}
-            ]
-        ];
 
         self.damageBrackets = [
             ['medusa_mana_shield', 'templar_assassin_refraction', 'faceless_void_backtrack', 'nyx_assassin_spiked_carapace'],
@@ -1114,14 +1077,14 @@ var HEROCALCULATOR = (function (my) {
         
         self.getDamageAmpReducInstance = function(sources, initialDamage, ability, damageType) {
             var data = [],
-                damage = initialDamage,
-                prevDamage = initialDamage,
+                damage = parseFloat(initialDamage),
+                prevDamage = damage,
                 label = ability == 'initial' ? 'Initial' : sources[ability].displayname;
 
             // Bracket 0
             data = data.concat(self.processDamageAmpReducBracket(0, sources, damage));
             damage = data[data.length - 1] ? data[data.length - 1].total : damage;
-            
+
             // Bracket 1
             data = data.concat(self.processDamageAmpReducBracket(1, sources, damage));
             damage = data[data.length - 1] ? data[data.length - 1].total : damage;
@@ -1129,21 +1092,7 @@ var HEROCALCULATOR = (function (my) {
             // Bracket 2
             data = data.concat(self.processDamageAmpReducBracket(2, sources, damage));
             damage = data[data.length - 1] ? data[data.length - 1].total : damage;
-            
-            // Bracket 3
-            var multiplier = 0;
-            if (sources['abaddon_aphotic_shield'] != undefined) {
-                multiplier += sources['abaddon_aphotic_shield'].multiplier;
-                prevDamage = damage;
-                damage -= multiplier;
-                data.push(new my.DamageInstance(
-                    sources['abaddon_aphotic_shield'].displayname,
-                    sources['abaddon_aphotic_shield'].damageType,
-                    damage - prevDamage,
-                    [],
-                    damage
-                ));
-            }
+
             return new my.DamageInstance(label, damageType, initialDamage, data, data[data.length - 1] ? data[data.length - 1].total : damage);
         }
         

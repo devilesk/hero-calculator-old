@@ -18,7 +18,7 @@ var HEROCALCULATOR = (function (my) {
             new my.BuffOption('wisp', 'wisp_overcharge'),
             new my.BuffOption('bristleback', 'bristleback_bristleback'),
             //new my.BuffOption('abaddon', 'abaddon_borrowed_time'),
-            new my.BuffOption('abaddon', 'abaddon_aphotic_shield'),
+            //new my.BuffOption('abaddon', 'abaddon_aphotic_shield'),
             //new my.BuffOption('dazzle', 'dazzle_shallow_grave'),
             //new my.BuffOption('treant', 'treant_living_armor'),
             new my.BuffOption('kunkka', 'kunkka_ghostship')
