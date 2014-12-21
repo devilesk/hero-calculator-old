@@ -597,9 +597,7 @@
         </div>
         <div class="col-md-4">
             <label for="herolevel">Level</label>
-            <select id="herolevel" class="form-control" data-bind="value: selectedHeroLevel, foreach: new Array(25)">
-                <option data-bind="text: $index()+1"></option>
-            </select>
+            <input id="herolevel" data-bind="spinner: selectedHeroLevel, spinnerOptions: { min: 1, max: 25 }">
         </div>
         <div class="col-md-offset-4 col-md-8 checkbox" style="margin-top:0px;margin-bottom:0px;padding-left:34px;" data-bind="visible: $root.layout() == 0">
             <label><input type="checkbox" style="float:none;margin-right:5px;" data-bind="checked: showDiff"><span style="font-size:12px">Show <abbr title="The difference between two adjacent hero tabs shown next to each stat.">delta values</abbr>. <span data-bind="visible: showDiff">Comparing level <span data-bind="text: selectedHeroLevel"></span> <span data-bind="text: hero().displayname"></span> to level <span data-bind="text: heroCompare().selectedHeroLevel"></span> <span data-bind="text: heroCompare().hero().displayname"></span>.</span></span></label>
@@ -1107,7 +1105,7 @@
                     <div class="img-rounded hc-item hc-item-pipe" id="pipe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
                     <div class="img-rounded hc-item hc-item-emptyitembg" id="emptyitembg"></div>
                     <div class="img-rounded hc-item hc-item-abyssal_blade" id="abyssal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-emptyitembg" id="emptyitembg"></div>
+                    <div class="img-rounded hc-item hc-item-crimson_guard" id="crimson_guard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
                     <div class="img-rounded hc-item hc-item-satanic" id="satanic" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
                     <br>
                 </div>

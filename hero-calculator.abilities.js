@@ -798,8 +798,6 @@ var HEROCALCULATOR = (function (my) {
                             switch(attribute.name()) {
                                 // abaddon_frostmourne,troll_warlord_battle_trance
                                 case 'attack_speed':
-                                // clinkz_strafe,ursa_overpower
-                                case 'attack_speed_bonus_pct':
                                 // visage_grave_chill
                                 case 'attackspeed_bonus':
                                 // mirana_leap
@@ -807,6 +805,12 @@ var HEROCALCULATOR = (function (my) {
                                 // life_stealer
                                 case 'attack_speed_bonus':
                                     totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                break;
+                                // clinkz_strafe,ursa_overpower
+                                case 'attack_speed_bonus_pct':
+                                    if (ability.name() == 'clinkz_strafe' || ability.name() == 'ursa_overpower') {
+                                        totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                    }
                                 break;
                                 // axe_culling_blade,necronomicon_archer_aoe
                                 case 'speed_bonus':
@@ -913,6 +917,12 @@ var HEROCALCULATOR = (function (my) {
                                 // visage_grave_chill
                                 case 'attackspeed_bonus':
                                     totalAttribute -= self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                break;
+                                // abaddon_frostmourne
+                                case 'attack_slow_tooltip':
+                                    if (ability.name() == 'abaddon_frostmourne') {
+                                        totalAttribute -= self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                    }
                                 break;
                             }
                         }
@@ -1023,6 +1033,17 @@ var HEROCALCULATOR = (function (my) {
                                 // medusa_split_shot
                                 case 'damage_modifier':
                                     totalAttribute *= (1 + self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
+                                break;
+                                // windrunner_focusfire
+                                case 'focusfire_damage_reduction':
+                                    if (!self.hasScepter()) {
+                                        totalAttribute *= (1 + self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
+                                    }
+                                break;
+                                case 'focusfire_damage_reduction_scepter':
+                                    if (self.hasScepter()) {
+                                        totalAttribute *= (1 + self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
+                                    }
                                 break;
                             }
                         }
@@ -1162,6 +1183,45 @@ var HEROCALCULATOR = (function (my) {
             return { sources: sources, total: totalAttribute };
         });
 
+        self.getBonusDamageBackstab = ko.computed(function () {
+            var totalAttribute1 = 0;
+            var totalAttribute2 = 0;
+            var sources = [];
+            for (var i = 0; i < self.abilities().length; i++) {
+                var ability = self.abilities()[i];
+                if (ability.name() == 'riki_backstab') {
+                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
+                            var attribute = self.abilities()[i].attributes()[j];
+                            switch(attribute.name()) {
+                                // riki_backstab
+                                case 'damage_multiplier':
+                                    totalAttribute1 += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                    sources.push({
+                                        'damage': self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level()),
+                                        'damageType': 'physical',
+                                        'displayname': ability.displayname()
+                                    });
+                                break;
+                            }
+                        }/*
+                        if (ability.bonusDamageBackstab != undefined) {
+                            console.log('bonusDamageBackstab');
+                            // damage_multiplier
+                            totalAttribute2+=ability.bonusDamageBackstab();
+                            sources.push({
+                                'damage': ability.bonusDamageBackstab(),
+                                'damageType': 'physical',
+                                'displayname': ability.displayname()
+                            });
+                        }
+                        */
+                    }
+                }
+            }
+            return { sources: sources, total: [totalAttribute1,totalAttribute2] };
+        });
+        
         self.getBonusDamagePrecisionAura = ko.computed(function () {
             var totalAttribute1 = 0;
             var totalAttribute2 = 0;
@@ -1239,6 +1299,17 @@ var HEROCALCULATOR = (function (my) {
                                 case 'damage_modifier':
                                     totalAttribute *= (1 + self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
                                 break;
+                                // windrunner_focusfire
+                                case 'focusfire_damage_reduction':
+                                    if (!self.hasScepter()) {
+                                        totalAttribute *= (1 + self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
+                                    }
+                                break;
+                                case 'focusfire_damage_reduction_scepter':
+                                    if (self.hasScepter()) {
+                                        totalAttribute *= (1 + self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
+                                    }
+                                break;
                             }
                         }
                     }
@@ -1288,7 +1359,7 @@ var HEROCALCULATOR = (function (my) {
                 }
                 else if (ability.damageReduction != undefined) {
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
-                        // wisp_overcharge,bristleback_bristleback
+                        // wisp_overcharge,bristleback_bristleback,spectre_dispersion
                         totalAttribute *= (1 + ability.damageReduction()/100);
                     }
                 }

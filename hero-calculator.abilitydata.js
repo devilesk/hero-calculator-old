@@ -2322,6 +2322,15 @@ var HEROCALCULATOR = (function (my) {
             {
                 attributeName: 'damage_reflection_pct',
                 label: 'DAMAGE REFLECTED:',
+                controlType: 'text',
+                fn: function(v,a) {
+                    return -a;
+                },
+                returnProperty: 'damageReduction'
+            },
+            {
+                attributeName: 'damage_reflection_pct',
+                label: 'DAMAGE REFLECTED:',
                 ignoreTooltip: true,
                 controlType: 'text',
                 fn: function(v,a) {

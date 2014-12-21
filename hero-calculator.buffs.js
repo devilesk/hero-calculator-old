@@ -60,10 +60,11 @@ var HEROCALCULATOR = (function (my) {
             new my.BuffOption('spirit_breaker', 'spirit_breaker_empowering_haste'),
             new my.BuffOption('sven', 'sven_warcry'),
             new my.BuffOption('treant', 'treant_living_armor'),
+            new my.BuffOption('troll_warlord', 'troll_warlord_battle_trance'),
             new my.BuffOption('vengefulspirit', 'vengefulspirit_command_aura'),
             new my.BuffOption('npc_dota_neutral_alpha_wolf', 'alpha_wolf_critical_strike'),
             new my.BuffOption('npc_dota_neutral_alpha_wolf', 'alpha_wolf_command_aura'),
-            new my.BuffOption('npc_dota_neutral_centaur_khan', 'centaur_khan_endurance_aura'),
+            new my.BuffOption('npc_dota_neutral_polar_furbolg_ursa_warrior', 'centaur_khan_endurance_aura'),
             new my.BuffOption('npc_dota_neutral_giant_wolf', 'giant_wolf_critical_strike'),
             new my.BuffOption('npc_dota_neutral_kobold_taskmaster', 'kobold_taskmaster_speed_aura'),
             new my.BuffOption('npc_dota_neutral_ogre_magi', 'ogre_magi_frost_armor'),
@@ -72,6 +73,7 @@ var HEROCALCULATOR = (function (my) {
             new my.BuffOption('npc_dota_necronomicon_archer_1', 'necronomicon_archer_aoe')
         ]);
         self.availableDebuffs = ko.observableArray([
+            new my.BuffOption('abaddon', 'abaddon_frostmourne'),
             new my.BuffOption('alchemist', 'alchemist_acid_spray'),
             new my.BuffOption('ancient_apparition', 'ancient_apparition_ice_vortex'),
             new my.BuffOption('axe', 'axe_battle_hunger'),
@@ -304,6 +306,43 @@ var HEROCALCULATOR = (function (my) {
                     case 'nevermore_shadowraze3':
                         self.abilities()[index() - 1].level(self.abilities()[index()].level());
                         self.abilities()[index() - 2].level(self.abilities()[index()].level());
+                    break;
+                }
+            }
+        };
+        self.levelDownAbility = function (index, data, event, hero) {
+            if (self.abilities()[index()].level() > 0) {
+                self.abilities()[index()].level(self.abilities()[index()].level() - 1);
+                switch (self.abilities()[index()].name()) {
+                    case 'beastmaster_call_of_the_wild':
+                    case 'chen_test_of_faith':
+                    case 'morphling_morph_agi':
+                    case 'shadow_demon_shadow_poison':
+                        self.abilities()[index() + 1].level(self.abilities()[index()].level());
+                    break;
+                    case 'morphling_morph_str':
+                        self.abilities()[index() - 1].level(self.abilities()[index()].level());
+                    break;
+                    case 'keeper_of_the_light_spirit_form':
+                        self.abilities()[index() - 1].level(self.abilities()[index()].level());
+                        self.abilities()[index() - 2].level(self.abilities()[index()].level());
+                    case 'nevermore_shadowraze1':
+                        self.abilities()[index() + 1].level(self.abilities()[index()].level());
+                        self.abilities()[index() + 2].level(self.abilities()[index()].level());
+                    break;
+                    case 'nevermore_shadowraze2':
+                        self.abilities()[index() - 1].level(self.abilities()[index()].level());
+                        self.abilities()[index() + 1].level(self.abilities()[index()].level());
+                    break;
+                    case 'nevermore_shadowraze3':
+                        self.abilities()[index() - 1].level(self.abilities()[index()].level());
+                        self.abilities()[index() - 2].level(self.abilities()[index()].level());
+                    break;
+                    case 'ember_spirit_fire_remnant':
+                        self.abilities()[index() - 1].level(self.abilities()[index()].level());
+                    break;
+                    case 'lone_druid_true_form':
+                        self.abilities()[index() - 1].level(self.abilities()[index()].level());
                     break;
                 }
             }

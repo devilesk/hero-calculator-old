@@ -92,7 +92,7 @@ var HEROCALCULATOR = (function (my) {
             else if (data.name() === 'invoker_invoke') {
                 return 4;
             }
-            else if (data.name() === 'earth_spirit_stone_caller') {
+            else if (data.name() === 'earth_spirit_stone_caller' || data.name() === 'ogre_magi_unrefined_fireblast') {
                 return 1;
             }
             else if (data.abilitytype() === 'DOTA_ABILITY_TYPE_ULTIMATE' || data.name() === 'keeper_of_the_light_recall' ||
@@ -122,7 +122,7 @@ var HEROCALCULATOR = (function (my) {
         
         self.ability = ko.computed(function () {
             var a = new my.AbilityModel(ko.mapping.fromJS(self.heroData().abilities), self);
-            if (self.selectedHero().heroName === 'earth_spirit') {
+            if (self.selectedHero().heroName === 'earth_spirit' || self.selectedHero().heroName === 'ogre_magi') {
                 a.abilities()[3].level(1);
             }
             else if (self.selectedHero().heroName === 'invoker') {
@@ -378,6 +378,9 @@ var HEROCALCULATOR = (function (my) {
                             ? ((self.selectedHero().heroName == 'drow_ranger') ? self.ability().getBonusDamagePrecisionAura().total[0] * self.totalAgi() : self.buffs.getBonusDamagePrecisionAura().total[1])
                             : 0)
                       )
+                    + Math.floor(
+                        ((self.selectedHero().heroName == 'riki') ? self.ability().getBonusDamageBackstab().total[0] * self.totalAgi() : 0)
+                      )
                     ) * self.ability().getBaseDamageReductionPct());
         });
         self.bonusDamageReduction = ko.computed(function () {
@@ -431,8 +434,8 @@ var HEROCALCULATOR = (function (my) {
             if (val < -80) {
                 return -80;
             }
-            else if (val > 400) {
-                return 400;
+            else if (val > 500) {
+                return 500;
             }
             return val.toFixed(2);
         });
@@ -454,7 +457,13 @@ var HEROCALCULATOR = (function (my) {
         });
         self.ehpPhysical = ko.computed(function () {
             var evasion = self.enemy().inventory.isSheeped() || self.debuffs.itemBuffs.isSheeped() ? 1 : self.inventory.getEvasion() * self.ability().getEvasion();
-            var ehp = (self.health() * (1 + .06 * self.totalArmorPhysical())) / (1 - (1 - (evasion * self.ability().getEvasionBacktrack())))
+            if (self.totalArmorPhysical() >= 0) {
+                var ehp = self.health() * (1 + .06 * self.totalArmorPhysical());
+            }
+            else {
+                var ehp = self.health() / (2 - Math.pow(0.94, -self.totalArmorPhysical()));
+            }
+            ehp /= (1 - (1 - (evasion * self.ability().getEvasionBacktrack())))
             ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
 			ehp *= (1 / self.ability().getDamageReduction());
 			ehp *= (1 / self.buffs.getDamageReduction());
@@ -855,6 +864,33 @@ var HEROCALCULATOR = (function (my) {
                     totalCritableDamage += d;
                     damage.physical += d;                    
                 }
+            }
+            
+            // riki_backstab
+            if (self.selectedHero().heroName === 'riki') {
+                var s = self.ability().getBonusDamageBackstab().sources;
+                var index = 0;
+            }
+            else {
+                var s = self.buffs.getBonusDamageBackstab().sources;
+                var index = 1;
+            }
+            if (s[index] != undefined) {
+                if (self.selectedHero().heroName === 'riki') {
+                    var d = s[index].damage * self.totalAgi();
+                }
+                else {
+                    var d = s[index].damage;
+                }
+                result.push({
+                    name: s[index].displayname,
+                    damage: d,
+                    damageType: 'physical',
+                    damageReduced: self.getReducedDamage(d, 'physical')
+                });
+                totalDamage += d;
+                //totalCritableDamage += d;
+                damage.physical += d;                    
             }
 			
 			// weaver_geminate_attack
