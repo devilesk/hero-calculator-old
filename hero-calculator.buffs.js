@@ -59,6 +59,7 @@ var HEROCALCULATOR = (function (my) {
             new my.BuffOption('skeleton_king', 'skeleton_king_vampiric_aura'),
             new my.BuffOption('spirit_breaker', 'spirit_breaker_empowering_haste'),
             new my.BuffOption('sven', 'sven_warcry'),
+            new my.BuffOption('sven', 'sven_gods_strength'),
             new my.BuffOption('treant', 'treant_living_armor'),
             new my.BuffOption('troll_warlord', 'troll_warlord_battle_trance'),
             new my.BuffOption('vengefulspirit', 'vengefulspirit_command_aura'),

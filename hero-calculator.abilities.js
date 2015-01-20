@@ -516,12 +516,12 @@ var HEROCALCULATOR = (function (my) {
                             switch(attribute.name()) {
                                 // lone_druid_true_form,lycan_shapeshift,troll_warlord_berserkers_rage
                                 case 'bonus_hp':
-                                    totalAttribute += parseInt(attribute.value()[ability.level()-1]);
+									totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
                                 break;
                                 // lone_druid_synergy
                                 case 'true_form_hp_bonus':
                                     if (self.isTrueFormActive()) {
-                                        totalAttribute += parseInt(attribute.value()[ability.level()-1]);
+										totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
                                     }
                                 break;
                             }
@@ -640,11 +640,11 @@ var HEROCALCULATOR = (function (my) {
                                 case 'heath_regen':
                                 // omniknight_guardian_angel,treant_living_armor,satyr_hellcaller_unholy_aura
                                 case 'health_regen':
-                                    totalAttribute += parseInt(attribute.value()[ability.level()-1]);
+									totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
                                 break;
                                 // legion_commander_press_the_attack
                                 case 'hp_regen':
-                                    totalAttribute += parseInt(attribute.value()[ability.level()-1]);
+									totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
                                 break;
                             }
                         }
@@ -671,7 +671,7 @@ var HEROCALCULATOR = (function (my) {
                             switch(attribute.name()) {
                                 // alchemist_chemical_rage
                                 case 'bonus_mana_regen':
-                                    totalAttribute += parseInt(attribute.value()[ability.level()-1]);
+                                    totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
                                 break;
                             }
                         }
@@ -699,7 +699,7 @@ var HEROCALCULATOR = (function (my) {
                                 // crystal_maiden_brilliance_aura
                                 case 'mana_regen':
                                     if (ability.name() == 'crystal_maiden_brilliance_aura') {
-                                        totalAttribute += parseFloat(attribute.value()[ability.level()-1]);
+                                        totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
                                     }
                                 break;
                             }
@@ -1155,7 +1155,17 @@ var HEROCALCULATOR = (function (my) {
                                 break;
                                 // sven_gods_strength
                                 case 'gods_strength_damage':
-                                    if (ability.name() == 'sven_gods_strength') {
+                                    if (ability.name() == 'sven_gods_strength' && self.hero != undefined && self.hero.selectedHero().heroName == 'sven') {
+                                        totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100;
+                                        sources[ability.name()] = {
+                                            'damage': self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100,
+                                            'damageType': 'physical',
+                                            'displayname': ability.displayname()
+                                        }
+                                    }
+                                break;
+                                case 'gods_strength_damage_scepter':
+                                    if (ability.name() == 'sven_gods_strength' && self.hero == undefined) {
                                         totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100;
                                         sources[ability.name()] = {
                                             'damage': self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100,

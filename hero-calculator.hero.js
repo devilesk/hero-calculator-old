@@ -213,7 +213,7 @@ var HEROCALCULATOR = (function (my) {
             return (self.heroData().attributebaseagility * .14 + self.heroData().armorphysical).toFixed(2);
         });
         self.respawnTime = ko.computed(function () {
-            return self.selectedHeroLevel() * 4;
+            return 5 + 3.8 * self.selectedHeroLevel();
         });
         self.totalAttribute = function (a) {
             if (a === 'agi') return parseFloat(self.totalAgi());

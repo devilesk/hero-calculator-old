@@ -1563,9 +1563,9 @@
                 <span>&ndash;</span>
                 <span data-bind="html: baseDamage()[1].toFixed(0)"></span>
                 <span data-bind="html: $root.getDiffText(diff['baseDamage']()[1]), css: {'diffPos': diff['baseDamage']()[1] > 0, 'diffNeg': diff['baseDamage']()[1] < 0}, visible: showDiff"></span>
-                <span style="color:green" data-bind="visible: bonusDamage() > 0, html: ' + ' + bonusDamage()"></span>
+                <span style="color:green" data-bind="visible: bonusDamage() > 0, html: ' + ' + bonusDamage().toFixed(0)"></span>
                 <span data-bind="html: $root.getDiffText(diff['bonusDamage']()), css: {'diffPos': diff['bonusDamage']() > 0, 'diffNeg': diff['bonusDamage']() < 0}, visible: showDiff"></span>
-                <span style="color:red" data-bind="visible: bonusDamageReduction() != 0, html: ' - ' + bonusDamageReduction()"></span>
+                <span style="color:red" data-bind="visible: bonusDamageReduction() != 0, html: ' - ' + bonusDamageReduction().toFixed(0)"></span>
                 <span data-bind="html: $root.getDiffText(diff['bonusDamageReduction']()), css: {'diffPos': diff['bonusDamageReduction']() > 0, 'diffNeg': diff['bonusDamageReduction']() < 0}, visible: showDiff"></span>
             </td>
         </tr>
