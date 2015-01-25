@@ -118,9 +118,9 @@
             <!-- /ko -->
                 <li data-bind="secondTab: 'settingsTab'"><a id="settingsTab" href="#settings" data-toggle="tab" data-bind="click: clickTab">Settings</a></li>
                 <li><div class="checkbox" style="margin-left:15px"><label><input type="checkbox" data-bind="checked: sideView"> Fullscreen</label></div></li>
-                <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-plus pull-right" data-bind="click: toggleDisplayShop, visible: !displayShop() && !shopPopout()" title="Maximize shop"></button>
+                <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-plus pull-right" data-bind="toggle: displayShop, visible: !displayShop() && !shopPopout()" title="Maximize shop"></button>
                 <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-new-window pull-right hidden-xs" data-bind="click: shopPopout, visible: !displayShop() && !shopPopout()" title="Popout shop"></button>
-                <strong style="cursor:pointer" class="pull-right shop-button" data-bind="click: toggleDisplayShop, visible: !displayShop() && !shopPopout()">Shop</strong>
+                <strong style="cursor:pointer" class="pull-right shop-button" data-bind="toggle: displayShop, visible: !displayShop() && !shopPopout()">Shop</strong>
             </ul>
             <div class="col-md-12 col-lg-8" data-bind="css: { 'col-lg-8': displayShop() && !shopPopout(), 'col-lg-12': !displayShop() || shopPopout()}">
                 <div class="tab-content" style="display:inline-block;width:100%;">
@@ -173,7 +173,7 @@
             <div class="col-md-12"><p><hr></p></div>
             
             <!-- BOTTOM FEATURES -->
-            <div class="col-md-12 form">
+            <div class="form" data-bind="css: { 'col-md-12': !shopDock() || !displayShop() || shopPopout(), 'col-md-8': shopDock() && displayShop() && !shopPopout()}">
                 <div>
                     <div class="form-group text-right">
                         <button class="btn btn-default" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-envelope"></span> Report a bug</button>
@@ -301,8 +301,9 @@
         return null;
     }
   </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.1/Chart.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.4.1/knockout.mapping.js"></script>
     <script src="jquery-ui.js"></script>
     <script src="hero-calculator.inventory.js"></script>

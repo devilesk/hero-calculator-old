@@ -1,11 +1,13 @@
 var HEROCALCULATOR = (function (my) {
     var my = {};
-    my.heroData = {};
-    my.itemData = {};
-    my.unitData = {};
-    my.abilityData = {};
-    my.stackableItems = ['clarity','flask','dust','ward_observer','ward_sentry','tango','tpscroll','smoke_of_deceit']
-    my.levelitems = ['necronomicon','dagon','diffusal_blade']
+		my.heroData = {},
+		my.itemData = {},
+		my.unitData = {},
+		my.abilityData = {},
+		my.stackableItems = ['clarity','flask','dust','ward_observer','ward_sentry','tango','tpscroll','smoke_of_deceit'],
+		my.levelitems = ['necronomicon','dagon','diffusal_blade'],
+		my.validItems = ["abyssal_blade","ultimate_scepter","courier","arcane_boots","armlet","assault","boots_of_elves","bfury","belt_of_strength","black_king_bar","blade_mail","blade_of_alacrity","blades_of_attack","blink","bloodstone","boots","travel_boots","bottle","bracer","broadsword","buckler","butterfly","chainmail","circlet","clarity","claymore","cloak","lesser_crit","greater_crit","dagon","demon_edge","desolator","diffusal_blade","rapier","ancient_janggo","dust","eagle","energy_booster","ethereal_blade","cyclone","skadi","flying_courier","force_staff","gauntlets","gem","ghost","gloves","hand_of_midas","headdress","flask","heart","heavens_halberd","helm_of_iron_will","helm_of_the_dominator","hood_of_defiance","hyperstone","branches","javelin","sphere","maelstrom","magic_stick","magic_wand","manta","mantle","mask_of_madness","medallion_of_courage","mekansm","mithril_hammer","mjollnir","monkey_king_bar","lifesteal","mystic_staff","necronomicon","null_talisman","oblivion_staff","ward_observer","ogre_axe","orb_of_venom","orchid","pers","phase_boots","pipe","platemail","point_booster","poor_mans_shield","power_treads","quarterstaff","quelling_blade","radiance","reaver","refresher","ring_of_aquila","ring_of_basilius","ring_of_health","ring_of_protection","ring_of_regen","robe","rod_of_atos","relic","sobi_mask","sange","sange_and_yasha","satanic","sheepstick","ward_sentry","shadow_amulet","invis_sword","shivas_guard","basher","slippers","smoke_of_deceit","soul_booster","soul_ring","staff_of_wizardry","stout_shield","talisman_of_evasion","tango","tpscroll","tranquil_boots","ultimate_orb","urn_of_shadows","vanguard","veil_of_discord","vitality_booster","vladmir","void_stone","wraith_band","yasha","crimson_guard"],
+        my.itemsWithActive = ['heart','smoke_of_deceit','dust','ghost','tranquil_boots','phase_boots','power_treads','buckler','medallion_of_courage','ancient_janggo','mekansm','pipe','veil_of_discord','rod_of_atos','orchid','sheepstick','armlet','invis_sword','ethereal_blade','shivas_guard','manta','mask_of_madness','diffusal_blade','mjollnir','satanic','ring_of_basilius','ring_of_aquila'];
     
     my.ItemInput = function (value, name) {
         if (my.itemData['item_' + value].ItemAliases instanceof Array) {
@@ -18,14 +20,154 @@ var HEROCALCULATOR = (function (my) {
         this.name = ko.observable(name);
         this.displayname = ko.observable(name + ' <span style="display:none">' + ';' + itemAlias + '</span>');
     };
+	
+	my.BasicInventoryViewModel = function (h) {
+        var self = this;
+		self.items = ko.observableArray([]);
+		self.activeItems = ko.observableArray([]);
+        self.addItem = function (data, event) {
+            if (data.selectedItem() != undefined) {
+                var new_item = {
+                    item: data.selectedItem(),
+                    state: ko.observable(0),
+                    size: data.itemInputValue(),
+                    enabled: ko.observable(true)
+                }
+                self.items.push(new_item);
+                if (data.selectedItem() === 'ring_of_aquila' || data.selectedItem() === 'ring_of_basilius' || data.selectedItem() === 'heart') {
+                    self.toggleItem(undefined, new_item, undefined);
+                }
+            }
+        };
+        self.toggleItem = function (index, data, event) {
+            if (my.itemsWithActive.indexOf(data.item) >= 0) {
+                if (self.activeItems.indexOf(data) < 0) {
+                    self.activeItems.push(data);
+                }
+                else {
+                    self.activeItems.remove(data);
+                }
+                switch (data.item) {
+                    case 'power_treads':
+                        if (data.state() < 2) {
+                            data.state(data.state() + 1);
+                        }
+                        else {
+                            data.state(0);
+                        }                
+                    break;
+                    default:
+                        if (data.state() == 0) {
+                            data.state(1);
+                        }
+                        else {
+                            data.state(0);
+                        }                
+                    break;
+                }
+            }
+        }.bind(this);
+        self.removeItem = function (item) {
+            self.activeItems.remove(item);
+            self.items.remove(item);
+        }.bind(this);
+        self.toggleMuteItem = function (item) {
+            item.enabled(!item.enabled());
+        }.bind(this);      
+
+        self.getItemImage = function (data) {
+            var state = ko.utils.unwrapObservable(data.state);
+            switch (data.item) {
+                case 'power_treads':
+                    if (state == 0) {
+                        return '/media/images/items/' + data.item + '_str.png';
+                    }
+                    else if (state == 1) {
+                        return '/media/images/items/' + data.item + '_int.png';
+                    }
+                    else {
+                        return '/media/images/items/' + data.item + '_agi.png';
+                    }
+                break;
+                case 'tranquil_boots':
+                case 'ring_of_basilius':
+                    if (state == 0) {
+                        return '/media/images/items/' + data.item + '.png';
+                    }
+                    else {
+                        return '/media/images/items/' + data.item + '_active.png';
+                    }
+                break;
+                case 'armlet':
+                    if (state == 0) {
+                        return '/media/images/items/' + data.item + '.png';
+                    }
+                    else {
+                        return '/media/images/items/' + data.item + '_active.png';
+                    }
+                break;
+                case 'ring_of_aquila':
+                    if (state == 0) {
+                        return '/media/images/items/' + data.item + '_active.png';
+                    }
+                    else {
+                        return '/media/images/items/' + data.item + '.png';
+                    }
+                break;
+                case 'dagon':
+                case 'diffusal_blade':
+                case 'necronomicon':
+                    if (data.size > 1) {
+                        return '/media/images/items/' + data.item + '_' + data.size + '.png';
+                    }
+                    else {
+                        return '/media/images/items/' + data.item + '.png';
+                    }
+                break;
+                default:
+                    return '/media/images/items/' + data.item + '.png';            
+                break;
+            }
+        };
+        self.getItemSizeLabel = function (data) {
+            if (my.stackableItems.indexOf(data.item) != -1) {
+                return '<span style="font-size:10px">Qty: </span>' + data.size;
+            }
+            else if (my.levelitems.indexOf(data.item) != -1) {
+                return '<span style="font-size:10px">Lvl: </span>' + data.size;
+            }
+            else if (data.item == 'bloodstone') {
+                return '<span style="font-size:10px">Charges: </span>' + data.size;
+            }
+            else {
+                return '';
+            }
+        };
+        self.getActiveBorder = function (data) {
+            switch (data.item) {
+                case 'power_treads':
+                case 'tranquil_boots':
+                case 'ring_of_basilius':
+                case 'ring_of_aquila':
+                case 'armlet':
+                    return 0;
+                break;
+                default:
+                    return ko.utils.unwrapObservable(data.state);    
+                break;
+            }
+        }
+        self.removeAll = function () {
+            self.activeItems.removeAll();
+            self.items.removeAll();
+        }.bind(this);
+	}
     
     my.InventoryViewModel = function (h) {
-        var self = this,
-        validItems = ["abyssal_blade","ultimate_scepter","courier","arcane_boots","armlet","assault","boots_of_elves","bfury","belt_of_strength","black_king_bar","blade_mail","blade_of_alacrity","blades_of_attack","blink","bloodstone","boots","travel_boots","bottle","bracer","broadsword","buckler","butterfly","chainmail","circlet","clarity","claymore","cloak","lesser_crit","greater_crit","dagon","demon_edge","desolator","diffusal_blade","rapier","ancient_janggo","dust","eagle","energy_booster","ethereal_blade","cyclone","skadi","flying_courier","force_staff","gauntlets","gem","ghost","gloves","hand_of_midas","headdress","flask","heart","heavens_halberd","helm_of_iron_will","helm_of_the_dominator","hood_of_defiance","hyperstone","branches","javelin","sphere","maelstrom","magic_stick","magic_wand","manta","mantle","mask_of_madness","medallion_of_courage","mekansm","mithril_hammer","mjollnir","monkey_king_bar","lifesteal","mystic_staff","necronomicon","null_talisman","oblivion_staff","ward_observer","ogre_axe","orb_of_venom","orchid","pers","phase_boots","pipe","platemail","point_booster","poor_mans_shield","power_treads","quarterstaff","quelling_blade","radiance","reaver","refresher","ring_of_aquila","ring_of_basilius","ring_of_health","ring_of_protection","ring_of_regen","robe","rod_of_atos","relic","sobi_mask","sange","sange_and_yasha","satanic","sheepstick","ward_sentry","shadow_amulet","invis_sword","shivas_guard","basher","slippers","smoke_of_deceit","soul_booster","soul_ring","staff_of_wizardry","stout_shield","talisman_of_evasion","tango","tpscroll","tranquil_boots","ultimate_orb","urn_of_shadows","vanguard","veil_of_discord","vitality_booster","vladmir","void_stone","wraith_band","yasha","crimson_guard"];
-        itemsWithActive = ['heart','smoke_of_deceit','dust','ghost','tranquil_boots','phase_boots','power_treads','buckler','medallion_of_courage','ancient_janggo','mekansm','pipe','veil_of_discord','rod_of_atos','orchid','sheepstick','armlet','invis_sword','ethereal_blade','shivas_guard','manta','mask_of_madness','diffusal_blade','mjollnir','satanic','ring_of_basilius','ring_of_aquila'];
+        var self = new my.BasicInventoryViewModel();
         self.hero = h;
         self.hasInventory = ko.observable(true);
-        self.items = ko.observableArray();
+        self.items = ko.observableArray([]);
         self.activeItems = ko.observableArray([]);
         self.hasScepter = ko.computed(function () {
             for (var i = 0; i < self.items().length; i++) {
@@ -86,7 +228,7 @@ var HEROCALCULATOR = (function (my) {
             }
             return c;
         }, this);
-        self.addItem = function (data, event) {
+        /*self.addItem = function (data, event) {
             if (self.hasInventory() && data.selectedItem() != undefined) {
                 var new_item = {
                     item: data.selectedItem(),
@@ -99,7 +241,7 @@ var HEROCALCULATOR = (function (my) {
                     self.toggleItem(undefined, new_item, undefined);
                 }
             }
-        };
+        };*/
         self.addItemBuff = function (data, event) {
             if (self.hasInventory() && self.selectedItemBuff() != undefined) {
                 var new_item = {
@@ -128,8 +270,8 @@ var HEROCALCULATOR = (function (my) {
                 }
             }
         };
-        self.toggleItem = function (index, data, event) {
-            if (itemsWithActive.indexOf(data.item) >= 0) {
+        /*self.toggleItem = function (index, data, event) {
+            if (my.itemsWithActive.indexOf(data.item) >= 0) {
                 if (self.activeItems.indexOf(data) < 0) {
                     self.activeItems.push(data);
                 }
@@ -162,7 +304,7 @@ var HEROCALCULATOR = (function (my) {
         }.bind(this);
         self.toggleMuteItem = function (item) {
             item.enabled(!item.enabled());
-        }.bind(this);        
+        }.bind(this);
         self.getItemImage = function (data) {
             switch (data.item) {
                 case 'power_treads':
@@ -240,11 +382,11 @@ var HEROCALCULATOR = (function (my) {
                     return 0;
                 break;
                 default:
-                    return data.state();    
+                    return ko.utils.unwrapObservable(data.state);    
                 break;
             }
             
-        }
+        }*/
 
         self.getItemAttributeValue = function (attributes, attributeName, level) {
             for (var i = 0; i < attributes.length; i++) {
@@ -1215,25 +1357,27 @@ var HEROCALCULATOR = (function (my) {
         };        
 
         self.itemOptions = ko.observableArray([]);
-        for (var i = 0; i < validItems.length; i++) {
-            self.itemOptions.push(new my.ItemInput(validItems[i], my.itemData['item_' + validItems[i]].displayname));
+        var itemOptionsArr = [];
+        for (var i = 0; i < my.validItems.length; i++) {
+            itemOptionsArr.push(new my.ItemInput(my.validItems[i], my.itemData['item_' + my.validItems[i]].displayname));
         }
+        self.itemOptions.push.apply(self.itemOptions, itemOptionsArr);
         /*for (i in my.itemData) {
             self.itemOptions.push(new my.ItemInput(i.replace('item_',''),my.itemData[i].displayname));
         }*/
-    
-        self.itemBuffOptions = ko.observableArray([]);        
+        
         var itemBuffs = ['assault', 'ancient_janggo', 'headdress', 'mekansm', 'pipe', 'ring_of_aquila', 'vladmir', 'ring_of_basilius','buckler'];
-        for (i in itemBuffs) {
+        self.itemBuffOptions = ko.observableArray(_.map(itemBuffs, function(item) { return new my.ItemInput(item, my.itemData['item_' + item].displayname); }));
+        /*for (i in itemBuffs) {
             self.itemBuffOptions.push(new my.ItemInput(itemBuffs[i], my.itemData['item_' + itemBuffs[i]].displayname));
-        }
+        }*/
         self.selectedItemBuff = ko.observable('assault');
 
-        self.itemDebuffOptions = ko.observableArray([]);        
         var itemDebuffs = ['assault', 'shivas_guard', 'desolator', 'medallion_of_courage', 'sheepstick'];
-        for (i in itemDebuffs) {
+        self.itemDebuffOptions = ko.observableArray(_.map(itemDebuffs, function(item) { return new my.ItemInput(item, my.itemData['item_' + item].displayname); }));        
+        /*for (i in itemDebuffs) {
             self.itemDebuffOptions.push(new my.ItemInput(itemDebuffs[i], my.itemData['item_' + itemDebuffs[i]].displayname));
-        }
+        }*/
         self.selectedItemDebuff = ko.observable('assault');
         
         return self;

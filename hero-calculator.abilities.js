@@ -2403,6 +2403,10 @@ var HEROCALCULATOR = (function (my) {
                 }
             }
         };
+		
+		self.isQWER = function (ability) {
+			return (ability.displayname() != 'Empty' &&  (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_HIDDEN') == -1 || ability.name().indexOf('invoker_') != -1) && ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE') == -1)
+		}
     }
 
     return my;

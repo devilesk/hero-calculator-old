@@ -58,6 +58,7 @@ var HEROCALCULATOR = (function (my) {
         }
         self.heroes[0].showUnitTab(true);
         self.tabs = ko.observableArray([]);
+        var tabsArr = [];
         for (var i = 0; i < 4; i++) {
             var color = i < 2 ? '#5cb85c' : '#d9534f';
             var tabGroup = new my.TabGroup(
@@ -65,15 +66,15 @@ var HEROCALCULATOR = (function (my) {
                 new my.Tab('unitTab' + i, 'unitPane' + i, self.heroes[i].unit(), 'Unit ' + i, color, 'unit-pane-template'),
                 new my.Tab('cloneTab' + i, 'clonePane' + i, self.heroes[i].clone(), 'Meepo Clone ' + i, color, 'clone-pane-template')
             );
-            self.tabs.push(tabGroup);
+            //self.tabs.push(tabGroup);
+            tabsArr.push(tabGroup);
         }
+        self.tabs.push.apply(self.tabs, tabsArr);
 
         self.selectedItem = ko.observable();
         self.layout = ko.observable("1");
         self.displayShop = ko.observable(true);
-        self.toggleDisplayShop = function () {
-            self.displayShop(!self.displayShop());
-        }
+        self.displayShopItemTooltip = ko.observable(true);
         self.allItems = ko.observableArray([
             {name: 'Str, Agi, Int, MS, Turn, Sight', value: 'stats0'},
             {name: 'Armor, Health, Mana, Regen, EHP', value: 'stats1'},
@@ -120,9 +121,9 @@ var HEROCALCULATOR = (function (my) {
                 return self.tabs()[0].hero;
             }
 		});
-        self.selectedTabs = ko.observableArray([]);
-		self.selectedTabs.push('heroTab0');
-		self.selectedTabs.push('heroTab1');
+        self.selectedTabs = ko.observableArray(['heroTab0', 'heroTab1']);
+		//self.selectedTabs.push('heroTab0');
+		//self.selectedTabs.push('heroTab1');
         self.clickTab = function (data, event, index) {
             /*if (event.target.id != 'settingsTab') {
                 self.selectedTabId(event.target.id);
@@ -164,6 +165,25 @@ var HEROCALCULATOR = (function (my) {
                 self.layout("0");
             }
         });
+		var $window = $(window);
+		self.windowWidth = ko.observable($window.width());
+		self.windowHeight = ko.observable($window.height());
+		$window.resize(function () { 
+			self.windowWidth($window.width());
+			self.windowHeight($window.height());
+		});
+        self.shopDock = ko.observable(false);
+        self.shopDock.subscribe(function (newValue) {
+            if (newValue) {
+
+            }
+            else {
+            }
+        });
+		self.shopDockTrigger = ko.computed(function () {
+			self.windowWidth();
+			self.shopDock();
+		});
         self.shopPopout = ko.observable(false);
         self.shopPopout.subscribe(function (newValue) {
             if (newValue) {
@@ -476,7 +496,8 @@ var HEROCALCULATOR = (function (my) {
     }
 
     my.heroCalculator = {};
-
+	my.theme = ko.observable($('#theme-select').val());
+	
     my.init = function (HERODATA_PATH,ITEMDATA_PATH,UNITDATA_PATH) {
         var loadedFiles = 0;
         var loadedFilesMax = 4;
@@ -519,6 +540,9 @@ var HEROCALCULATOR = (function (my) {
     my.run = function () {
         my.heroCalculator = new my.HeroCalculatorViewModel();
         ko.applyBindings(my.heroCalculator);
+		$('#theme-select').change(function () {
+			my.theme($(this).val());
+		});
 		$('#spinner').hide();
 		$('#hero-calc-wrapper').css('display', 'inline-block');
         $('#popHero0').addClass('active');
@@ -527,6 +551,7 @@ var HEROCALCULATOR = (function (my) {
         $('#popHero1').popover({animation: false, html: true});
         $('#popHero4').popover({animation: false, html: true});
         $('#popHero5').popover({animation: false, html: true});
+        $('[data-toggle="tooltip"]').tooltip();
         var saveId = getParameterByName('id');
         if (saveId) {
             $.get('save/' + saveId + '.json', function (data) {
@@ -534,6 +559,12 @@ var HEROCALCULATOR = (function (my) {
             });
         }
     }
+    
+    my.inventoryClipBoard = {
+        items: [],
+        activeItems: []
+    };
+
     
     function getParameterByName(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");

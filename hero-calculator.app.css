@@ -1,3 +1,84 @@
+.tooltip-underline {
+	cursor: help;
+	border-bottom: 1px dotted #999;
+}
+.btn:active, .btn.active {
+	box-shadow: inset 0 3px 5px rgba(0,0,0,.5);
+}
+.itemBuild-inventory img.itemBuild-img-sm {
+	width: 40px;
+	cursor: default;
+}
+.itemBuild-inventory img {
+	width: 50px;
+}
+.itemBuild-inventory .btn {
+	padding: 1px 5px;
+}
+.inventory img {
+	width: 75px;
+}
+.inventory .btn {
+	padding: 3px 10px;
+}
+.carry-over {
+	position: relative;
+}
+.carry-over .btn {
+	position: absolute;
+	top: -8px;
+	left: -24px;
+}
+#shop-container {
+	z-index: 999;
+}
+.build-table tbody td.no-top-border {
+	border-top: 0;
+}
+.build-table tbody td.right-border:last-child, .build-table tbody td.right-border:nth-last-child(2), .build-table tbody td.right-border-itemrow:last-child,
+.build-table thead th.right-border:last-child, .build-table thead th.right-border:nth-last-child(2) {
+	border-right: 0;
+}
+.build-table thead th.right-border, .build-table tbody td.right-border, .build-table tbody td.right-border-itemrow {
+	border-right: 1px solid #202125;
+}
+td {
+    font-family: "Calibri";
+}
+.inventory {
+    min-height: 77px;
+    float: left;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+}
+.inventory.row-highlight {
+	box-shadow: inset 0 0 6px rgba(0,0,0,.5)
+}
+.hide-shop-item-details .item_field {
+	display: none;
+}
+.hide-shop-item-details .item_field.item_name, .hide-shop-item-details .item_field.item_cost {
+	display: inline;
+}
+.hover-cursor  {
+	cursor: pointer;
+}
+.hover-cursor:hover {
+	color: #aaa;
+	background-color: #1c1d1f;
+}
+.hover-cursor:active {
+	opacity: .8;
+}
+.row-highlight, .row-highlight:hover {
+	color: #aaa;
+	background-color: #202126;
+}
+.allow-events, .btn.allow-events {
+    cursor: pointer;
+    pointer-events: auto;
+}
 .ui-spinner-button {
     width: 32px;
     height: 50%;
@@ -71,11 +152,6 @@ hr {
 
 img {
     max-width: 100%;
-}
-
-table tr td:first-child {
-    font-size: 13px;
-    line-height: 20px;
 }
 
 .checkbox-label {
@@ -314,7 +390,6 @@ table tr td:first-child {
 
 .item_active:hover,.item_inactive:hover,.hc-item:hover ,.section_header {
     cursor: pointer;
-    cursor: hand;
 }
 
 .section_header {

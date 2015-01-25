@@ -33,7 +33,7 @@
     <div class="row">
         <div class="col-md-4" data-bind="css: {'col-md-4': $root.layout() == 0, 'col-md-12': $root.layout() == 1}">
             <div class="row">
-                <h3 class="col-md-12">Stats <a class="btn btn-default btn-xs" data-bind="click: toggleStatDetails, text: !showStatDetails() ? 'Show more' : 'Show less', attr: {title: !showStatDetails() ? 'Click to show base stats' : 'Click to hide base stats'}"></a></h3>
+                <h3 class="col-md-12">Stats <a class="btn btn-default btn-xs" data-bind="toggle: showStatDetails, text: !showStatDetails() ? 'Show more' : 'Show less', attr: {title: !showStatDetails() ? 'Click to show base stats' : 'Click to hide base stats'}"></a></h3>
 
                 <div class="col-md-12" data-bind="visible: showStatDetails(), css: {'col-md-12': $root.layout() == 0, 'col-md-3': $root.layout() == 1}, template: {name: 'stats-additional-template'}">
                 </div>
@@ -45,8 +45,8 @@
         <div class="col-md-8" data-bind="css: {'col-md-4': $root.layout() == 0, 'col-md-12': $root.layout() == 1}">
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('inventory'); }, css: { section_disabled: !sectionDisplay().inventory() }">Inventory <small style="color:goldenrod" data-bind="html: inventory.totalCost() ? '<img src=\'http://cdn.dota2.com/apps/dota2/images/tooltips/gold.png\'/> ' + inventory.totalCost() : '' "></small></h3>
-                    <div id="inventory" data-bind="foreach: inventory.items, visible: sectionDisplay().inventory()">
+                    <h3 class="section_header" data-bind="toggle: sectionDisplay().inventory, css: { section_disabled: !sectionDisplay().inventory() }">Inventory <small style="color:goldenrod" data-bind="html: inventory.totalCost() ? '<img src=\'http://cdn.dota2.com/apps/dota2/images/tooltips/gold.png\'/> ' + inventory.totalCost() : '' "></small></h3>
+                    <div id="inventory" class="inventory hover-cursor" data-bind="click: function (data, event) { selectInventory(-1); }, css: {'row-highlight': selectedInventory() == -1}, foreach: inventory.items, visible: sectionDisplay().inventory()">
                         <div class="btn-group">
                             <img style="width:75px;" class="img-rounded" data-bind="css: { item_disabled: !enabled(), item_active: $parent.inventory.getActiveBorder($data) == 1, item_inactive: $parent.inventory.getActiveBorder($data) == 0 }, attr:{ src: $parent.inventory.getItemImage($data) }, click: function(data, event) { $parent.inventory.toggleItem($index, data, event); }, event: { dblclick: $parent.inventory.removeItem }"/>
                             <div style="float:left" data-bind="visible: $parent.inventory.getItemSizeLabel($data) != ''">
@@ -70,7 +70,7 @@
     <div class="row">
         <div class="col-md-4" data-bind="css: {'col-md-4': $root.layout() == 0, 'col-md-12': $root.layout() == 1}">
             <div class="row">
-                <h3 class="col-md-12">Stats <a class="btn btn-default btn-xs" data-bind="click: toggleStatDetails, text: !showStatDetails() ? 'Show more' : 'Show less', attr: {title: !showStatDetails() ? 'Click to show base stats' : 'Click to hide base stats'}"></a></h3>
+                <h3 class="col-md-12">Stats <a class="btn btn-default btn-xs" data-bind="toggle: showStatDetails, text: !showStatDetails() ? 'Show more' : 'Show less', attr: {title: !showStatDetails() ? 'Click to show base stats' : 'Click to hide base stats'}"></a></h3>
 
                 <div class="col-md-12" data-bind="visible: showStatDetails(), css: {'col-md-12': $root.layout() == 0, 'col-md-3': $root.layout() == 1}, template: {name: 'stats-additional-template'}"></div>
 
@@ -81,7 +81,7 @@
 
             <div class="row" data-bind="visible: showDamageDetails()">
                 <div class="col-md-12">
-                    <h3 style="display:block;" class="section_header" data-bind="click: toggleDamageDetails, css: { section_disabled: !showDamageDetails() }">Damage Details
+                    <h3 style="display:block;" class="section_header" data-bind="toggle: showDamageDetails, css: { section_disabled: !showDamageDetails() }">Damage Details
                         <span class="pull-right">
                             <small style="text-align:center" data-bind="style: {color: getDamageTypeColor('physical')}">Physical</small>
                             <small style="text-align:center" data-bind="style: {color: getDamageTypeColor('magic')}">Magical</small>
@@ -203,10 +203,8 @@
         <div class="col-md-8" data-bind="css: {'col-md-8': $root.layout() == 0, 'col-md-12': $root.layout() == 1}">
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('inventory'); }, css: { section_disabled: !sectionDisplay().inventory() }">Inventory <small style="color:goldenrod" data-bind="html: inventory.totalCost() ? '<img src=\'http://cdn.dota2.com/apps/dota2/images/tooltips/gold.png\'/> ' + inventory.totalCost() : '' "></small></h3>
-                    <div id="inventory" data-bind="foreach: inventory.items, visible: sectionDisplay().inventory()">
-                        <div class="pull-left" style="margin-right:10px" data-bind="template: { name: 'item-template'}"></div>
-                    </div>
+                    <h3 class="section_header" data-bind="toggle: sectionDisplay().inventory, css: { section_disabled: !sectionDisplay().inventory() }">Inventory <small style="color:goldenrod" data-bind="html: inventory.totalCost() ? '<img src=\'http://cdn.dota2.com/apps/dota2/images/tooltips/gold.png\'/> ' + inventory.totalCost() : '' "></small></h3>
+                    <div id="inventory" class="inventory hover-cursor" data-bind="click: function (data, event) { selectInventory(-1); }, css: {'row-highlight': selectedInventory() == -1}, template: { name: 'item-template', foreach: inventory.items }, visible: sectionDisplay().inventory()"></div>
                 </div>
             </div>
 
@@ -235,7 +233,7 @@
     <div class="row">
         <div class="col-md-4" data-bind="css: {'col-md-4': $root.layout() == 0, 'col-md-12': $root.layout() == 1}">
             <div class="row">
-                <h3 class="col-md-12">Stats <a class="btn btn-default btn-xs" data-bind="click: toggleStatDetails, text: !showStatDetails() ? 'Show more' : 'Show less', attr: {title: !showStatDetails() ? 'Click to show base stats' : 'Click to hide base stats'}"></a></h3>
+                <h3 class="col-md-12">Stats <a class="btn btn-default btn-xs" data-bind="toggle: showStatDetails, text: !showStatDetails() ? 'Show more' : 'Show less', attr: {title: !showStatDetails() ? 'Click to show base stats' : 'Click to hide base stats'}"></a></h3>
 
                 <div class="col-md-3" data-bind="visible: showStatDetails(), template: {name: 'stats-additional-template'}"></div>
                 
@@ -275,7 +273,7 @@
                     <tr><td>Evasion:</td><td class="text-right"><span data-bind="text: evasion"></span></td></tr>
                     <tr><td>Bash:</td><td class="text-right"><span data-bind="text: bash"></span></td></tr>
                     <tr><td>Miss Chance:</td><td class="text-right"><span data-bind="text: missChance"></span></td></tr>
-                    <tr><td colspan=2><a class="btn btn-default btn-block btn-xs" data-bind="css: {disabled: critInfo().sources.length == 0 ? 'disabled' : '', 'toggled': showCriticalStrikeDetails}, click: toggleCriticalStrikeDetails">Critical Strike Details</a></td></tr>
+                    <tr><td colspan=2><a class="btn btn-default btn-block btn-xs" data-bind="css: {disabled: critInfo().sources.length == 0 ? 'disabled' : '', 'toggled': showCriticalStrikeDetails}, toggle: showCriticalStrikeDetails">Critical Strike Details</a></td></tr>
                     </tbody>
                     <tbody class="tabledropdown" style="border-top:0" data-bind="visible: showCriticalStrikeDetails(),foreach: critInfo().sources">
                     <tr><td colspan=2><strong data-bind="text: $data.name"></strong></td></tr>
@@ -301,7 +299,7 @@
                     <tr><td>Attack Time:</td><td class="text-right"><span data-bind="text: attackTime"></span></td></tr>
                     <tr><td>Attack / Sec:</td><td class="text-right"><span data-bind="text: attacksPerSecond().toFixed(2)"></span></td></tr>
                     <tr><td>Attack Range:</td><td class="text-right"><span data-bind="text: totalattackrange"></span></td></tr>
-                    <tr><td colspan=2><a class="btn btn-default btn-block btn-xs" data-bind="click: toggleDamageDetails, css: {'toggled': showDamageDetails}">Damage Details</a></td></tr>
+                    <tr><td colspan=2><a class="btn btn-default btn-block btn-xs" data-bind="toggle: showDamageDetails, css: {'toggled': showDamageDetails}">Damage Details</a></td></tr>
                     </tbody>
                     </table>
                 </div>
@@ -309,7 +307,7 @@
 
             <div class="row" data-bind="visible: showDamageDetails()">
                 <div class="col-md-12">
-                    <h3 style="display:block;" class="section_header" data-bind="click: toggleDamageDetails, css: { section_disabled: !showDamageDetails() }">Damage Details
+                    <h3 style="display:block;" class="section_header" data-bind="toggle: showDamageDetails, css: { section_disabled: !showDamageDetails() }">Damage Details
                         <span class="pull-right">
                             <small style="text-align:center" data-bind="style: {color: getDamageTypeColor('physical')}">Physical</small>
                             <small style="text-align:center" data-bind="style: {color: getDamageTypeColor('magic')}">Magical</small>
@@ -431,19 +429,15 @@
         <div class="col-md-8" data-bind="css: {'col-md-8': $root.layout() == 0, 'col-md-12': $root.layout() == 1}">
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('inventory'); }, css: { section_disabled: !sectionDisplay().inventory() }">Inventory <small style="color:goldenrod" data-bind="html: inventory.totalCost() ? '<img src=\'http://cdn.dota2.com/apps/dota2/images/tooltips/gold.png\'/> ' + inventory.totalCost() : '' "></small></h3>
-                    <div id="inventory" data-bind="foreach: inventory.items, visible: sectionDisplay().inventory()">
-                        <div class="pull-left" style="margin-right:10px" data-bind="template: { name: 'item-template'}"></div>
-                    </div>
+                    <h3 class="section_header" data-bind="toggle: sectionDisplay().inventory, css: { section_disabled: !sectionDisplay().inventory() }">Inventory <small style="color:goldenrod" data-bind="html: inventory.totalCost() ? '<img src=\'http://cdn.dota2.com/apps/dota2/images/tooltips/gold.png\'/> ' + inventory.totalCost() : '' "></small></h3>
+                    <div id="inventory" class="inventory hover-cursor" data-bind="click: function (data, event) { selectInventory(-1); }, css: {'row-highlight': selectedInventory() == -1}, template: { name: 'item-template', foreach: inventory.items }, visible: sectionDisplay().inventory()"></div>
                 </div>
             </div>
             
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('ability'); }, css: { section_disabled: !sectionDisplay().ability() }">Abilities <small style="color:inherit" data-bind="text: availableSkillPoints() ? (availableSkillPoints() == 1 ? '1 unspent skillpoint' : availableSkillPoints() + ' unspent skillpoints') : ''"></small></h3>
-                    <div class="row" data-bind="foreach: ability().abilities, visible: sectionDisplay().ability()">
-                        <div data-bind="template: { name: 'ability-template'}"></div>
-                    </div>
+                    <h3 class="section_header" data-bind="toggle: sectionDisplay().ability, css: { section_disabled: !sectionDisplay().ability() }">Abilities <small style="color:inherit" data-bind="text: availableSkillPoints() ? (availableSkillPoints() == 1 ? '1 unspent skillpoint' : availableSkillPoints() + ' unspent skillpoints') : ''"></small></h3>
+                    <div class="row" data-bind="template: { name: 'ability-template', foreach: ability().abilities }, visible: sectionDisplay().ability()"></div>
                     <div class="form-horizontal" data-bind="if: selectedHero().heroName == 'silencer', visible: sectionDisplay().ability()">
                         <div class="form-group">
                                 <div class="col-md-2 control-label">
@@ -459,7 +453,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('buff'); }, css: { section_disabled: !sectionDisplay().buff() }">Buffs</h3>
+                    <h3 class="section_header" data-bind="toggle: sectionDisplay().buff, css: { section_disabled: !sectionDisplay().buff() }">Buffs</h3>
                     <div class="form-horizontal" data-bind="visible: sectionDisplay().buff()">
                         <div class="form-group">
                             <div class="col-md-6">
@@ -522,7 +516,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('debuff'); }, css: { section_disabled: !sectionDisplay().debuff() }">Debuffs</h3>
+                    <h3 class="section_header" data-bind="toggle: sectionDisplay().debuff, css: { section_disabled: !sectionDisplay().debuff() }">Debuffs</h3>
                     <div class="form-horizontal" data-bind="visible: sectionDisplay().debuff()">
                         <div class="form-group">
                             <div class="col-md-6">
@@ -608,7 +602,7 @@
     <div class="row">
         <div class="col-md-4" data-bind="css: {'col-md-4': $root.layout() == 0, 'col-md-12': $root.layout() == 1}">
             <div class="row">
-                <h3 class="col-md-12">Stats <a class="btn btn-default btn-xs" data-bind="click: toggleStatDetails, text: !showStatDetails() ? 'Show more' : 'Show less', attr: {title: !showStatDetails() ? 'Click to show base stats' : 'Click to hide base stats'}"></a>
+                <h3 class="col-md-12">Stats <a class="btn btn-default btn-xs" data-bind="toggle: showStatDetails, text: !showStatDetails() ? 'Show more' : 'Show less', attr: {title: !showStatDetails() ? 'Click to show base stats' : 'Click to hide base stats'}"></a>
                     <div class="checkbox" style="margin-left:15px;display:inline;" data-bind="style: {'display': $root.layout() == 1 ? 'inline' : 'none'}">
                         <label><input type="checkbox" style="float:none;margin-right:5px;" data-bind="checked: showDiff"><span style="font-size:12px">Show <abbr title="The difference between two adjacent hero tabs shown next to each stat.">delta values</abbr>. <span data-bind="visible: showDiff">Comparing level <span data-bind="text: selectedHeroLevel"></span> <span data-bind="text: hero().displayname"></span> to level <span data-bind="text: heroCompare().selectedHeroLevel"></span> <span data-bind="text: heroCompare().hero().displayname"></span>.</span></span></label>
                         <label style="margin-left:25px;font-size:12px;"><input type="checkbox" style="float:none;margin-right:5px;" data-bind="checked: showUnitTab">Show unit tab</label>
@@ -624,7 +618,7 @@
 
             <div class="row" data-bind="visible: showDamageDetails()">
                 <div class="col-md-12">
-                    <h3 style="display:block;" class="section_header" data-bind="click: toggleDamageDetails, css: { section_disabled: !showDamageDetails() }">Damage Details
+                    <h3 style="display:block;" class="section_header" data-bind="toggle: showDamageDetails, css: { section_disabled: !showDamageDetails() }">Damage Details
                         <span class="pull-right">
                             <small style="text-align:center" data-bind="style: {color: getDamageTypeColor('physical')}">Physical</small>
                             <small style="text-align:center" data-bind="style: {color: getDamageTypeColor('magic')}">Magical</small>
@@ -745,20 +739,16 @@
         </div>
         <div class="col-md-8" data-bind="css: {'col-md-8': $root.layout() == 0, 'col-md-12': $root.layout() == 1}">
             <div class="row">
-                <div class="col-md-12">
-                    <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('inventory'); }, css: { section_disabled: !sectionDisplay().inventory() }">Inventory <small style="color:goldenrod" data-bind="html: inventory.totalCost() ? '<img src=\'http://cdn.dota2.com/apps/dota2/images/tooltips/gold.png\'/> ' + inventory.totalCost() : '' "></small></h3>
-                    <div id="inventory" data-bind="foreach: inventory.items, visible: sectionDisplay().inventory()">
-                        <div class="pull-left" style="margin-right:10px" data-bind="template: { name: 'item-template'}"></div>
-                    </div>
+                <div class="col-md-12" data-bind="itemBuildTable: {}">
+                    <h3 class="section_header" data-bind="toggle: sectionDisplay().inventory, css: { section_disabled: !sectionDisplay().inventory() }">Inventory <small style="color:goldenrod" data-bind="html: inventory.totalCost() ? '<img src=\'http://cdn.dota2.com/apps/dota2/images/tooltips/gold.png\'/> ' + inventory.totalCost() : '' "></small></h3>
+                    <div id="inventory" class="inventory hover-cursor" data-bind="click: function (data, event) { selectInventory(-1); }, css: {'row-highlight': selectedInventory() == -1}, template: { name: 'item-template', foreach: inventory.items }, visible: sectionDisplay().inventory()"></div>
                 </div>
             </div>
             
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('ability'); }, css: { section_disabled: !sectionDisplay().ability() }">Abilities <small style="color:inherit" data-bind="text: availableSkillPoints() ? (availableSkillPoints() == 1 ? '1 unspent skillpoint' : availableSkillPoints() + ' unspent skillpoints') : ''"></small></h3>
-                    <div class="row" data-bind="foreach: ability().abilities, visible: sectionDisplay().ability()">
-                        <div data-bind="template: { name: 'ability-template'}"></div>
-                    </div>
+                    <h3 class="section_header" data-bind="toggle: sectionDisplay().ability, css: { section_disabled: !sectionDisplay().ability() }">Abilities <small style="color:inherit" data-bind="text: availableSkillPoints() ? (availableSkillPoints() == 1 ? '1 unspent skillpoint' : availableSkillPoints() + ' unspent skillpoints') : ''"></small></h3>
+                    <div class="row" data-bind="template: { name: 'ability-template', foreach: ability().abilities }, visible: sectionDisplay().ability()"></div>
                     <div class="form-horizontal" data-bind="if: selectedHero().heroName == 'silencer', visible: sectionDisplay().ability()">
                         <div class="form-group">
                                 <div class="col-md-2 control-label">
@@ -774,7 +764,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('buff'); }, css: { section_disabled: !sectionDisplay().buff() }">Buffs</h3>
+                    <h3 class="section_header" data-bind="toggle: sectionDisplay().buff, css: { section_disabled: !sectionDisplay().buff() }">Buffs</h3>
                     <div class="form-horizontal" data-bind="visible: sectionDisplay().buff()">
                         <div class="form-group">
                             <div class="col-md-6">
@@ -837,7 +827,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('debuff'); }, css: { section_disabled: !sectionDisplay().debuff() }">Debuffs</h3>
+                    <h3 class="section_header" data-bind="toggle: sectionDisplay().debuff, css: { section_disabled: !sectionDisplay().debuff() }">Debuffs</h3>
                     <div class="form-horizontal" data-bind="visible: sectionDisplay().debuff()">
                         <div class="form-group">
                             <div class="col-md-6">
@@ -903,7 +893,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('illusion'); }, css: { section_disabled: !sectionDisplay().illusion() }">Illusions</h3>
+                    <h3 class="section_header" data-bind="toggle: sectionDisplay().illusion, css: { section_disabled: !sectionDisplay().illusion() }">Illusions</h3>
                     <div data-bind="visible: sectionDisplay().illusion()">
                         <h4 style="color:red">Under Construction</h4>
                         <div class="form-horizontal">
@@ -935,14 +925,154 @@
                 </div>
             </div>
         </div>
+		
+		<div class="col-md-12">
+			<h3 class="section_header" data-bind="toggle: sectionDisplay().skillbuild, css: { section_disabled: !sectionDisplay().skillbuild() }">Build Explorer</h3>
+			<div data-bind="visible: sectionDisplay().skillbuild()">
+				<div class="col-md-12">
+					<h4 class="section_header" data-bind="toggle: sectionDisplay()['skillbuild-skills'], css: { section_disabled: !sectionDisplay()['skillbuild-skills']() }">Skill Build <small style="color:inherit" data-bind="text: availableSkillBuildPoints() ? (availableSkillBuildPoints() == 1 ? '1 unspent skillpoint' : availableSkillBuildPoints() + ' unspent skillpoints') : ''"></small></h4>
+						<div data-bind="visible: sectionDisplay()['skillbuild-skills']">
+						<table>
+							<tbody data-bind="template: { name: 'ability-3-template', foreach: ability().abilities }"></tbody>
+						</table>
+						<div class="form-group">
+							<button class="btn btn-default" data-bind="click: resetSkillBuild">Clear</button>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<h4 class="section_header" data-bind="toggle: sectionDisplay()['skillbuild-items'], css: { section_disabled: !sectionDisplay()['skillbuild-items']() }">Item Build</h4>
+					<div data-bind="visible: sectionDisplay()['skillbuild-items']">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Level</th>
+									<th class="text-center">Inventory</th>
+									<th></th>
+									<th></th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody data-bind="foreach: new Array(25), itemBuildTable: {}">
+								<tr class="hover-cursor" data-bind="css: {'row-highlight': $parent.selectedInventory() == $index()}">
+									<td class="carry-over" data-bind="click: function (data, event) { $parent.selectInventory($index()); }">
+										<strong data-bind="text: ($index() + 1)"></strong>
+										<a class="btn btn-default btn-xs glyphicon" data-bind="visible: $index() > 0, toggle: $parent.itemBuild()[$index()].carryOver, preventBubble: 'click', css: { 'glyphicon-arrow-down': $parent.itemBuild()[$index()].carryOver(), 'glyphicon-stop': !$parent.itemBuild()[$index()].carryOver() }" title="Carry over items to next level's inventory"></a>
+									</td>
+									<td class="col-md-10" data-bind="click: function (data, event) { $parent.selectInventory($index()); }, with: $parent.itemBuild()[$index()]">
+										<div class="itemBuild-inventory" data-bind="template: { name: 'itemBuild-item-template', foreach: items }"></div>
+									</td>
+									<td>
+										<a class="btn btn-default btn-xs" data-bind="click: function (data, event) { $parent.copyInventoryToClipBoard($index()); }" title="Copy items">Copy</a>
+									</td>
+									<td>
+										<a class="btn btn-default btn-xs" data-bind="click: function (data, event) { $parent.pasteInventoryFromClipBoard($index()); }" title="Paste items">Paste</a>
+									</td>
+									<td>
+										<a class="btn btn-default btn-xs" data-bind="click: function (data, event) { $parent.resetItemBuild($index()); }" title="Clear inventory">Clear</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="form-group">
+							<button class="btn btn-default" data-bind="click: resetAllItemBuilds">Clear</button>
+						</div>
+					</div>
+				</div>
+                <div class="form-group">
+					<label>Data set header label</label>
+                    <input type="text" class="form-control" data-bind="value: graphDataHeader">
+                </div>
+                <div class="form-group">
+					<label>Data set description</label>
+                    <input type="text" class="form-control" data-bind="value: graphDataDescription">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-default" data-bind="click: graph">Add data set</button>
+                </div>
+                <div class="form-group">
+                    <label>Hero Property</label>
+                    <select class="form-control" data-bind="options: graphProperties, optionsText: 'label', optionsValue: 'id', value: selectedGraphProperty"></select>
+                </div>
+				<!-- ko if: graphData().length > 0 -->
+				<div class="form-group">
+					<canvas  data-bind="chart: graphChartData, chartType: 'Scatter', chartOptions: graphChartOptions()"></canvas >
+				</div>
+                <button class="btn btn-default btn-xs" data-bind="toggle: showGraphItemBuildRows, css: {'toggled': showGraphItemBuildRows}">Show item build rows</button>
+                <button class="btn btn-default btn-xs" data-bind="toggle: showGraphSkillBuildColumns, css: {'toggled': showGraphSkillBuildColumns}">Show skill build columns</button>
+				<table class="table build-table">
+					<thead>
+						<tr>
+							<th class="right-border">Level</th>
+							<!-- ko foreach: graphData -->
+							<th class="text-center" data-bind="css: { 'right-border': !$parent.showGraphSkillBuildColumns() || !$data.visible() }">
+								<span data-bind="css: { 'tooltip-underline': $data.description }, tooltip: {title: $data.description, placement: 'bottom'}, visible: $data.visible(), text: $data.header, style: { color: $parent.graphDistinctColor($parent.graphData().length, $index(), 1) }"></span>
+                                <span class="btn btn-xs glyphicon glyphicon-info-sign" data-bind="visible: $data.visible(), popover: {template: 'popover-graphData-template', data: $data, options: {} }"></span>
+								<button class="btn btn-default btn-xs shop-button glyphicon glyphicon-remove pull-right" class="close" data-bind="visible: !$parent.showGraphSkillBuildColumns() || !$data.visible(), click: function(data, event) { $parent.removeGraphDataSet($data); }"></button>
+								<button class="btn btn-default btn-xs shop-button glyphicon pull-right" data-bind="visible: !$parent.showGraphSkillBuildColumns() || !$data.visible(), toggle: $data.visible, css: { 'glyphicon-minus': $data.visible(), 'glyphicon-plus': !$data.visible()}"></button>
+							</th>
+							<th class="text-left right-border" data-bind="visible: $data.visible() && $parent.showGraphSkillBuildColumns()"><abbr title="Q-W-E-R-Stats">Skill Build</abbr>
+								<button class="btn btn-default btn-xs shop-button glyphicon glyphicon-remove pull-right" class="close" data-bind="visible: $parent.showGraphSkillBuildColumns(), click: function(data, event) { $parent.removeGraphDataSet($data); }"></button>
+								<button class="btn btn-default btn-xs shop-button glyphicon pull-right" data-bind="visible: $parent.showGraphSkillBuildColumns(), toggle: $data.visible, css: { 'glyphicon-minus': $data.visible(), 'glyphicon-plus': !$data.visible()}"></button>
+							</th>
+							<!-- /ko -->
+						</tr>
+					</thead>
+					<tbody data-bind="foreach: new Array(graphData()[0].data.length)">
+						<tr>
+							<td class="right-border">
+                                <strong data-bind="text: ($index() + 1)"></strong>
+                            </td>
+							<!-- ko foreach: new Array($parent.graphData().length) -->
+							<td class="text-right" data-bind="css: { 'right-border': !$parentContext.$parent.showGraphSkillBuildColumns() || !$parentContext.$parent.graphData()[$index()].visible() }">
+								<span data-bind="visible: $parentContext.$parent.graphData()[$index()].visible(), text: $parentContext.$parent.graphData()[$index()].data[$parentContext.$index()][$parentContext.$parent.selectedGraphProperty()]"></span>
+							</td>
+							<td class="text-left right-border" data-bind="visible: $parentContext.$parent.graphData()[$index()].visible() && $parentContext.$parent.showGraphSkillBuildColumns(), text: $parentContext.$parent.graphData()[$index()].cumulativeSkillBuild[$parentContext.$index()].join('-')"></td>
+							<!-- /ko -->
+						</tr>
+                        <tr class="itemBuild-inventory" data-bind="visible: $parent.showGraphItemBuildRows() && $parent.graphRowHasItems($index())">
+                            <td class="right-border-itemrow no-top-border"></td>
+							<!-- ko foreach: new Array($parent.graphData().length) -->
+                            <td class="right-border-itemrow no-top-border" data-bind="attr: { colspan: $parentContext.$parent.graphData()[$index()].visible() && $parentContext.$parent.showGraphSkillBuildColumns() ? 2 : 1 }">
+								<div data-bind="visible: $parentContext.$parent.graphData()[$index()].visible(), foreach: $parentContext.$parent.graphData()[$index()].data[$parentContext.$index()].items">
+									<img class="itemBuild-img-sm img-rounded" data-bind="css: { item_disabled: !enabled, item_active: $parentContext.$parentContext.$parent.inventory.getActiveBorder($data) == 1, item_inactive: $parentContext.$parentContext.$parent.inventory.getActiveBorder($data) == 0 }, attr:{ src: $parentContext.$parentContext.$parent.inventory.getItemImage($data) }"/>
+									<div style="float:left" data-bind="visible: $parentContext.$parentContext.$parent.inventory.getItemSizeLabel($data) != ''">
+										<div data-bind="html: $parentContext.$parentContext.$parent.inventory.getItemSizeLabel($data)" style="position:absolute;left:0;bottom:0;color:white;opacity:.5;background-color:black;padding:0px 2px"></div>
+										<div data-bind="html: $parentContext.$parentContext.$parent.inventory.getItemSizeLabel($data)" style="position:absolute;left:0;bottom:0;color:white;padding:0px 2px"></div>
+									</div>
+								</div>
+                            </td>
+							<!-- /ko -->
+                        </tr>
+					</tbody>
+				</table>
+				<!-- /ko -->
+			</div>
+		</div>
+    </div>
+</script>
+
+<script type="text/html" id="popover-graphData-template">
+	<label>Skill Build</label>
+    <div data-bind="foreach: $data.skillBuild">
+        <div class="pull-left" style="width:50px;height:50px;position:relative;border:1px solid black;">
+            <div style="position:absolute;bottom:0;right:0;background-color:white;color:black;opacity:.8" data-bind="text: $index() + 1"></div>
+            <!-- ko if: $data != -1 -->
+            <img class="img-rounded" data-bind="attr:{src: '/media/images/spellicons/' + $parentContext.$parentContext.$parent.ability().abilities()[$data].name() + '.png'}"/>
+            <!-- /ko -->
+            <!-- ko if: $data == -1 -->
+            
+            <!-- /ko -->
+        </div>
     </div>
 </script>
 
 <script type="text/html" id="shop-template">
-        <div id="shop-container" class="col-md-12 col-lg-4" data-bind="visible: displayShop() || shopPopout(), css: {'col-lg-4': !shopPopout()}, style: { 'padding-top': shopPopout() ? '5px' : '0px'}">
-              <button id="shop-minimize" class="btn btn-default btn-xs shop-button glyphicon glyphicon-minus pull-right" data-bind="click: toggleDisplayShop, visible: displayShop()" title="Minimize shop"></button>
-              <button id="shop-maximize" class="btn btn-default btn-xs shop-button glyphicon glyphicon-plus pull-right" data-bind="click: toggleDisplayShop, visible: !displayShop()" title="Maximize shop"></button>
+        <div id="shop-container" class="col-md-12 col-lg-4" data-bind="shopDockStyle: shopDockTrigger, visible: displayShop() || shopPopout(), css: {'col-lg-4': !shopPopout()}, style: { 'padding-top': shopPopout() ? '5px' : '0px'}">
+              <button id="shop-minimize" class="btn btn-default btn-xs shop-button glyphicon glyphicon-minus pull-right" data-bind="toggle: displayShop, visible: displayShop()" title="Minimize shop"></button>
+              <button id="shop-maximize" class="btn btn-default btn-xs shop-button glyphicon glyphicon-plus pull-right" data-bind="toggle: displayShop, visible: !displayShop()" title="Maximize shop"></button>
               <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-new-window pull-right hidden-xs" data-bind="click: shopPopout, visible: !shopPopout()" title="Popout shop"></button>
+              <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-align-right pull-right hidden-xs" data-bind="toggle: shopDock, attr: { title: shopDock() ? 'Undock shop to right side of screen' : 'Dock shop to right side of screen' }" ></button>
             <ul id="shoptabs" class="nav nav-tabs" data-bind="visible: displayShop()">
               <li><a href="#shop_basic" data-toggle="tab">Basic</a></li>
               <li><a href="#shop_upgrade" data-toggle="tab">Upgrade</a></li>
@@ -955,65 +1085,65 @@
                     <div class="hc-shop hc-shop-armaments" id="armaments"></div>
                     <div class="hc-shop hc-shop-arcane" id="arcane"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-clarity" id="clarity" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-branches" id="branches" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ring_of_protection" id="ring_of_protection" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-magic_stick" id="magic_stick" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-clarity" id="clarity" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-branches" id="branches" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ring_of_protection" id="ring_of_protection" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-magic_stick" id="magic_stick" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-tango" id="tango" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-gauntlets" id="gauntlets" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-quelling_blade" id="quelling_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-sobi_mask" id="sobi_mask" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-tango" id="tango" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-gauntlets" id="gauntlets" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-quelling_blade" id="quelling_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-sobi_mask" id="sobi_mask" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-flask" id="flask" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-slippers" id="slippers" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-stout_shield" id="stout_shield" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ring_of_regen" id="ring_of_regen" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-flask" id="flask" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-slippers" id="slippers" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-stout_shield" id="stout_shield" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ring_of_regen" id="ring_of_regen" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-smoke_of_deceit" id="smoke_of_deceit" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-mantle" id="mantle" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-blades_of_attack" id="blades_of_attack" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-boots" id="boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-smoke_of_deceit" id="smoke_of_deceit" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-mantle" id="mantle" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-blades_of_attack" id="blades_of_attack" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-boots" id="boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-tpscroll" id="tpscroll" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-circlet" id="circlet" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-chainmail" id="chainmail" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-gloves" id="gloves" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-tpscroll" id="tpscroll" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-circlet" id="circlet" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-chainmail" id="chainmail" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-gloves" id="gloves" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-dust" id="dust" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-belt_of_strength" id="belt_of_strength" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-helm_of_iron_will" id="helm_of_iron_will" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-cloak" id="cloak" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-dust" id="dust" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-belt_of_strength" id="belt_of_strength" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-helm_of_iron_will" id="helm_of_iron_will" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-cloak" id="cloak" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-courier" id="courier" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-boots_of_elves" id="boots_of_elves" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-broadsword" id="broadsword" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-gem" id="gem" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-courier" id="courier" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-boots_of_elves" id="boots_of_elves" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-broadsword" id="broadsword" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-gem" id="gem" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-flying_courier" id="flying_courier" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-robe" id="robe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-quarterstaff" id="quarterstaff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-lifesteal" id="lifesteal" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-flying_courier" id="flying_courier" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-robe" id="robe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-quarterstaff" id="quarterstaff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-lifesteal" id="lifesteal" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-ward_observer" id="ward_observer" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ogre_axe" id="ogre_axe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-claymore" id="claymore" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ghost" id="ghost" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ward_observer" id="ward_observer" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ogre_axe" id="ogre_axe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-claymore" id="claymore" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ghost" id="ghost" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-ward_sentry" id="ward_sentry" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-blade_of_alacrity" id="blade_of_alacrity" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-javelin" id="javelin" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-talisman_of_evasion" id="talisman_of_evasion" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ward_sentry" id="ward_sentry" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-blade_of_alacrity" id="blade_of_alacrity" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-javelin" id="javelin" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-talisman_of_evasion" id="talisman_of_evasion" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-bottle" id="bottle" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-staff_of_wizardry" id="staff_of_wizardry" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-platemail" id="platemail" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-blink" id="blink" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-bottle" id="bottle" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-staff_of_wizardry" id="staff_of_wizardry" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-platemail" id="platemail" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-blink" id="blink" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
                     <div class="img-rounded hc-item hc-item-emptyitembg" id="emptyitembg"></div>
-                    <div class="img-rounded hc-item hc-item-ultimate_orb" id="ultimate_orb" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-mithril_hammer" id="mithril_hammer" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-shadow_amulet" id="shadow_amulet" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ultimate_orb" id="ultimate_orb" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-mithril_hammer" id="mithril_hammer" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-shadow_amulet" id="shadow_amulet" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
                 </div>
                 <div class="tab-pane" id="shop_upgrade">
@@ -1024,117 +1154,117 @@
                     <div class="hc-shop hc-shop-armor" id="armor"></div>
                     <div class="hc-shop hc-shop-artifacts" id="artifacts"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-wraith_band" id="wraith_band" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ring_of_basilius" id="ring_of_basilius" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-force_staff" id="force_staff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-lesser_crit" id="lesser_crit" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-hood_of_defiance" id="hood_of_defiance" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-helm_of_the_dominator" id="helm_of_the_dominator" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-wraith_band" id="wraith_band" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ring_of_basilius" id="ring_of_basilius" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-force_staff" id="force_staff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-lesser_crit" id="lesser_crit" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-hood_of_defiance" id="hood_of_defiance" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-helm_of_the_dominator" id="helm_of_the_dominator" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-null_talisman" id="null_talisman" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-headdress" id="headdress" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-necronomicon" id="necronomicon" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-armlet" id="armlet" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-blade_mail" id="blade_mail" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-mask_of_madness" id="mask_of_madness" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-null_talisman" id="null_talisman" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-headdress" id="headdress" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-necronomicon" id="necronomicon" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-armlet" id="armlet" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-blade_mail" id="blade_mail" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-mask_of_madness" id="mask_of_madness" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-magic_wand" id="magic_wand" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-buckler" id="buckler" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-cyclone" id="cyclone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-basher" id="basher" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-vanguard" id="vanguard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-sange" id="sange" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-magic_wand" id="magic_wand" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-buckler" id="buckler" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-cyclone" id="cyclone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-basher" id="basher" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-vanguard" id="vanguard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-sange" id="sange" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-bracer" id="bracer" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-urn_of_shadows" id="urn_of_shadows" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-dagon" id="dagon" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-invis_sword" id="invis_sword" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-soul_booster" id="soul_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-yasha" id="yasha" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-bracer" id="bracer" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-urn_of_shadows" id="urn_of_shadows" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-dagon" id="dagon" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-invis_sword" id="invis_sword" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-soul_booster" id="soul_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-yasha" id="yasha" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-poor_mans_shield" id="poor_mans_shield" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ring_of_aquila" id="ring_of_aquila" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-veil_of_discord" id="veil_of_discord" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-bfury" id="bfury" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-black_king_bar" id="black_king_bar" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-maelstrom" id="maelstrom" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-poor_mans_shield" id="poor_mans_shield" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ring_of_aquila" id="ring_of_aquila" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-veil_of_discord" id="veil_of_discord" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-bfury" id="bfury" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-black_king_bar" id="black_king_bar" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-maelstrom" id="maelstrom" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-soul_ring" id="soul_ring" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-tranquil_boots" id="tranquil_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-rod_of_atos" id="rod_of_atos" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ethereal_blade" id="ethereal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-shivas_guard" id="shivas_guard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-diffusal_blade" id="diffusal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-soul_ring" id="soul_ring" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-tranquil_boots" id="tranquil_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-rod_of_atos" id="rod_of_atos" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ethereal_blade" id="ethereal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-shivas_guard" id="shivas_guard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-diffusal_blade" id="diffusal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-phase_boots" id="phase_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-medallion_of_courage" id="medallion_of_courage" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ultimate_scepter" id="ultimate_scepter" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-radiance" id="radiance" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-manta" id="manta" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-desolator" id="desolator" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-phase_boots" id="phase_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-medallion_of_courage" id="medallion_of_courage" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ultimate_scepter" id="ultimate_scepter" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-radiance" id="radiance" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-manta" id="manta" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-desolator" id="desolator" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-power_treads" id="power_treads" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-arcane_boots" id="arcane_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-orchid" id="orchid" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-monkey_king_bar" id="monkey_king_bar" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-bloodstone" id="bloodstone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-heavens_halberd" id="heavens_halberd" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-power_treads" id="power_treads" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-arcane_boots" id="arcane_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-orchid" id="orchid" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-monkey_king_bar" id="monkey_king_bar" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-bloodstone" id="bloodstone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-heavens_halberd" id="heavens_halberd" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-oblivion_staff" id="oblivion_staff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ancient_janggo" id="ancient_janggo" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-refresher" id="refresher" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-greater_crit" id="greater_crit" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-sphere" id="sphere" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-sange_and_yasha" id="sange_and_yasha" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-oblivion_staff" id="oblivion_staff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ancient_janggo" id="ancient_janggo" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-refresher" id="refresher" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-greater_crit" id="greater_crit" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-sphere" id="sphere" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-sange_and_yasha" id="sange_and_yasha" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-pers" id="pers" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-vladmir" id="vladmir" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-sheepstick" id="sheepstick" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-butterfly" id="butterfly" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-assault" id="assault" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-mjollnir" id="mjollnir" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-pers" id="pers" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-vladmir" id="vladmir" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-sheepstick" id="sheepstick" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-butterfly" id="butterfly" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-assault" id="assault" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-mjollnir" id="mjollnir" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-hand_of_midas" id="hand_of_midas" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-mekansm" id="mekansm" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-hand_of_midas" id="hand_of_midas" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-mekansm" id="mekansm" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <div class="img-rounded hc-item hc-item-emptyitembg" id="emptyitembg"></div>
-                    <div class="img-rounded hc-item hc-item-rapier" id="rapier" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-heart" id="heart" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-skadi" id="skadi" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-rapier" id="rapier" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-heart" id="heart" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-skadi" id="skadi" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-travel_boots" id="travel_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-pipe" id="pipe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-travel_boots" id="travel_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-pipe" id="pipe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <div class="img-rounded hc-item hc-item-emptyitembg" id="emptyitembg"></div>
-                    <div class="img-rounded hc-item hc-item-abyssal_blade" id="abyssal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-crimson_guard" id="crimson_guard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-satanic" id="satanic" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-abyssal_blade" id="abyssal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-crimson_guard" id="crimson_guard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-satanic" id="satanic" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
                 </div>
                 <div class="tab-pane" id="shop_secret">
                     <div class="hc-shop hc-shop-secret" id="secret"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-orb_of_venom" id="orb_of_venom" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-orb_of_venom" id="orb_of_venom" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-ring_of_health" id="ring_of_health" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ring_of_health" id="ring_of_health" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-void_stone" id="void_stone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-void_stone" id="void_stone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-energy_booster" id="energy_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-energy_booster" id="energy_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-vitality_booster" id="vitality_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-vitality_booster" id="vitality_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-point_booster" id="point_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-point_booster" id="point_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-hyperstone" id="hyperstone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-hyperstone" id="hyperstone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-demon_edge" id="demon_edge" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-demon_edge" id="demon_edge" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-mystic_staff" id="mystic_staff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-mystic_staff" id="mystic_staff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-eagle" id="eagle" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-eagle" id="eagle" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-reaver" id="reaver" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-reaver" id="reaver" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-relic" id="relic" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.inventory.addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-relic" id="relic" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
                     <br>
                 </div>
             </div>
@@ -1148,8 +1278,10 @@
                 </div>
             </div>
 
-            <div data-bind="visible: selectedItem && displayShop()">
-                <div data-bind="html: getItemTooltipData"></div>
+            <div data-bind="visible: selectedItem() && displayShop()">
+				<button class="btn btn-default btn-xs glyphicon glyphicon-minus pull-right" data-bind="toggle: displayShopItemTooltip, visible: displayShopItemTooltip()" title="Hide item description"></button>
+				<button class="btn btn-default btn-xs glyphicon glyphicon-plus pull-right" data-bind="toggle: displayShopItemTooltip, visible: !displayShopItemTooltip()" title="Show item description"></button>
+                <div data-bind="html: getItemTooltipData, css: { 'hide-shop-item-details': !displayShopItemTooltip() }"></div>
                 <div style="margin-top:10px;margin-bottom:10px;" class="form-inline" data-bind="visible: getItemInputLabel() != ''">
                     <div class="form-group">
                         <label for="iteminput" data-bind="text: getItemInputLabel"></label>
@@ -1157,22 +1289,40 @@
                     </div>
                 </div>
                 <div class="form-group text-right">
-                    <button class="btn btn-default" data-bind="click: selectedTab().data.inventory.addItem">Add Item</button>
+                    <button class="btn btn-default" data-bind="click: selectedTab().data.getSelectedInventory().addItem">Add Item</button>
                 </div>
             </div>
         </div>
 </script>
 
 <script type="text/html" id="item-template">
-    <div class="btn-group">
-        <img style="width:75px;" class="img-rounded" data-bind="css: { item_disabled: !enabled(), item_active: $parent.inventory.getActiveBorder($data) == 1, item_inactive: $parent.inventory.getActiveBorder($data) == 0 }, attr:{ src: $parent.inventory.getItemImage($data) }, click: function(data, event) { $parent.inventory.toggleItem($index, data, event); }, event: { dblclick: $parent.inventory.removeItem }"/>
-        <div style="float:left" data-bind="visible: $parent.inventory.getItemSizeLabel($data) != ''">
-            <div data-bind="html: $parent.inventory.getItemSizeLabel($data)" style="position:absolute;left:0;bottom:0;color:white;opacity:.5;background-color:black;padding:0px 2px"></div>
-            <div data-bind="html: $parent.inventory.getItemSizeLabel($data)" style="position:absolute;left:0;bottom:0;color:white;padding:0px 2px"></div>
+    <div class="pull-left" style="margin-right:10px">
+        <div class="btn-group">
+            <img class="img-rounded" data-bind="css: { item_disabled: !enabled(), item_active: $parent.inventory.getActiveBorder($data) == 1, item_inactive: $parent.inventory.getActiveBorder($data) == 0 }, attr:{ src: $parent.inventory.getItemImage($data) }, click: function(data, event) { $parent.inventory.toggleItem($index, data, event); }, event: { dblclick: $parent.inventory.removeItem }"/>
+            <div style="float:left" data-bind="visible: $parent.inventory.getItemSizeLabel($data) != ''">
+                <div data-bind="html: $parent.inventory.getItemSizeLabel($data)" style="position:absolute;left:0;bottom:0;color:white;opacity:.5;background-color:black;padding:0px 2px"></div>
+                <div data-bind="html: $parent.inventory.getItemSizeLabel($data)" style="position:absolute;left:0;bottom:0;color:white;padding:0px 2px"></div>
+            </div>
+            <div class="btn-group-vertical">
+                <button class="btn btn-default btn-xs" title="Remove Item" data-bind="click: $parent.inventory.removeItem">&times;</button>
+                <button class="btn btn-default btn-xs" title="Disable/Enable Item" data-bind="click: $parent.inventory.toggleMuteItem, html: enabled() ? 'o' : '-', attr: {title: enabled() ? 'Disable Item' : 'Enable Item'}">o</button>
+            </div>
         </div>
-        <div class="btn-group-vertical">
-            <button style="padding:3px 10px;" class="btn btn-default btn-xs" title="Remove Item" data-bind="click: $parent.inventory.removeItem">&times;</button>
-            <button style="padding:3px 10px;" class="btn btn-default btn-xs" title="Disable/Enable Item" data-bind="click: $parent.inventory.toggleMuteItem, html: enabled() ? 'o' : '-', attr: {title: enabled() ? 'Disable Item' : 'Enable Item'}">o</button>
+    </div>
+</script>
+
+<script type="text/html" id="itemBuild-item-template">
+    <div class="pull-left" style="margin-right:10px">
+        <div class="btn-group">
+            <img class="img-rounded" data-bind="css: { item_disabled: !enabled(), item_active: $parent.getActiveBorder($data) == 1, item_inactive: $parent.getActiveBorder($data) == 0 }, attr:{ src: $parent.getItemImage($data) }, click: function(data, event) { $parent.toggleItem($index, data, event); }, event: { dblclick: $parent.removeItem }, clickBubble: false"/>
+            <div style="float:left" data-bind="visible: $parent.getItemSizeLabel($data) != ''">
+                <div data-bind="html: $parent.getItemSizeLabel($data)" style="position:absolute;left:0;bottom:0;color:white;opacity:.5;background-color:black;padding:0px 2px"></div>
+                <div data-bind="html: $parent.getItemSizeLabel($data)" style="position:absolute;left:0;bottom:0;color:white;padding:0px 2px"></div>
+            </div>
+            <div class="btn-group-vertical">
+                <button class="btn btn-default btn-xs" title="Remove Item" data-bind="click: $parent.removeItem, clickBubble: false">&times;</button>
+                <button class="btn btn-default btn-xs" title="Disable/Enable Item" data-bind="click: $parent.toggleMuteItem, html: enabled() ? 'o' : '-', attr: {title: enabled() ? 'Disable Item' : 'Enable Item'}, clickBubble: false">o</button>
+            </div>
         </div>
     </div>
 </script>
@@ -1199,7 +1349,7 @@
 
 <script type="text/html" id="damage-amp-template">
     <div class="col-md-12">
-        <h3 class="section_header" data-bind="click: function(data, event) { sectionDisplayToggle('damageamp'); }, css: { section_disabled: !sectionDisplay().damageamp() }">Damage Amplification & Reduction</h3>
+        <h3 class="section_header" data-bind="toggle: sectionDisplay().damageamp, css: { section_disabled: !sectionDisplay().damageamp() }">Damage Amplification & Reduction</h3>
         <div data-bind="visible: sectionDisplay().damageamp()">
             <div class="form-horizontal">
                 <div class="form-group">
@@ -1294,7 +1444,7 @@
                 </div>
             </div>
             
-            <h4>Calculations <a class="btn btn-default btn-xs" data-bind="click: toggleDamageAmpCalcDetails, text: !showDamageAmpCalcDetails() ? 'Show details' : 'Hide details'"></a></h4>
+            <h4>Calculations <a class="btn btn-default btn-xs" data-bind="toggle: showDamageAmpCalcDetails, text: !showDamageAmpCalcDetails() ? 'Show details' : 'Hide details'"></a></h4>
             <table class="table">
                 <tbody>
                     <!-- ko foreach: damageInputModified().data -->
@@ -1325,32 +1475,34 @@
 </script>
 
 <script type="text/html" id="ability-template">
-    <div data-bind="if: $data.displayname() != 'Empty' &&  ($data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_HIDDEN') == -1 || $data.name().indexOf('invoker_') != -1),
-    style: {clear: $data.name() == 'invoker_cold_snap' || $data.name() == 'invoker_chaos_meteor' ? 'both' : ''},
-    css: {row: $data.isDetail() || ($index() < $parent.ability().abilities().length-1 && $parent.ability().abilities()[$index()+1].isDetail()), row3: $data.isDetail() || ($index() < $parent.ability().abilities().length-1 && $parent.ability().abilities()[$index()+1].isDetail()) }">
-        <div class="col-md-3 text-center bottom-buffer row2" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
-            <img style="padding:0px;margin-bottom:1px;" class="img-rounded ability" data-bind="css: { ability_active: $data.isActive() || $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.isActive() && $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1, btn: $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1, 'btn-default': $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1}, attr:{src: '/media/images/spellicons/' + $data.name() + '.png'}, click: function(data, event) { $parent.ability().toggleAbility($index, data, event); }"/>
-            <div class="progress" style="position:relative">
-                <div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data) > 0, text: $data.level() + '/' + $parent.getAbilityLevelMax($data)"></div>
-                <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;" data-bind="attr: { 'aria-valuenow': ($parent.getAbilityLevelMax($data) > 0 ? $data.level()/$parent.getAbilityLevelMax($data)*100 : 0) }, style: { width: ($parent.getAbilityLevelMax($data) > 0 ? $data.level()/$parent.getAbilityLevelMax($data)*100 : 0) + '%' }"></div>
+    <div>
+        <div data-bind="if: $data.displayname() != 'Empty' &&  ($data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_HIDDEN') == -1 || $data.name().indexOf('invoker_') != -1),
+        style: {clear: $data.name() == 'invoker_cold_snap' || $data.name() == 'invoker_chaos_meteor' ? 'both' : ''},
+        css: {row: $data.isDetail() || ($index() < $parent.ability().abilities().length-1 && $parent.ability().abilities()[$index()+1].isDetail()), row3: $data.isDetail() || ($index() < $parent.ability().abilities().length-1 && $parent.ability().abilities()[$index()+1].isDetail()) }">
+            <div class="col-md-3 text-center bottom-buffer row2" data-bind="css: {'col-md-3': $root.layout() == 0, 'col-md-2': $root.layout() == 1}">
+                <img style="padding:0px;margin-bottom:1px;" class="img-rounded ability" data-bind="css: { ability_active: $data.isActive() || $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1, ability_inactive: !$data.isActive() && $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1, btn: $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1, 'btn-default': $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') == -1}, attr:{src: '/media/images/spellicons/' + $data.name() + '.png'}, click: function(data, event) { $parent.ability().toggleAbility($index, data, event); }"/>
+                <div class="progress" style="position:relative">
+                    <div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data) > 0, text: $data.level() + '/' + $parent.getAbilityLevelMax($data)"></div>
+                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;" data-bind="attr: { 'aria-valuenow': ($parent.getAbilityLevelMax($data) > 0 ? $data.level()/$parent.getAbilityLevelMax($data)*100 : 0) }, style: { width: ($parent.getAbilityLevelMax($data) > 0 ? $data.level()/$parent.getAbilityLevelMax($data)*100 : 0) + '%' }"></div>
+                </div>
+                <div class="btn-group btn-group-justified" data-bind="if: $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE') == -1">
+                    <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.ability().levelDownAbility($index, data, event, $parent); }">-</a>
+                    <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.ability().levelUpAbility($index, data, event, $parent); }">+</a>
+                </div>
+                <div class="btn-group btn-group-justified">
+                    <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.ability().toggleAbilityDetail($index, data, event); }, css: {'toggled': $data.isDetail}">Details</a>
+                </div>
+                <div class="btn-group btn-group-justified" data-bind="if: $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE') != -1">
+                    <a class="btn btn-default btn-sm btn-block" style="visibility:hidden;">&mdash;</a>
+                </div>
             </div>
-            <div class="btn-group btn-group-justified" data-bind="if: $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE') == -1">
-                <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.ability().levelDownAbility($index, data, event, $parent); }">-</a>
-                <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.ability().levelUpAbility($index, data, event, $parent); }">+</a>
-            </div>
-            <div class="btn-group btn-group-justified">
-                <a class="btn btn-default btn-sm" data-bind="click: function(data, event) { $parent.ability().toggleAbilityDetail($index, data, event); }, css: {'toggled': $data.isDetail}">Details</a>
-            </div>
-            <div class="btn-group btn-group-justified" data-bind="if: $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE') != -1">
-                <a class="btn btn-default btn-sm btn-block" style="visibility:hidden;">&mdash;</a>
-            </div>
-        </div>
-        <div class="col-md-9 bottom-buffer2" data-bind="visible: $data.isDetail()">
-            <button type="button" class="close" data-bind="click: function(data, event) { $parent.ability().toggleAbilityDetail($index, data, event); }">&times;</button>
-            <div data-bind="html: $parent.ability().getAbilityTooltipData($parent.hero().name(), $data.name())"></div>
-            <div data-bind="if: $data.name() in $parent.ability().abilityData && $parent.ability().abilities()[$index()].level() > 0">
-                <div class="col-md-12" style="margin-top: 10px" >
-                    <div data-bind="template: { name: 'ability-settings-template', data: $parent.ability().abilitySettingsData($data.name(), $parent, $index()) }"></div>
+            <div class="col-md-9 bottom-buffer2" data-bind="visible: $data.isDetail()">
+                <button type="button" class="close" data-bind="click: function(data, event) { $parent.ability().toggleAbilityDetail($index, data, event); }">&times;</button>
+                <div data-bind="html: $parent.ability().getAbilityTooltipData($parent.hero().name(), $data.name())"></div>
+                <div data-bind="if: $data.name() in $parent.ability().abilityData && $parent.ability().abilities()[$index()].level() > 0">
+                    <div class="col-md-12" style="margin-top: 10px" >
+                        <div data-bind="template: { name: 'ability-settings-template', data: $parent.ability().abilitySettingsData($data.name(), $parent, $index()) }"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1384,6 +1536,26 @@
             </div>
         </div>
     </div>
+</script>
+
+<script type="text/html" id="ability-3-template">
+    <tr class="row row3" data-bind="if: $data.displayname() != 'Empty' &&  ($data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_HIDDEN') == -1 || $data.name().indexOf('invoker_') != -1) && $data.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE') == -1,
+    style: {clear: $data.name() == 'invoker_cold_snap' || $data.name() == 'invoker_chaos_meteor' ? 'both' : ''}">
+        <td style="padding-bottom:10px;">
+			<div style="width:80px;">
+				<img style="padding:0px;margin-bottom:1px;" class="img-rounded" data-bind="attr:{src: '/media/images/spellicons/' + $data.name() + '.png'}"/>
+				<div class="progress" style="position:relative">
+					<div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data) > 0, text: $parent.getSkillBuildAbilityLevel($index()) + '/' + $parent.getAbilityLevelMax($data)"></div>
+					<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;" data-bind="attr: { 'aria-valuenow': ($parent.getAbilityLevelMax($data) > 0 ? $parent.getSkillBuildAbilityLevel($index())/$parent.getAbilityLevelMax($data)*100 : 0) }, style: { width: ($parent.getAbilityLevelMax($data) > 0 ? $parent.getSkillBuildAbilityLevel($index())/$parent.getAbilityLevelMax($data)*100 : 0) + '%' }"></div>
+				</div>
+            </div>
+        </td>
+	<!-- ko foreach: new Array(25) -->
+		<td style="padding-bottom:10px;vertical-align:top">
+			<div class="pull-left btn btn-default btn-sm" style="line-height:78px;padding:0px;width:20px;" data-bind="text: $index()+1, css: {'toggled': $parentContext.$parent.skillBuild()[$index()]() == $parentContext.$index(), 'disabled allow-events': $parentContext.$parent.skillBuild()[$index()]() != -1 && $parentContext.$parent.skillBuild()[$index()]() != $parentContext.$index()}, click: function(data, event) { $parentContext.$parent.toggleAbilitySkillBuild($index(), $parentContext.$index(), $parentContext.$data, event); }"></div>
+		</td>
+	<!-- /ko -->
+    </tr>
 </script>
 
 <script type="text/html" id="ability-settings-template">
@@ -1540,7 +1712,7 @@
         <tr><td>%Evasion:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'evasion' } }"></td></tr>
         <tr><td>%Bash:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'bash' } }"></td></tr>
         <tr><td>%Miss Chance:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'missChance' } }"></td></tr>
-        <tr><td colspan=2><a class="btn btn-default btn-block btn-xs" data-bind="css: {disabled: critInfo().sources.length == 0 ? 'disabled' : '', 'toggled': showCriticalStrikeDetails}, click: toggleCriticalStrikeDetails">Critical Strike Details</a></td></tr>
+        <tr><td colspan=2><a class="btn btn-default btn-block btn-xs" data-bind="css: {disabled: critInfo().sources.length == 0 ? 'disabled' : '', 'toggled': showCriticalStrikeDetails}, toggle: showCriticalStrikeDetails">Critical Strike Details</a></td></tr>
         </tbody>
         <tbody class="tabledropdown" style="border-top:0" data-bind="visible: showCriticalStrikeDetails(),foreach: critInfo().sources">
         <tr><td colspan=2><strong data-bind="text: $data.name"></strong></td></tr>
@@ -1574,7 +1746,7 @@
         <tr><td>Attack Time:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'attackTime' } }"></td></tr>
         <tr><td>Attack &frasl; Sec:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'attacksPerSecond' } }"></td></tr>
         <tr><td>Attack Range:</td><td class="text-right" data-bind="template: { name: 'stat-template', data: {'hero': $data, 'stat': 'totalattackrange' } }"></td></tr>
-        <tr><td colspan=2><a class="btn btn-default btn-block btn-xs" data-bind="click: toggleDamageDetails, css: {'toggled': showDamageDetails}">Damage Details</a></td></tr>
+        <tr><td colspan=2><a class="btn btn-default btn-block btn-xs" data-bind="toggle: showDamageDetails, css: {'toggled': showDamageDetails}">Damage Details</a></td></tr>
         </tbody>
         </table>
     </div>

@@ -11,6 +11,11 @@ var HEROCALCULATOR = (function (my) {
         this.heroDisplayName = displayname;
     };
     
+    my.GraphPropertyOption = function (id, label) {
+		this.id = id;
+        this.label = label;
+    };
+	
     my.DamageInstance = function (label, damageType, value, data, total) {
         this.label = label || '';
         this.damageType = damageType || '';
@@ -18,7 +23,7 @@ var HEROCALCULATOR = (function (my) {
         this.data = data || [];
         this.total = parseFloat(total) || 0;
     }
-    
+        
     function createHeroOptions() {
         var options = [];
         for (h in my.heroData) {
@@ -42,12 +47,15 @@ var HEROCALCULATOR = (function (my) {
         var self = this;
         self.availableHeroes = ko.observableArray(createHeroOptions());
         self.sectionDisplay = ko.observable({
-            inventory: ko.observable(true),
-            ability: ko.observable(true),
-            buff: ko.observable(true),
-            debuff: ko.observable(true),
-            damageamp: ko.observable(false),
-            illusion: ko.observable(false)
+            'inventory': ko.observable(true),
+            'ability': ko.observable(true),
+            'buff': ko.observable(true),
+            'debuff': ko.observable(true),
+            'damageamp': ko.observable(false),
+            'illusion': ko.observable(false),
+            'skillbuild': ko.observable(false),
+            'skillbuild-skills': ko.observable(true),
+            'skillbuild-items': ko.observable(true)
         });
         self.sectionDisplayToggle = function (section) {
             self.sectionDisplay()[section](!self.sectionDisplay()[section]());
@@ -134,24 +142,13 @@ var HEROCALCULATOR = (function (my) {
             a.hasScepter = self.inventory.hasScepter
             return a;
         });
+		
         self.showCriticalStrikeDetails = ko.observable(false);
-        self.toggleCriticalStrikeDetails = function () {
-            self.showCriticalStrikeDetails(!self.showCriticalStrikeDetails());
-        };
         self.damageInputValue = ko.observable(0);
         self.showDamageDetails = ko.observable(false);
-        self.toggleDamageDetails = function () {
-            self.showDamageDetails(!self.showDamageDetails());
-        };
         self.showStatDetails = ko.observable(false);
-        self.toggleStatDetails = function () {
-            self.showStatDetails(!self.showStatDetails());
-        };
         self.showDamageAmpCalcDetails = ko.observable(false);
-        self.toggleDamageAmpCalcDetails = function () {
-            self.showDamageAmpCalcDetails(!self.showDamageAmpCalcDetails());
-        };
-        
+
         self.availableSkillPoints = ko.computed(function () {
             var c = self.selectedHeroLevel();
             for (var i = 0; i < self.ability().abilities().length; i++) {
@@ -196,23 +193,23 @@ var HEROCALCULATOR = (function (my) {
             }
             return c-self.skillPointHistory().length;
         }, this);
-        self.primaryAttribute = ko.computed(function () {
+        self.primaryAttribute = ko.pureComputed(function () {
             var v = self.heroData().attributeprimary;
             if (v === 'DOTA_ATTRIBUTE_AGILITY') return 'agi';
             if (v === 'DOTA_ATTRIBUTE_INTELLECT') return 'int';
             if (v === 'DOTA_ATTRIBUTE_STRENGTH') return 'str';
             return '';
         });
-        self.totalExp = ko.computed(function () {
+        self.totalExp = ko.pureComputed(function () {
             return my.totalExp[self.selectedHeroLevel() - 1];
         });
-        self.nextLevelExp = ko.computed(function () {
+        self.nextLevelExp = ko.pureComputed(function () {
             return my.nextLevelExp[self.selectedHeroLevel() - 1];
         });
-        self.startingArmor = ko.computed(function () {
+        self.startingArmor = ko.pureComputed(function () {
             return (self.heroData().attributebaseagility * .14 + self.heroData().armorphysical).toFixed(2);
         });
-        self.respawnTime = ko.computed(function () {
+        self.respawnTime = ko.pureComputed(function () {
             return 5 + 3.8 * self.selectedHeroLevel();
         });
         self.totalAttribute = function (a) {
@@ -221,7 +218,7 @@ var HEROCALCULATOR = (function (my) {
             if (a === 'str') return parseFloat(self.totalStr());
             return 0;
         };
-        self.totalAgi = ko.computed(function () {
+        self.totalAgi = ko.pureComputed(function () {
             return (self.heroData().attributebaseagility
                     + self.heroData().attributeagilitygain * (self.selectedHeroLevel() - 1) 
                     + self.inventory.getAttributes('agi') 
@@ -232,7 +229,7 @@ var HEROCALCULATOR = (function (my) {
                    ).toFixed(2);
         });
         self.intStolen = ko.observable(0).extend({ numeric: 0 });
-        self.totalInt = ko.computed(function () {
+        self.totalInt = ko.pureComputed(function () {
             return (self.heroData().attributebaseintelligence 
                     + self.heroData().attributeintelligencegain * (self.selectedHeroLevel() - 1) 
                     + self.inventory.getAttributes('int') 
@@ -242,7 +239,7 @@ var HEROCALCULATOR = (function (my) {
                     + self.debuffs.getAllStatsReduction() + self.intStolen()
                    ).toFixed(2);
         });
-        self.totalStr = ko.computed(function () {
+        self.totalStr = ko.pureComputed(function () {
             return (self.heroData().attributebasestrength 
                     + self.heroData().attributestrengthgain * (self.selectedHeroLevel() - 1) 
                     + self.inventory.getAttributes('str') 
@@ -253,12 +250,12 @@ var HEROCALCULATOR = (function (my) {
                     + self.debuffs.getAllStatsReduction()
                    ).toFixed(2);
         });
-        self.health = ko.computed(function () {
+        self.health = ko.pureComputed(function () {
             return (self.heroData().statushealth + Math.floor(self.totalStr()) * 19 
                     + self.inventory.getHealth()
                     + self.ability().getHealth()).toFixed(2);
         });
-        self.healthregen = ko.computed(function () {
+        self.healthregen = ko.pureComputed(function () {
             var healthRegenAura = _.reduce([self.inventory.getHealthRegenAura, self.buffs.itemBuffs.getHealthRegenAura], function (memo, fn) {
                 var obj = fn(memo.excludeList);
                 obj.value += memo.value;
@@ -271,10 +268,10 @@ var HEROCALCULATOR = (function (my) {
                     + healthRegenAura.value
                     ).toFixed(2);
         });
-        self.mana = ko.computed(function () {
+        self.mana = ko.pureComputed(function () {
             return (self.heroData().statusmana + self.totalInt() * 13 + self.inventory.getMana()).toFixed(2);
         });
-        self.manaregen = ko.computed(function () {
+        self.manaregen = ko.pureComputed(function () {
             return ((self.heroData().statusmanaregen 
                     + self.totalInt() * .04 
                     + self.ability().getManaRegen()) 
@@ -284,7 +281,7 @@ var HEROCALCULATOR = (function (my) {
 					+ self.inventory.getManaRegen()
                     - self.enemy().ability().getManaRegenReduction()).toFixed(2);
         });
-        self.totalArmorPhysical = ko.computed(function () {
+        self.totalArmorPhysical = ko.pureComputed(function () {
             var armorAura = _.reduce([self.inventory.getArmorAura, self.buffs.itemBuffs.getArmorAura], function (memo, fn) {
                 var obj = fn(memo.attributes);
                 return obj;
@@ -308,7 +305,7 @@ var HEROCALCULATOR = (function (my) {
                     //+ self.debuffs.getArmorReduction()
                     ).toFixed(2);
         });
-        self.totalArmorPhysicalReduction = ko.computed(function () {
+        self.totalArmorPhysicalReduction = ko.pureComputed(function () {
 			var totalArmor = self.totalArmorPhysical();
 			if (totalArmor >= 0) {
 				return ((0.06 * self.totalArmorPhysical()) / (1 + 0.06 * self.totalArmorPhysical()) * 100).toFixed(2);
@@ -317,7 +314,7 @@ var HEROCALCULATOR = (function (my) {
 				return -((0.06 * -self.totalArmorPhysical()) / (1 + 0.06 * -self.totalArmorPhysical()) * 100).toFixed(2);
 			}
 		});
-        self.totalMovementSpeed = ko.computed(function () {
+        self.totalMovementSpeed = ko.pureComputed(function () {
             var MIN_MOVESPEED = 100;
             var ms = (self.ability().setMovementSpeed() > 0 ? self.ability().setMovementSpeed() : self.buffs.setMovementSpeed());
             if (ms > 0) {
@@ -350,12 +347,12 @@ var HEROCALCULATOR = (function (my) {
                 , MIN_MOVESPEED).toFixed(2);
             }
         });
-        self.totalTurnRate = ko.computed(function () {
+        self.totalTurnRate = ko.pureComputed(function () {
             return (self.heroData().movementturnrate 
                     * (1 + self.enemy().ability().getTurnRateReduction()
                          + self.debuffs.getTurnRateReduction())).toFixed(2);
         });
-        self.baseDamage = ko.computed(function () {
+        self.baseDamage = ko.pureComputed(function () {
             var totalAttribute = self.totalAttribute(self.primaryAttribute()),
                 abilityBaseDamage = self.ability().getBaseDamage(),
                 minDamage = self.heroData().attackdamagemin,
@@ -363,7 +360,7 @@ var HEROCALCULATOR = (function (my) {
             return [Math.floor((minDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier),
                     Math.floor((maxDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier)];
         });
-        self.bonusDamage = ko.computed(function () {
+        self.bonusDamage = ko.pureComputed(function () {
             return ((self.inventory.getBonusDamage().total
                     + self.ability().getBonusDamage().total
                     + self.buffs.getBonusDamage().total
@@ -383,14 +380,14 @@ var HEROCALCULATOR = (function (my) {
                       )
                     ) * self.ability().getBaseDamageReductionPct());
         });
-        self.bonusDamageReduction = ko.computed(function () {
+        self.bonusDamageReduction = ko.pureComputed(function () {
             return Math.abs(self.enemy().ability().getBonusDamageReduction() + self.debuffs.getBonusDamageReduction());
         });
-        self.damage = ko.computed(function () {
+        self.damage = ko.pureComputed(function () {
             return [self.baseDamage()[0] + self.bonusDamage()[0],
                     self.baseDamage()[1] + self.bonusDamage()[1]];
         });
-        self.totalMagicResistanceProduct = ko.computed(function () {
+        self.totalMagicResistanceProduct = ko.pureComputed(function () {
             return (1 - self.heroData().magicalresistance / 100) 
                     * self.inventory.getMagicResist()
                     * self.ability().getMagicResist()
@@ -400,17 +397,17 @@ var HEROCALCULATOR = (function (my) {
 					* self.enemy().ability().getMagicResistReduction()
 					* self.debuffs.getMagicResistReduction();
         });
-        self.totalMagicResistance = ko.computed(function () {
+        self.totalMagicResistance = ko.pureComputed(function () {
             return ((1 - self.totalMagicResistanceProduct()) * 100).toFixed(2);
         });
-        self.bat = ko.computed(function () {
+        self.bat = ko.pureComputed(function () {
             var abilityBAT = self.ability().getBAT();
             if (abilityBAT > 0) {
                 return abilityBAT;
             }
             return self.heroData().attackrate;
         });
-        self.ias = ko.computed(function () {
+        self.ias = ko.pureComputed(function () {
             var attackSpeed = _.reduce([self.inventory.getAttackSpeed, self.buffs.itemBuffs.getAttackSpeed], function (memo, fn) {
                 var obj = fn(memo.excludeList);
                 obj.value += memo.value;
@@ -439,13 +436,13 @@ var HEROCALCULATOR = (function (my) {
             }
             return val.toFixed(2);
         });
-        self.attackTime = ko.computed(function () {
+        self.attackTime = ko.pureComputed(function () {
             return (self.bat() / (1 + self.ias() / 100)).toFixed(2);
         });
-        self.attacksPerSecond = ko.computed(function () {
+        self.attacksPerSecond = ko.pureComputed(function () {
             return ((1 + self.ias() / 100) / self.bat()).toFixed(2);
         });
-        self.evasion = ko.computed(function () {
+        self.evasion = ko.pureComputed(function () {
             if (self.enemy().inventory.isSheeped() || self.debuffs.itemBuffs.isSheeped()) return 0;
             var e = self.ability().setEvasion();
             if (e) {
@@ -455,7 +452,7 @@ var HEROCALCULATOR = (function (my) {
                 return ((1-(self.inventory.getEvasion() * self.ability().getEvasion() * self.ability().getEvasionBacktrack())) * 100).toFixed(2);
             }
         });
-        self.ehpPhysical = ko.computed(function () {
+        self.ehpPhysical = ko.pureComputed(function () {
             var evasion = self.enemy().inventory.isSheeped() || self.debuffs.itemBuffs.isSheeped() ? 1 : self.inventory.getEvasion() * self.ability().getEvasion();
             if (self.totalArmorPhysical() >= 0) {
                 var ehp = self.health() * (1 + .06 * self.totalArmorPhysical());
@@ -471,7 +468,7 @@ var HEROCALCULATOR = (function (my) {
 			ehp *= (1 / self.debuffs.getDamageAmplification());
             return ehp.toFixed(2);
         });
-        self.ehpMagical = ko.computed(function () {
+        self.ehpMagical = ko.pureComputed(function () {
             var ehp = self.health() / self.totalMagicResistanceProduct();
             ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
 			ehp *= (1 / self.ability().getDamageReduction());
@@ -481,12 +478,12 @@ var HEROCALCULATOR = (function (my) {
             ehp *= (1 / self.debuffs.getDamageAmplification());
             return ehp.toFixed(2);
         });
-        self.bash = ko.computed(function () {
+        self.bash = ko.pureComputed(function () {
             var attacktype = self.heroData().attacktype;
             return ((1 - (self.inventory.getBash(attacktype) * self.ability().getBash())) * 100).toFixed(2);
         });
 
-        self.cleaveInfo = ko.computed(function () {
+        self.cleaveInfo = ko.pureComputed(function () {
             var cleaveSources = self.inventory.getCleaveSource();
             $.extend(cleaveSources, self.ability().getCleaveSource());
             $.extend(cleaveSources, self.buffs.getCleaveSource());
@@ -525,11 +522,11 @@ var HEROCALCULATOR = (function (my) {
             return result;
         });
         
-        self.critChance = ko.computed(function () {
+        self.critChance = ko.pureComputed(function () {
             return ((1 - (self.inventory.getCritChance() * self.ability().getCritChance())) * 100).toFixed(2);
         });
 
-        self.critInfo = ko.computed(function () {
+        self.critInfo = ko.pureComputed(function () {
             var critSources = self.inventory.getCritSource();
             $.extend(critSources, self.ability().getCritSource());
             $.extend(critSources, self.buffs.getCritSource());
@@ -586,7 +583,7 @@ var HEROCALCULATOR = (function (my) {
             return { sources: result, total: critTotal };
         });
         
-        self.bashInfo = ko.computed(function () {
+        self.bashInfo = ko.pureComputed(function () {
             var attacktype = self.heroData().attacktype;
             var bashSources = self.inventory.getBashSource(attacktype);
             $.extend(bashSources, self.ability().getBashSource());
@@ -652,7 +649,7 @@ var HEROCALCULATOR = (function (my) {
             return { sources: result, total: bashTotal };
         });
         
-        self.orbProcInfo = ko.computed(function () {
+        self.orbProcInfo = ko.pureComputed(function () {
             var attacktype = self.heroData().attacktype;
             var damageSources = self.inventory.getOrbProcSource();
             var damageSourcesArray = [];
@@ -748,7 +745,7 @@ var HEROCALCULATOR = (function (my) {
 			return result;
         }
             
-        self.damageTotalInfo = ko.computed(function () {
+        self.damageTotalInfo = ko.pureComputed(function () {
             var bonusDamageArray = [
                 self.ability().getBonusDamage().sources,
                 self.buffs.getBonusDamage().sources
@@ -1045,19 +1042,19 @@ var HEROCALCULATOR = (function (my) {
             self.critInfo();
             return 0;
         });
-        self.missChance = ko.computed(function () {
+        self.missChance = ko.pureComputed(function () {
             return ((1 - (self.enemy().ability().getMissChance() * self.debuffs.getMissChance())) * 100).toFixed(2);
         });
-        self.totalattackrange = ko.computed(function () {
+        self.totalattackrange = ko.pureComputed(function () {
             return self.heroData().attackrange + self.ability().getAttackRange();
         });
-        self.visionrangeday = ko.computed(function () {
+        self.visionrangeday = ko.pureComputed(function () {
             return (self.heroData().visiondaytimerange) * (1 + self.enemy().ability().getVisionRangePctReduction() + self.debuffs.getVisionRangePctReduction());
         });
-        self.visionrangenight = ko.computed(function () {
+        self.visionrangenight = ko.pureComputed(function () {
             return (self.heroData().visionnighttimerange + self.ability().getVisionRangeNight()) * (1 + self.enemy().ability().getVisionRangePctReduction() + self.debuffs.getVisionRangePctReduction());
         });
-        self.lifesteal = ko.computed(function () {
+        self.lifesteal = ko.pureComputed(function () {
             var total = self.inventory.getLifesteal() + self.ability().getLifesteal() + self.buffs.getLifesteal();
             if (self.hero().attacktype() == 'DOTA_UNIT_CAP_MELEE_ATTACK') {
 				var lifestealAura = _.reduce([self.inventory.getLifestealAura, self.buffs.itemBuffs.getLifestealAura], function (memo, fn) {
@@ -1210,7 +1207,375 @@ var HEROCALCULATOR = (function (my) {
             var index = i;
             self.diff[self.diffProperties[index]] = self.getDiffFunction(self.diffProperties[index]);
         }
+		
+		self.itemBuild = ko.observableArray([]);
+		self.skillBuild = ko.observableArray([]);
+		self.graphDataItemRows = [];
+		for (var i = 0; i < 25; i++) {
+			self.itemBuild.push(new my.BasicInventoryViewModel());
+			self.itemBuild()[i].carryOver = ko.observable(true);
+			self.skillBuild.push(ko.observable(-1));
+			self.graphDataItemRows.push(ko.observable(false));
+		}
+		self.toggleItemBuildCarryOver = function (index) {
+			self.itemBuild()[index].carryOver(!self.itemBuild()[index].carryOver());
+		}
+		
+		self.abilityMapData = [0,1,2,3,4];
+		self.abilityMapHero = self.selectedHero().heroName;
+        self.abilityMap = ko.computed(function () {
+			if (self.abilityMapHero == self.selectedHero().heroName) return;
+			self.abilityMapHero = self.selectedHero().heroName;
+			var newMap =_.filter(_.map(self.ability().abilities(), function(ability, index) {
+				if (self.ability().isQWER(ability)) {
+					return index;
+				}
+				else {
+					return -1;
+				}
+			}), function(element) { return element != -1; });
+			for (var i = 0; i < 25; i++) {
+				var abilityValue = self.skillBuild()[i]();
+				if (abilityValue == -1) continue;
+				
+				var abilityIndex = self.abilityMapData.indexOf(abilityValue);
+				var newValue = newMap[abilityIndex];
+				if (newValue != abilityValue) {
+					self.skillBuild()[i](newValue);
+				}
+			}
+			self.abilityMapData = newMap;
+		});
+		
+		self.availableSkillBuildPoints = ko.computed(function () {
+            return _.reduce(self.skillBuild(), function(memo, num){ return memo + (num() == -1); }, 0);
+        });
+        self.getSkillBuildAbilityLevel = function (index) {
+            return _.reduce(self.skillBuild(), function(memo, num){ return memo + (num() == index); }, 0);
+        };
+        self.toggleAbilitySkillBuild = function (index, abilityIndex, data, event) {
+			if (self.skillBuild()[index]() != abilityIndex) {
+				var ability = self.ability().abilities()[abilityIndex],
+					abilityType = ability.abilitytype(),
+					skillBuildSlice = self.skillBuild().slice(0, index),
+					currentAbilityLevel = _.reduce(self.skillBuild(), function(memo, num){ return memo + (num() == abilityIndex); }, 0),
+					n = _.reduce(skillBuildSlice, function(memo, num){ return memo + (num() == abilityIndex); }, 0);
+				
+				if (self.IsValidAbilityLevel(ability, self.selectedHero().heroName, index + 1, n)) {
+					/*if (currentAbilityLevel < self.getAbilityLevelMax(data)) {
+						self.skillBuild()[index](abilityIndex);
+					}
+					else {
+						for (var i = 24; i >= 0; i--) {
+							if (self.skillBuild()[i]() == abilityIndex) {
+								self.skillBuild()[i](-1);
+								self.skillBuild()[index](abilityIndex);
+								break;
+							}
+						}
+					}
+					*/
+					self.skillBuild()[index](abilityIndex);
+					for (var i = index + 1; i < 25; i++) {
+						if (self.skillBuild()[i]() == abilityIndex) {
+							n++;
+							if (!self.IsValidAbilityLevel(ability, self.selectedHero().heroName, i + 1, n)) {
+								self.skillBuild()[i](-1);
+								n--;
+							}
+						}
+					}
+				}
+				else if (n > 0 && self.IsValidAbilityLevel(ability, self.selectedHero().heroName, index + 1, n - 1)) {
+					for (var i = skillBuildSlice.length - 1; i >= 0; i--) {
+						if (skillBuildSlice[i]() == abilityIndex) {
+							self.skillBuild()[i](-1);
+							self.skillBuild()[index](abilityIndex);
+							break;
+						}
+					}
+				}
+			}
+			else {
+				self.skillBuild()[index](-1);
+			}
+        };
+		self.IsValidAbilityLevel = function (ability, heroName, heroLevel, abilityLevel) {
+			var a = 1, b = 2, m = 4;
+			if (ability.name() == 'attribute_bonus') {
+				m = 10;
+			}
+			else {
+				if (ability.abilitytype() == 'DOTA_ABILITY_TYPE_ULTIMATE') {
+					if (heroName == 'invoker') {
+						a = 2;
+						b = 5;
+					}
+					else if (heroName == 'meepo') {
+						a = 3;
+						b = 7;
+						m = 3;
+					}
+					else {
+						a = 6;
+						b = 5;
+						m = 3;
+					}
+				}
+				else {
+					if (heroName == 'invoker') {
+						m = 7;
+					}
+				}				
+			}
+			
+			return heroLevel >= a + b * abilityLevel && abilityLevel < m;
+		}
+		
+        self.resetItemBuild = function (index) {
+            self.itemBuild()[index].removeAll();
+        };		
+        self.resetAllItemBuilds = function () {
+            for (var i = 0; i < 25; i++) {
+                self.itemBuild()[i].removeAll();
+                self.itemBuild()[i].carryOver(true);
+            }
+        };
+        self.resetSkillBuild = function () {
+            for (var i = 0; i < 25; i++) {
+                self.skillBuild()[i](-1);
+            }
+        };
+        self.graphData = ko.observableArray([]);
+        self.graphDataHeader = ko.observable('');
+		self.selectedHero.subscribe(function (newValue) {
+			self.graphDataHeader(self.selectedHero().heroDisplayName);
+		});
+        self.graphDataDescription = ko.observable('');
+		self.graphProperties = ko.observableArray([
+			new my.GraphPropertyOption('totalArmorPhysical', 'Armor'),
+			new my.GraphPropertyOption('totalArmorPhysicalReduction', 'Physical Damage Reduction'),
+			new my.GraphPropertyOption('totalMagicResistance', 'Magical Resistance'),
+			new my.GraphPropertyOption('health', 'Health'),
+			new my.GraphPropertyOption('healthregen', 'Health Regeneration'),
+			new my.GraphPropertyOption('mana', 'Mana'),
+			new my.GraphPropertyOption('manaregen', 'Mana Regeneration'),
+			new my.GraphPropertyOption('ehpPhysical', 'EHP Physical'),
+			new my.GraphPropertyOption('ehpMagical', 'EHP Magical'),
+			new my.GraphPropertyOption('damage', 'Damage per attack'),
+			new my.GraphPropertyOption('dps', 'Damage per second'),
+			new my.GraphPropertyOption('attacksPerSecond', 'Attacks per second'),
+			new my.GraphPropertyOption('attackTime', 'Time per attack')
+		]);
+        self.graph = function () {
+            var savedAbilityLevels = [],
+                savedLevel = self.selectedHeroLevel(),
+				savedItems = self.inventory.items();
+				savedActiveItems = self.inventory.activeItems(),
+                s = ko.toJS(self.skillBuild),
+				carryOverItems = [],
+				carryOverActiveItems = [],
+                dataset = [];
+            for (var i = 0; i < self.ability().abilities().length; i++) {
+                savedAbilityLevels.push(self.ability().abilities()[i].level());
+            }
+            for (var i = 1; i < 26; i++) {
+                self.selectedHeroLevel(i);
+                var skillBuildSubset = s.slice(0, i);
+                for (var j = 0; j < self.ability().abilities().length; j++) {
+                    var a = self.ability().abilities()[j],
+                        count = _.reduce(skillBuildSubset, function(memo, num){ return memo + (num == j); }, 0);
+                    a.level(count);
+                }
+				
+				if (!self.itemBuild()[i-1].carryOver()) {
+					carryOverItems = [];
+					carryOverActiveItems = [];
+				}
+				carryOverItems = carryOverItems.concat(self.itemBuild()[i-1].items());
+				carryOverActiveItems = carryOverActiveItems.concat(self.itemBuild()[i-1].activeItems());
+				
+				self.inventory.items(carryOverItems);
+				self.inventory.activeItems(carryOverActiveItems);
+				dataObj = {};
+				for (var j = 0; j < self.graphProperties().length; j++) {
+					var prop = self.graphProperties()[j];
+                    switch (prop.id) {
+                        case 'dps':
+                            dataObj[prop.id] = self['damageTotalInfo']().dps.total.toFixed(2);
+                        break;
+                        case 'damage':
+                            dataObj[prop.id] = self['damageTotalInfo']().total.toFixed(2);
+                        break;
+                        default :
+                            dataObj[prop.id] = self[prop.id]();
+                        break;
+                    }
+				}
+				
+				dataObj.items = _.map(carryOverItems, function(item) {
+                    return ko.toJS(item);
+                });
+                dataset.push(dataObj);
+				if (carryOverItems > 0) {
+					self.graphDataItemRows[i-1](true);
+				}
+            }
+			var data = {
+                header: self.graphDataHeader(),
+				description: self.graphDataDescription(),
+                items: _.map(self.inventory.items(), function(item) {
+                    return ko.toJS(item);
+                }),
+                skillBuild: ko.toJS(self.skillBuild),
+                data: dataset,
+				abilityMap : self.abilityMapData.slice(0),
+				cumulativeSkillBuild: [],
+				visible: ko.observable(true)
+            }
+			for (var i = 0; i < 25; i++) {
+				var skillBuildAtLevel = [],
+					skillBuildSlice = data.skillBuild.slice(0, i + 1);
+				for (var j = 0; j < data.abilityMap.length; j++) {
+					var abilityIndex = data.abilityMap[j];
+					skillBuildAtLevel.push(_.reduce(skillBuildSlice, function(memo, num){ return memo + (num == abilityIndex); }, 0));
+				}
+				data.cumulativeSkillBuild.push(skillBuildAtLevel);
+			}
+				
+            self.graphData.push(data);
+            self.selectedHeroLevel(savedLevel);
+            for (var i = 0; i < self.ability().abilities().length; i++) {
+                self.ability().abilities()[i].level(savedAbilityLevels[i]);
+            }
+			self.inventory.items(savedItems);
+			self.inventory.activeItems(savedActiveItems);
+        };
+		self.removeGraphDataSet = function (data) {
+			self.graphData.remove(data);
+		}
+		self.selectedGraphProperty = ko.observable(self.graphProperties()[0].id);
+		
+		self.graphChartOptions = ko.computed(function () {
+			var color = my.theme() == 'dark' ? 'rgb(151, 154, 162)' : 'rgb(51, 51, 51)';
+			return {
+				responsive: true,
+				datasetStroke: false,
+				datasetStrokeWidth: -1,
+				datasetFill: false,
+				pointHitDetectionRadius : 10,
+				scaleFontColor: color,
+				scaleLineColor: color.replace('rgb', 'rgba').replace(')', ', .1)'),
+				scaleGridLineColor: color.replace('rgb', 'rgba').replace(')', ', .1)')
+			}
+		});
+		self.graphChartData = ko.computed(function () {
+			var data = {
+				labels: [],
+				datasets: []
+			}
+			for (var i = 0; i < 25; i++) {
+				data.labels.push((i+1).toString());
+			}
+			for (var i = 0; i < self.graphData().length; i++) {
+				var dataObj = self.graphData()[i],
+					dataset = {
+						label: dataObj.header,
+						fillColor: self.graphDistinctColor(self.graphData().length, i, .1),
+						strokeColor: self.graphDistinctColor(self.graphData().length, i, 1),
+						pointColor: self.graphDistinctColor(self.graphData().length, i, 1),
+						pointStrokeColor: self.graphDistinctColor(self.graphData().length, i, 1),
+						pointHighlightFill: self.graphDistinctColor(self.graphData().length, i, .1),
+						pointHighlightStroke: self.graphDistinctColor(self.graphData().length, i, .5),
+						data: _.pluck(dataObj.data, self.selectedGraphProperty())
+					};
+				data.datasets.push(dataset);
+			}
+			return data;
+		});
+        self.graphDistinctColor = function (max, index, alpha) {
+            var alpha = alpha || 1;
+            rgba = self.hslToRgb((1 / max) * index % 1, 1, .5);
+            rgba.push(alpha);
+            return "rgba(" + rgba.join() + ")";
+        }
+        self.getDistinctColor = function (max, index, alpha) {
+            var alpha = alpha || 1;
+            rgba = self.hslToRgb((1 / max) * index % 1, 1, .5);
+            rgba.push(alpha);
+            return rgba;
+        }
+        self.hslToRgb = function (h, s, l) {
+            var r, g, b;
+            if(s == 0){
+                r = g = b = l; // achromatic
+            }else{
+                var hue2rgb = function hue2rgb(p, q, t){
+                    if(t < 0) t += 1;
+                    if(t > 1) t -= 1;
+                    if(t < 1/6) return p + (q - p) * 6 * t;
+                    if(t < 1/2) return q;
+                    if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                    return p;
+                }
 
+                var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                var p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1/3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1/3);
+            }
+
+            return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+        }
+		
+		self.showGraphItemBuildRows = ko.observable(false);
+		self.showGraphSkillBuildColumns = ko.observable(false);
+		self.graphRowHasItems = function (index) {
+			return _.some(self.graphData(), function (dataset) {
+				return dataset.visible() && dataset.data[index].items.length > 0;
+			});
+		}
+		self.selectedInventory = ko.observable(-1);
+		self.selectInventory = function (index) {
+			self.selectedInventory(self.selectedInventory() == index ? -1 : index);
+		}
+		self.getSelectedInventory = ko.pureComputed(function () {
+			if (self.selectedInventory() == -1) {
+				return self.inventory;
+			}
+			else {
+				return self.itemBuild()[self.selectedInventory()];
+			}
+		});
+		self.copyInventory = function (index) {
+			if (self.selectedInventory() != -1 && self.selectedInventory() != index) {
+				self.itemBuild()[self.selectedInventory()].items(self.itemBuild()[self.selectedInventory()].items().concat(self.itemBuild()[index].items()));
+				self.itemBuild()[self.selectedInventory()].activeItems(_.union(self.itemBuild()[self.selectedInventory()].activeItems(), self.itemBuild()[index].activeItems()));
+			}
+		}
+		self.copyInventoryToClipBoard = function (index) {
+			if (index == -1) {
+				my.inventoryClipBoard.items = self.inventory.items.slice(0);
+				my.inventoryClipBoard.activeItems = self.inventory.activeItems.slice(0);			
+			}
+			else {
+				my.inventoryClipBoard.items = self.itemBuild()[index].items.slice(0);
+				my.inventoryClipBoard.activeItems = self.itemBuild()[index].activeItems.slice(0);
+			}
+		}
+		self.pasteInventoryFromClipBoard = function (index) {
+            if (my.inventoryClipBoard.items.length > 0) {
+				if (index == -1) {
+					self.inventory.items(self.inventory.items().concat(my.inventoryClipBoard.items));
+					self.inventory.activeItems(_.union(self.inventory.activeItems(), my.inventoryClipBoard.activeItems));	
+				}
+				else {
+					self.itemBuild()[index].items(self.itemBuild()[index].items().concat(my.inventoryClipBoard.items));
+					self.itemBuild()[index].activeItems(_.union(self.itemBuild()[index].activeItems(), my.inventoryClipBoard.activeItems));
+				}
+            }
+		}
     };
 
     return my;
