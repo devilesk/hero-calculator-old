@@ -44,6 +44,7 @@
 }
 td {
     font-family: "Calibri";
+	font-size: 15px;
 }
 .inventory {
     min-height: 77px;
