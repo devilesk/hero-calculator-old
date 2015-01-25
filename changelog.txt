@@ -1,3 +1,11 @@
+2015-01-25
+- Added Build Explorer feature.
+	Input a skill and item build and generate a dataset for levels 1 to 25 using the hero calculator.
+	All datasets displayed in a table and chart.
+- Added copy (CTRL+C) and paste (CTRL+V) when hovering over item inventories.
+	Can also be used in Build Explorer item build section.
+- Added option to dock shop panel to right side of screen.
+
 2014-12-28
 - Added Sven God's Strength scepter aura to buffs.
 
