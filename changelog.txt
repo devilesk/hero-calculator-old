@@ -1,3 +1,6 @@
+2015-01-29
+- Build Explorer data now included in saved builds.
+
 2015-01-25
 - Added Build Explorer feature.
 	Input a skill and item build and generate a dataset for levels 1 to 25 using the hero calculator.

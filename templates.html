@@ -46,7 +46,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <h3 class="section_header" data-bind="toggle: sectionDisplay().inventory, css: { section_disabled: !sectionDisplay().inventory() }">Inventory <small style="color:goldenrod" data-bind="html: inventory.totalCost() ? '<img src=\'http://cdn.dota2.com/apps/dota2/images/tooltips/gold.png\'/> ' + inventory.totalCost() : '' "></small></h3>
-                    <div id="inventory" class="inventory hover-cursor" data-bind="click: function (data, event) { selectInventory(-1); }, css: {'row-highlight': selectedInventory() == -1}, foreach: inventory.items, visible: sectionDisplay().inventory()">
+                    <div id="inventory" class="inventory hover-cursor" data-bind="click: function (data, event) { buildExplorer.selectInventory(-1); }, css: {'row-highlight': selectedInventory() == -1}, foreach: inventory.items, visible: sectionDisplay().inventory()">
                         <div class="btn-group">
                             <img style="width:75px;" class="img-rounded" data-bind="css: { item_disabled: !enabled(), item_active: $parent.inventory.getActiveBorder($data) == 1, item_inactive: $parent.inventory.getActiveBorder($data) == 0 }, attr:{ src: $parent.inventory.getItemImage($data) }, click: function(data, event) { $parent.inventory.toggleItem($index, data, event); }, event: { dblclick: $parent.inventory.removeItem }"/>
                             <div style="float:left" data-bind="visible: $parent.inventory.getItemSizeLabel($data) != ''">
@@ -204,7 +204,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <h3 class="section_header" data-bind="toggle: sectionDisplay().inventory, css: { section_disabled: !sectionDisplay().inventory() }">Inventory <small style="color:goldenrod" data-bind="html: inventory.totalCost() ? '<img src=\'http://cdn.dota2.com/apps/dota2/images/tooltips/gold.png\'/> ' + inventory.totalCost() : '' "></small></h3>
-                    <div id="inventory" class="inventory hover-cursor" data-bind="click: function (data, event) { selectInventory(-1); }, css: {'row-highlight': selectedInventory() == -1}, template: { name: 'item-template', foreach: inventory.items }, visible: sectionDisplay().inventory()"></div>
+                    <div id="inventory" class="inventory hover-cursor" data-bind="click: function (data, event) { buildExplorer.selectInventory(-1); }, css: {'row-highlight': selectedInventory() == -1}, template: { name: 'item-template', foreach: inventory.items }, visible: sectionDisplay().inventory()"></div>
                 </div>
             </div>
 
@@ -430,7 +430,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <h3 class="section_header" data-bind="toggle: sectionDisplay().inventory, css: { section_disabled: !sectionDisplay().inventory() }">Inventory <small style="color:goldenrod" data-bind="html: inventory.totalCost() ? '<img src=\'http://cdn.dota2.com/apps/dota2/images/tooltips/gold.png\'/> ' + inventory.totalCost() : '' "></small></h3>
-                    <div id="inventory" class="inventory hover-cursor" data-bind="click: function (data, event) { selectInventory(-1); }, css: {'row-highlight': selectedInventory() == -1}, template: { name: 'item-template', foreach: inventory.items }, visible: sectionDisplay().inventory()"></div>
+                    <div id="inventory" class="inventory hover-cursor" data-bind="click: function (data, event) { buildExplorer.selectInventory(-1); }, css: {'row-highlight': selectedInventory() == -1}, template: { name: 'item-template', foreach: inventory.items }, visible: sectionDisplay().inventory()"></div>
                 </div>
             </div>
             
@@ -739,9 +739,9 @@
         </div>
         <div class="col-md-8" data-bind="css: {'col-md-8': $root.layout() == 0, 'col-md-12': $root.layout() == 1}">
             <div class="row">
-                <div class="col-md-12" data-bind="itemBuildTable: {}">
+                <div class="col-md-12" data-bind="itemBuildTable: $data.buildExplorer">
                     <h3 class="section_header" data-bind="toggle: sectionDisplay().inventory, css: { section_disabled: !sectionDisplay().inventory() }">Inventory <small style="color:goldenrod" data-bind="html: inventory.totalCost() ? '<img src=\'http://cdn.dota2.com/apps/dota2/images/tooltips/gold.png\'/> ' + inventory.totalCost() : '' "></small></h3>
-                    <div id="inventory" class="inventory hover-cursor" data-bind="click: function (data, event) { selectInventory(-1); }, css: {'row-highlight': selectedInventory() == -1}, template: { name: 'item-template', foreach: inventory.items }, visible: sectionDisplay().inventory()"></div>
+                    <div id="inventory" class="inventory hover-cursor" data-bind="click: function (data, event) { buildExplorer.selectInventory(-1); }, css: {'row-highlight': selectedInventory() == -1}, template: { name: 'item-template', foreach: inventory.items }, visible: sectionDisplay().inventory()"></div>
                 </div>
             </div>
             
@@ -927,13 +927,14 @@
         </div>
 		
 		<div class="col-md-12">
-			<h3 class="section_header" data-bind="toggle: sectionDisplay().skillbuild, css: { section_disabled: !sectionDisplay().skillbuild() }">Build Explorer</h3>
-			<div data-bind="visible: sectionDisplay().skillbuild()">
+            <!-- ko with: buildExplorer -->
+			<h3 class="section_header" data-bind="toggle: $parent.sectionDisplay().skillbuild, css: { section_disabled: !$parent.sectionDisplay().skillbuild() }">Build Explorer</h3>
+			<div data-bind="visible: $parent.sectionDisplay().skillbuild()">
 				<div class="col-md-12">
-					<h4 class="section_header" data-bind="toggle: sectionDisplay()['skillbuild-skills'], css: { section_disabled: !sectionDisplay()['skillbuild-skills']() }">Skill Build <small style="color:inherit" data-bind="text: availableSkillBuildPoints() ? (availableSkillBuildPoints() == 1 ? '1 unspent skillpoint' : availableSkillBuildPoints() + ' unspent skillpoints') : ''"></small></h4>
-						<div data-bind="visible: sectionDisplay()['skillbuild-skills']">
+					<h4 class="section_header" data-bind="toggle: $parent.sectionDisplay()['skillbuild-skills'], css: { section_disabled: !$parent.sectionDisplay()['skillbuild-skills']() }">Skill Build <small style="color:inherit" data-bind="text: availableSkillBuildPoints() ? (availableSkillBuildPoints() == 1 ? '1 unspent skillpoint' : availableSkillBuildPoints() + ' unspent skillpoints') : ''"></small></h4>
+						<div data-bind="visible: $parent.sectionDisplay()['skillbuild-skills']">
 						<table>
-							<tbody data-bind="template: { name: 'ability-3-template', foreach: ability().abilities }"></tbody>
+							<tbody data-bind="template: { name: 'ability-3-template', foreach: $parent.ability().abilities }"></tbody>
 						</table>
 						<div class="form-group">
 							<button class="btn btn-default" data-bind="click: resetSkillBuild">Clear</button>
@@ -941,8 +942,8 @@
 					</div>
 				</div>
 				<div class="col-md-12">
-					<h4 class="section_header" data-bind="toggle: sectionDisplay()['skillbuild-items'], css: { section_disabled: !sectionDisplay()['skillbuild-items']() }">Item Build</h4>
-					<div data-bind="visible: sectionDisplay()['skillbuild-items']">
+					<h4 class="section_header" data-bind="toggle: $parent.sectionDisplay()['skillbuild-items'], css: { section_disabled: !$parent.sectionDisplay()['skillbuild-items']() }">Item Build</h4>
+					<div data-bind="visible: $parent.sectionDisplay()['skillbuild-items']">
 						<table class="table">
 							<thead>
 								<tr>
@@ -953,8 +954,8 @@
 									<th></th>
 								</tr>
 							</thead>
-							<tbody data-bind="foreach: new Array(25), itemBuildTable: {}">
-								<tr class="hover-cursor" data-bind="css: {'row-highlight': $parent.selectedInventory() == $index()}">
+							<tbody data-bind="foreach: new Array(25), itemBuildTable: $data">
+								<tr class="hover-cursor" data-bind="css: {'row-highlight': $parents[1].selectedInventory() == $index()}">
 									<td class="carry-over" data-bind="click: function (data, event) { $parent.selectInventory($index()); }">
 										<strong data-bind="text: ($index() + 1)"></strong>
 										<a class="btn btn-default btn-xs glyphicon" data-bind="visible: $index() > 0, toggle: $parent.itemBuild()[$index()].carryOver, preventBubble: 'click', css: { 'glyphicon-arrow-down': $parent.itemBuild()[$index()].carryOver(), 'glyphicon-stop': !$parent.itemBuild()[$index()].carryOver() }" title="Carry over items to next level's inventory"></a>
@@ -995,9 +996,7 @@
                     <select class="form-control" data-bind="options: graphProperties, optionsText: 'label', optionsValue: 'id', value: selectedGraphProperty"></select>
                 </div>
 				<!-- ko if: graphData().length > 0 -->
-				<div class="form-group">
-					<canvas  data-bind="chart: graphChartData, chartType: 'Scatter', chartOptions: graphChartOptions()"></canvas >
-				</div>
+				<div class="form-group" data-bind="chart: graphChartData, chartType: 'Scatter', chartOptions: graphChartOptions()"></div>
                 <button class="btn btn-default btn-xs" data-bind="toggle: showGraphItemBuildRows, css: {'toggled': showGraphItemBuildRows}">Show item build rows</button>
                 <button class="btn btn-default btn-xs" data-bind="toggle: showGraphSkillBuildColumns, css: {'toggled': showGraphSkillBuildColumns}">Show skill build columns</button>
 				<table class="table build-table">
@@ -1024,21 +1023,21 @@
                                 <strong data-bind="text: ($index() + 1)"></strong>
                             </td>
 							<!-- ko foreach: new Array($parent.graphData().length) -->
-							<td class="text-right" data-bind="css: { 'right-border': !$parentContext.$parent.showGraphSkillBuildColumns() || !$parentContext.$parent.graphData()[$index()].visible() }">
-								<span data-bind="visible: $parentContext.$parent.graphData()[$index()].visible(), text: $parentContext.$parent.graphData()[$index()].data[$parentContext.$index()][$parentContext.$parent.selectedGraphProperty()]"></span>
+							<td class="text-right" data-bind="css: { 'right-border': !$parents[1].showGraphSkillBuildColumns() || !$parents[1].graphData()[$index()].visible() }">
+								<span data-bind="visible: $parents[1].graphData()[$index()].visible(), text: $parents[1].graphData()[$index()].data[$parentContext.$index()][$parents[1].selectedGraphProperty()]"></span>
 							</td>
-							<td class="text-left right-border" data-bind="visible: $parentContext.$parent.graphData()[$index()].visible() && $parentContext.$parent.showGraphSkillBuildColumns(), text: $parentContext.$parent.graphData()[$index()].cumulativeSkillBuild[$parentContext.$index()].join('-')"></td>
+							<td class="text-left right-border" data-bind="visible: $parents[1].graphData()[$index()].visible() && $parents[1].showGraphSkillBuildColumns(), text: $parents[1].graphData()[$index()].cumulativeSkillBuild[$parentContext.$index()].join('-')"></td>
 							<!-- /ko -->
 						</tr>
                         <tr class="itemBuild-inventory" data-bind="visible: $parent.showGraphItemBuildRows() && $parent.graphRowHasItems($index())">
                             <td class="right-border-itemrow no-top-border"></td>
 							<!-- ko foreach: new Array($parent.graphData().length) -->
-                            <td class="right-border-itemrow no-top-border" data-bind="attr: { colspan: $parentContext.$parent.graphData()[$index()].visible() && $parentContext.$parent.showGraphSkillBuildColumns() ? 2 : 1 }">
-								<div data-bind="visible: $parentContext.$parent.graphData()[$index()].visible(), foreach: $parentContext.$parent.graphData()[$index()].data[$parentContext.$index()].items">
-									<img class="itemBuild-img-sm img-rounded" data-bind="css: { item_disabled: !enabled, item_active: $parentContext.$parentContext.$parent.inventory.getActiveBorder($data) == 1, item_inactive: $parentContext.$parentContext.$parent.inventory.getActiveBorder($data) == 0 }, attr:{ src: $parentContext.$parentContext.$parent.inventory.getItemImage($data) }"/>
-									<div style="float:left" data-bind="visible: $parentContext.$parentContext.$parent.inventory.getItemSizeLabel($data) != ''">
-										<div data-bind="html: $parentContext.$parentContext.$parent.inventory.getItemSizeLabel($data)" style="position:absolute;left:0;bottom:0;color:white;opacity:.5;background-color:black;padding:0px 2px"></div>
-										<div data-bind="html: $parentContext.$parentContext.$parent.inventory.getItemSizeLabel($data)" style="position:absolute;left:0;bottom:0;color:white;padding:0px 2px"></div>
+                            <td class="right-border-itemrow no-top-border" data-bind="attr: { colspan: $parents[1].graphData()[$index()].visible() && $parents[1].showGraphSkillBuildColumns() ? 2 : 1 }">
+								<div data-bind="visible: $parents[1].graphData()[$index()].visible(), foreach: $parents[1].graphData()[$index()].data[$parentContext.$index()].items">
+									<img class="itemBuild-img-sm img-rounded" data-bind="css: { item_disabled: !enabled, item_active: $parents[3].inventory.getActiveBorder($data) == 1, item_inactive: $parents[3].inventory.getActiveBorder($data) == 0 }, attr:{ src: $parents[3].inventory.getItemImage($data) }"/>
+									<div style="float:left" data-bind="visible: $parents[3].inventory.getItemSizeLabel($data) != ''">
+										<div data-bind="html: $parents[3].inventory.getItemSizeLabel($data)" style="position:absolute;left:0;bottom:0;color:white;opacity:.5;background-color:black;padding:0px 2px"></div>
+										<div data-bind="html: $parents[3].inventory.getItemSizeLabel($data)" style="position:absolute;left:0;bottom:0;color:white;padding:0px 2px"></div>
 									</div>
 								</div>
                             </td>
@@ -1048,6 +1047,7 @@
 				</table>
 				<!-- /ko -->
 			</div>
+            <!-- /ko -->
 		</div>
     </div>
 </script>
@@ -1058,7 +1058,7 @@
         <div class="pull-left" style="width:50px;height:50px;position:relative;border:1px solid black;">
             <div style="position:absolute;bottom:0;right:0;background-color:white;color:black;opacity:.8" data-bind="text: $index() + 1"></div>
             <!-- ko if: $data != -1 -->
-            <img class="img-rounded" data-bind="attr:{src: '/media/images/spellicons/' + $parentContext.$parentContext.$parent.ability().abilities()[$data].name() + '.png'}"/>
+            <img class="img-rounded" data-bind="attr:{src: '/media/images/spellicons/' + $parents[3].ability().abilities()[$data].name() + '.png'}"/>
             <!-- /ko -->
             <!-- ko if: $data == -1 -->
             
@@ -1085,65 +1085,65 @@
                     <div class="hc-shop hc-shop-armaments" id="armaments"></div>
                     <div class="hc-shop hc-shop-arcane" id="arcane"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-clarity" id="clarity" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-branches" id="branches" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ring_of_protection" id="ring_of_protection" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-magic_stick" id="magic_stick" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-clarity" id="clarity" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-branches" id="branches" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ring_of_protection" id="ring_of_protection" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-magic_stick" id="magic_stick" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-tango" id="tango" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-gauntlets" id="gauntlets" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-quelling_blade" id="quelling_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-sobi_mask" id="sobi_mask" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-tango" id="tango" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-gauntlets" id="gauntlets" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-quelling_blade" id="quelling_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-sobi_mask" id="sobi_mask" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-flask" id="flask" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-slippers" id="slippers" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-stout_shield" id="stout_shield" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ring_of_regen" id="ring_of_regen" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-flask" id="flask" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-slippers" id="slippers" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-stout_shield" id="stout_shield" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ring_of_regen" id="ring_of_regen" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-smoke_of_deceit" id="smoke_of_deceit" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-mantle" id="mantle" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-blades_of_attack" id="blades_of_attack" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-boots" id="boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-smoke_of_deceit" id="smoke_of_deceit" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-mantle" id="mantle" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-blades_of_attack" id="blades_of_attack" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-boots" id="boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-tpscroll" id="tpscroll" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-circlet" id="circlet" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-chainmail" id="chainmail" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-gloves" id="gloves" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-tpscroll" id="tpscroll" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-circlet" id="circlet" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-chainmail" id="chainmail" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-gloves" id="gloves" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-dust" id="dust" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-belt_of_strength" id="belt_of_strength" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-helm_of_iron_will" id="helm_of_iron_will" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-cloak" id="cloak" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-dust" id="dust" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-belt_of_strength" id="belt_of_strength" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-helm_of_iron_will" id="helm_of_iron_will" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-cloak" id="cloak" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-courier" id="courier" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-boots_of_elves" id="boots_of_elves" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-broadsword" id="broadsword" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-gem" id="gem" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-courier" id="courier" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-boots_of_elves" id="boots_of_elves" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-broadsword" id="broadsword" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-gem" id="gem" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-flying_courier" id="flying_courier" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-robe" id="robe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-quarterstaff" id="quarterstaff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-lifesteal" id="lifesteal" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-flying_courier" id="flying_courier" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-robe" id="robe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-quarterstaff" id="quarterstaff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-lifesteal" id="lifesteal" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-ward_observer" id="ward_observer" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ogre_axe" id="ogre_axe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-claymore" id="claymore" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ghost" id="ghost" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ward_observer" id="ward_observer" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ogre_axe" id="ogre_axe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-claymore" id="claymore" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ghost" id="ghost" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-ward_sentry" id="ward_sentry" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-blade_of_alacrity" id="blade_of_alacrity" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-javelin" id="javelin" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-talisman_of_evasion" id="talisman_of_evasion" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ward_sentry" id="ward_sentry" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-blade_of_alacrity" id="blade_of_alacrity" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-javelin" id="javelin" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-talisman_of_evasion" id="talisman_of_evasion" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-bottle" id="bottle" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-staff_of_wizardry" id="staff_of_wizardry" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-platemail" id="platemail" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-blink" id="blink" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-bottle" id="bottle" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-staff_of_wizardry" id="staff_of_wizardry" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-platemail" id="platemail" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-blink" id="blink" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
                     <div class="img-rounded hc-item hc-item-emptyitembg" id="emptyitembg"></div>
-                    <div class="img-rounded hc-item hc-item-ultimate_orb" id="ultimate_orb" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-mithril_hammer" id="mithril_hammer" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-shadow_amulet" id="shadow_amulet" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ultimate_orb" id="ultimate_orb" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-mithril_hammer" id="mithril_hammer" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-shadow_amulet" id="shadow_amulet" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
                 </div>
                 <div class="tab-pane" id="shop_upgrade">
@@ -1154,117 +1154,117 @@
                     <div class="hc-shop hc-shop-armor" id="armor"></div>
                     <div class="hc-shop hc-shop-artifacts" id="artifacts"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-wraith_band" id="wraith_band" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ring_of_basilius" id="ring_of_basilius" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-force_staff" id="force_staff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-lesser_crit" id="lesser_crit" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-hood_of_defiance" id="hood_of_defiance" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-helm_of_the_dominator" id="helm_of_the_dominator" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-wraith_band" id="wraith_band" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ring_of_basilius" id="ring_of_basilius" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-force_staff" id="force_staff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-lesser_crit" id="lesser_crit" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-hood_of_defiance" id="hood_of_defiance" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-helm_of_the_dominator" id="helm_of_the_dominator" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-null_talisman" id="null_talisman" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-headdress" id="headdress" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-necronomicon" id="necronomicon" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-armlet" id="armlet" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-blade_mail" id="blade_mail" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-mask_of_madness" id="mask_of_madness" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-null_talisman" id="null_talisman" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-headdress" id="headdress" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-necronomicon" id="necronomicon" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-armlet" id="armlet" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-blade_mail" id="blade_mail" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-mask_of_madness" id="mask_of_madness" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-magic_wand" id="magic_wand" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-buckler" id="buckler" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-cyclone" id="cyclone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-basher" id="basher" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-vanguard" id="vanguard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-sange" id="sange" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-magic_wand" id="magic_wand" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-buckler" id="buckler" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-cyclone" id="cyclone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-basher" id="basher" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-vanguard" id="vanguard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-sange" id="sange" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-bracer" id="bracer" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-urn_of_shadows" id="urn_of_shadows" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-dagon" id="dagon" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-invis_sword" id="invis_sword" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-soul_booster" id="soul_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-yasha" id="yasha" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-bracer" id="bracer" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-urn_of_shadows" id="urn_of_shadows" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-dagon" id="dagon" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-invis_sword" id="invis_sword" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-soul_booster" id="soul_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-yasha" id="yasha" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-poor_mans_shield" id="poor_mans_shield" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ring_of_aquila" id="ring_of_aquila" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-veil_of_discord" id="veil_of_discord" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-bfury" id="bfury" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-black_king_bar" id="black_king_bar" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-maelstrom" id="maelstrom" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-poor_mans_shield" id="poor_mans_shield" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ring_of_aquila" id="ring_of_aquila" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-veil_of_discord" id="veil_of_discord" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-bfury" id="bfury" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-black_king_bar" id="black_king_bar" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-maelstrom" id="maelstrom" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-soul_ring" id="soul_ring" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-tranquil_boots" id="tranquil_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-rod_of_atos" id="rod_of_atos" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ethereal_blade" id="ethereal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-shivas_guard" id="shivas_guard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-diffusal_blade" id="diffusal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-soul_ring" id="soul_ring" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-tranquil_boots" id="tranquil_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-rod_of_atos" id="rod_of_atos" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ethereal_blade" id="ethereal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-shivas_guard" id="shivas_guard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-diffusal_blade" id="diffusal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-phase_boots" id="phase_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-medallion_of_courage" id="medallion_of_courage" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ultimate_scepter" id="ultimate_scepter" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-radiance" id="radiance" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-manta" id="manta" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-desolator" id="desolator" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-phase_boots" id="phase_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-medallion_of_courage" id="medallion_of_courage" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ultimate_scepter" id="ultimate_scepter" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-radiance" id="radiance" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-manta" id="manta" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-desolator" id="desolator" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-power_treads" id="power_treads" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-arcane_boots" id="arcane_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-orchid" id="orchid" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-monkey_king_bar" id="monkey_king_bar" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-bloodstone" id="bloodstone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-heavens_halberd" id="heavens_halberd" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-power_treads" id="power_treads" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-arcane_boots" id="arcane_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-orchid" id="orchid" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-monkey_king_bar" id="monkey_king_bar" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-bloodstone" id="bloodstone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-heavens_halberd" id="heavens_halberd" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-oblivion_staff" id="oblivion_staff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-ancient_janggo" id="ancient_janggo" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-refresher" id="refresher" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-greater_crit" id="greater_crit" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-sphere" id="sphere" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-sange_and_yasha" id="sange_and_yasha" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-oblivion_staff" id="oblivion_staff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ancient_janggo" id="ancient_janggo" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-refresher" id="refresher" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-greater_crit" id="greater_crit" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-sphere" id="sphere" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-sange_and_yasha" id="sange_and_yasha" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-pers" id="pers" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-vladmir" id="vladmir" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-sheepstick" id="sheepstick" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-butterfly" id="butterfly" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-assault" id="assault" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-mjollnir" id="mjollnir" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-pers" id="pers" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-vladmir" id="vladmir" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-sheepstick" id="sheepstick" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-butterfly" id="butterfly" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-assault" id="assault" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-mjollnir" id="mjollnir" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-hand_of_midas" id="hand_of_midas" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-mekansm" id="mekansm" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-hand_of_midas" id="hand_of_midas" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-mekansm" id="mekansm" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <div class="img-rounded hc-item hc-item-emptyitembg" id="emptyitembg"></div>
-                    <div class="img-rounded hc-item hc-item-rapier" id="rapier" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-heart" id="heart" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-skadi" id="skadi" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-rapier" id="rapier" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-heart" id="heart" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-skadi" id="skadi" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-travel_boots" id="travel_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-pipe" id="pipe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-travel_boots" id="travel_boots" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-pipe" id="pipe" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <div class="img-rounded hc-item hc-item-emptyitembg" id="emptyitembg"></div>
-                    <div class="img-rounded hc-item hc-item-abyssal_blade" id="abyssal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-crimson_guard" id="crimson_guard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
-                    <div class="img-rounded hc-item hc-item-satanic" id="satanic" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-abyssal_blade" id="abyssal_blade" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-crimson_guard" id="crimson_guard" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-satanic" id="satanic" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
                 </div>
                 <div class="tab-pane" id="shop_secret">
                     <div class="hc-shop hc-shop-secret" id="secret"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-orb_of_venom" id="orb_of_venom" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-orb_of_venom" id="orb_of_venom" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-ring_of_health" id="ring_of_health" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-ring_of_health" id="ring_of_health" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-void_stone" id="void_stone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-void_stone" id="void_stone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-energy_booster" id="energy_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-energy_booster" id="energy_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-vitality_booster" id="vitality_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-vitality_booster" id="vitality_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-point_booster" id="point_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-point_booster" id="point_booster" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-hyperstone" id="hyperstone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-hyperstone" id="hyperstone" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-demon_edge" id="demon_edge" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-demon_edge" id="demon_edge" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-mystic_staff" id="mystic_staff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-mystic_staff" id="mystic_staff" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-eagle" id="eagle" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-eagle" id="eagle" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-reaver" id="reaver" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-reaver" id="reaver" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
-                    <div class="img-rounded hc-item hc-item-relic" id="relic" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.getSelectedInventory().addItem }"></div>
+                    <div class="img-rounded hc-item hc-item-relic" id="relic" data-bind="click: changeSelectedItem, event: { dblclick: selectedTab().data.buildExplorer.getSelectedInventory().addItem }"></div>
                     <br>
                 </div>
             </div>
@@ -1289,7 +1289,7 @@
                     </div>
                 </div>
                 <div class="form-group text-right">
-                    <button class="btn btn-default" data-bind="click: selectedTab().data.getSelectedInventory().addItem">Add Item</button>
+                    <button class="btn btn-default" data-bind="click: selectedTab().data.buildExplorer.getSelectedInventory().addItem">Add Item</button>
                 </div>
             </div>
         </div>
@@ -1453,7 +1453,7 @@
                         <td class="text-right"><span data-bind="html: Math.round($data.value * 100) / 100, style: {color: $parent.getDamageTypeColor($data.damageType)}"></span></td>
                     </tr>
                         <!-- ko foreach: $data.data -->
-                        <tr data-bind="visible: $parentContext.$parent.showDamageAmpCalcDetails()">
+                        <tr data-bind="visible: $parents[1].showDamageAmpCalcDetails()">
                             <td><span data-bind="text: $data.label"></span></td>
                             <td class="text-right"><span data-bind="html: Math.round($data.value * 100) / 100, diffStyle: $data.value"></span></td>
                         </tr>
@@ -1545,14 +1545,14 @@
 			<div style="width:80px;">
 				<img style="padding:0px;margin-bottom:1px;" class="img-rounded" data-bind="attr:{src: '/media/images/spellicons/' + $data.name() + '.png'}"/>
 				<div class="progress" style="position:relative">
-					<div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parent.getAbilityLevelMax($data) > 0, text: $parent.getSkillBuildAbilityLevel($index()) + '/' + $parent.getAbilityLevelMax($data)"></div>
-					<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;" data-bind="attr: { 'aria-valuenow': ($parent.getAbilityLevelMax($data) > 0 ? $parent.getSkillBuildAbilityLevel($index())/$parent.getAbilityLevelMax($data)*100 : 0) }, style: { width: ($parent.getAbilityLevelMax($data) > 0 ? $parent.getSkillBuildAbilityLevel($index())/$parent.getAbilityLevelMax($data)*100 : 0) + '%' }"></div>
+					<div style="position:absolute;width:100%;color:white;" class="text-center" data-bind="visible: $parents[1].getAbilityLevelMax($data) > 0, text: $parent.getSkillBuildAbilityLevel($index()) + '/' + $parents[1].getAbilityLevelMax($data)"></div>
+					<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;" data-bind="attr: { 'aria-valuenow': ($parents[1].getAbilityLevelMax($data) > 0 ? $parent.getSkillBuildAbilityLevel($index())/$parents[1].getAbilityLevelMax($data)*100 : 0) }, style: { width: ($parents[1].getAbilityLevelMax($data) > 0 ? $parent.getSkillBuildAbilityLevel($index())/$parents[1].getAbilityLevelMax($data)*100 : 0) + '%' }"></div>
 				</div>
             </div>
         </td>
 	<!-- ko foreach: new Array(25) -->
 		<td style="padding-bottom:10px;vertical-align:top">
-			<div class="pull-left btn btn-default btn-sm" style="line-height:78px;padding:0px;width:20px;" data-bind="text: $index()+1, css: {'toggled': $parentContext.$parent.skillBuild()[$index()]() == $parentContext.$index(), 'disabled allow-events': $parentContext.$parent.skillBuild()[$index()]() != -1 && $parentContext.$parent.skillBuild()[$index()]() != $parentContext.$index()}, click: function(data, event) { $parentContext.$parent.toggleAbilitySkillBuild($index(), $parentContext.$index(), $parentContext.$data, event); }"></div>
+			<div class="pull-left btn btn-default btn-sm" style="line-height:78px;padding:0px;width:20px;" data-bind="text: $index()+1, css: {'toggled': $parents[1].skillBuild()[$index()]() == $parentContext.$index(), 'disabled allow-events': $parents[1].skillBuild()[$index()]() != -1 && $parents[1].skillBuild()[$index()]() != $parentContext.$index()}, click: function(data, event) { $parents[1].toggleAbilitySkillBuild($index(), $parentContext.$index(), $parentContext.$data, event); }"></div>
 		</td>
 	<!-- /ko -->
     </tr>

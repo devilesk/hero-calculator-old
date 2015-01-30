@@ -1301,7 +1301,6 @@ var HEROCALCULATOR = (function (my) {
                     switch(attribute.name) {
                         case 'bonus_magical_armor':
                             totalAttribute *= (1 - parseInt(attribute.value[0]) / 100);
-                            console.log('bonus_magical_armor', attribute, parseInt(attribute.value[0]), totalAttribute);
                         break;
                         case 'bonus_spell_resist':
                             totalAttribute *= (1 - parseInt(attribute.value[0]) / 100);

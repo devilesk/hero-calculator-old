@@ -8,132 +8,42 @@
  */
 (function( $ ) {
 
-var proto = $.ui.autocomplete.prototype,
-	initSource = proto._initSource;
+    var proto = $.ui.autocomplete.prototype,
+        initSource = proto._initSource;
 
-function filter( array, term ) {
-	var matcher = new RegExp( $.ui.autocomplete.escapeRegex(term), "i" );
-	return $.grep( array, function(value) {
-		return matcher.test( $( "<div>" ).html( value.label || value.value || value ).text() );
-	});
-}
+    function filter( array, term ) {
+        var matcher = new RegExp( $.ui.autocomplete.escapeRegex(term), "i" );
+        return $.grep( array, function(value) {
+            return matcher.test( $( "<div>" ).html( value.label || value.value || value ).text() );
+        });
+    }
 
-$.extend( proto, {
-	_initSource: function() {
-		if ( this.options.html && $.isArray(this.options.source) ) {
-			this.source = function( request, response ) {
-				response( filter( this.options.source, request.term ) );
-			};
-		} else {
-			initSource.call( this );
-		}
-	},
+    $.extend( proto, {
+        _initSource: function() {
+            if ( this.options.html && $.isArray(this.options.source) ) {
+                this.source = function( request, response ) {
+                    response( filter( this.options.source, request.term ) );
+                };
+            } else {
+                initSource.call( this );
+            }
+        },
 
-	_renderItem: function( ul, item) {
-		return $( "<li></li>" )
-			.data( "item.autocomplete", item )
-			.append( $( "<a></a>" )[ this.options.html ? "html" : "text" ]( item.label ) )
-			.appendTo( ul );
-	}
-});
+        _renderItem: function( ul, item) {
+            return $( "<li></li>" )
+                .data( "item.autocomplete", item )
+                .append( $( "<a></a>" )[ this.options.html ? "html" : "text" ]( item.label ) )
+                .appendTo( ul );
+        }
+    });
 
 })( jQuery );
-
-Chart.types.Line.extend({
-    // Passing in a name registers this chart in the Chart namespace in the same way
-    name: "Scatter",
-    draw : function(ease){
-			var easingDecimal = ease || 1;
-			this.clear();
-
-			var ctx = this.chart.ctx;
-
-			// Some helper methods for getting the next/prev points
-			var hasValue = function(item){
-				return item.value !== null;
-			},
-			nextPoint = function(point, collection, index){
-				return Chart.helpers.findNextWhere(collection, hasValue, index) || point;
-			},
-			previousPoint = function(point, collection, index){
-				return Chart.helpers.findPreviousWhere(collection, hasValue, index) || point;
-			};
-
-			this.scale.draw(easingDecimal);
-
-
-			Chart.helpers.each(this.datasets,function(dataset){
-				var pointsWithValues = Chart.helpers.where(dataset.points, hasValue);
-
-				//Transition each point first so that the line and point drawing isn't out of sync
-				//We can use this extra loop to calculate the control points of this dataset also in this loop
-
-				Chart.helpers.each(dataset.points, function(point, index){
-					if (point.hasValue()){
-						point.transition({
-							y : this.scale.calculateY(point.value),
-							x : this.scale.calculateX(index)
-						}, easingDecimal);
-					}
-				},this);
-
-
-				// Control points need to be calculated in a seperate loop, because we need to know the current x/y of the point
-				// This would cause issues when there is no animation, because the y of the next point would be 0, so beziers would be skewed
-				if (this.options.bezierCurve){
-					Chart.helpers.each(pointsWithValues, function(point, index){
-						var tension = (index > 0 && index < pointsWithValues.length - 1) ? this.options.bezierCurveTension : 0;
-						point.controlPoints = Chart.helpers.splineCurve(
-							previousPoint(point, pointsWithValues, index),
-							point,
-							nextPoint(point, pointsWithValues, index),
-							tension
-						);
-
-						// Prevent the bezier going outside of the bounds of the graph
-
-						// Cap puter bezier handles to the upper/lower scale bounds
-						if (point.controlPoints.outer.y > this.scale.endPoint){
-							point.controlPoints.outer.y = this.scale.endPoint;
-						}
-						else if (point.controlPoints.outer.y < this.scale.startPoint){
-							point.controlPoints.outer.y = this.scale.startPoint;
-						}
-
-						// Cap inner bezier handles to the upper/lower scale bounds
-						if (point.controlPoints.inner.y > this.scale.endPoint){
-							point.controlPoints.inner.y = this.scale.endPoint;
-						}
-						else if (point.controlPoints.inner.y < this.scale.startPoint){
-							point.controlPoints.inner.y = this.scale.startPoint;
-						}
-					},this);
-				}
-
-				if (this.options.datasetFill && pointsWithValues.length > 0){
-					//Round off the line by going to the base of the chart, back to the start, then fill.
-					ctx.lineTo(pointsWithValues[pointsWithValues.length - 1].x, this.scale.endPoint);
-					ctx.lineTo(pointsWithValues[0].x, this.scale.endPoint);
-					ctx.fillStyle = dataset.fillColor;
-					ctx.closePath();
-					ctx.fill();
-				}
-
-				//Now draw the points over the line
-				//A little inefficient double looping, but better than the line
-				//lagging behind the point positions
-				Chart.helpers.each(pointsWithValues,function(point){
-					point.draw();
-				});
-			},this);
-		}
-});
 
 var HEROCALCULATOR = (function (my) {
 
     ko.bindingHandlers.itemBuildTable = {
         init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-            var options = ko.unwrap(valueAccessor()),
+            var buildExplorer = ko.unwrap(valueAccessor()),
                 $el = $(element);
 
             var pressedKeys = {};
@@ -152,10 +62,10 @@ var HEROCALCULATOR = (function (my) {
                     $hoveredRows = $(element).find('.hover-cursor:hover');
                     if ($hoveredRows.length == 1) {
                         if (pressedKeys[67]) {
-                            bindingContext.$data.copyInventoryToClipBoard($("tr", $(element)).index($hoveredRows[0]));
+                            buildExplorer.copyInventoryToClipBoard($("tr", $(element)).index($hoveredRows[0]));
                         }
                         else {
-                            bindingContext.$data.pasteInventoryFromClipBoard($("tr", $(element)).index($hoveredRows[0]));
+                            buildExplorer.pasteInventoryFromClipBoard($("tr", $(element)).index($hoveredRows[0]));
                         }
 						$hoveredRows.fadeOut(50).fadeIn(50);
                     }
@@ -355,43 +265,44 @@ var HEROCALCULATOR = (function (my) {
         }
     };
     
-    ko.bindingHandlers['class'] = {
-        'update': function(element, valueAccessor) {
-            console.log(valueAccessor);
-            if (element['__ko__previousClassValue__']) {
-                $(element).removeClass(element['__ko__previousClassValue__']);
-            }
-            var value = ko.utils.unwrapObservable(valueAccessor());
-            $(element).addClass(value);
-            element['__ko__previousClassValue__'] = value;
-        }
-    };
-    
 	ko.bindingHandlers.chart = {
-		init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-			var data = ko.utils.unwrapObservable(valueAccessor()),
-				ctx = $(element).get(0).getContext("2d"),
+		/*init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+			var newCanvas = $('<canvas/>'),
+				data = ko.utils.unwrapObservable(valueAccessor()),
+				ctx = newCanvas[0].getContext("2d"),
 				chartType = allBindingsAccessor().chartType,
-				options = allBindingsAccessor().chartOptions || {},
-				myChart = new Chart(ctx)[chartType](data, options);
+				options = allBindingsAccessor().chartOptions || {};
+				
+			$(element).append(newCanvas);
+			var myChart = new Chart(ctx)[chartType](data, options);
 			ko.utils.domData.set(element, 'myChart', myChart);
-			
+
             //handle disposal (if KO removes by the template binding)
             ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
                 var myChart = ko.utils.domData.get(element, 'myChart');
+                myChart.clear();
 				myChart.destroy();
             });
 		},
+		*/
 		update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-			var data = ko.utils.unwrapObservable(valueAccessor()),
-				ctx = $(element).get(0).getContext("2d"),
+			var newCanvas = $('<canvas/>').width(730).height(365),
+				data = ko.utils.unwrapObservable(valueAccessor()),
+				ctx = newCanvas[0].getContext("2d"),
 				chartType = allBindingsAccessor().chartType,
 				options = allBindingsAccessor().chartOptions || {},
 				myChart = ko.utils.domData.get(element, 'myChart');
-			myChart.destroy();
+			
+            if (myChart) {
+                myChart.clear();
+                myChart.destroy();
+            }
+			
+			$(element).empty();
+			$(element).append(newCanvas);
             if (data.datasets.length > 0) {
-                myChart = new Chart(ctx)[chartType](data, options);
-                ko.utils.domData.set(element, 'myChart', myChart);
+				myChart = new Chart(ctx)[chartType](data, options);
+				ko.utils.domData.set(element, 'myChart', myChart);
             }
 		}
 	};

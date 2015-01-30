@@ -242,7 +242,7 @@ var HEROCALCULATOR = (function (my) {
         self.saveLink = ko.observable();
         self.save = function () {
             var data = {
-                version: "1.1.0",
+                version: "1.2.0",
                 heroes: []
             }
             for (var i = 0; i < 4; i++) {
@@ -256,7 +256,8 @@ var HEROCALCULATOR = (function (my) {
                     buffs: [],
                     itemBuffs: [],
                     debuffs: [],
-                    itemDebuffs: []
+                    itemDebuffs: [],
+                    graphData: []
                 }
                 // items
                 for (var j = 0; j < hero.inventory.items().length; j++) {
@@ -296,6 +297,9 @@ var HEROCALCULATOR = (function (my) {
                 for (var j = 0; j < hero.debuffs.itemBuffs.items().length; j++) {
                     d.itemDebuffs.push(ko.toJS(hero.debuffs.itemBuffs.items()[j]));
                 }
+                
+                // graph data
+                d.graphData = ko.toJS(hero.buildExplorer.graphData);
                 
                 data.heroes.push(d);
             }
@@ -384,6 +388,11 @@ var HEROCALCULATOR = (function (my) {
                         }
                         hero.debuffs.itemBuffs.items.push(new_item);
                     }
+                }
+                
+                // load graph data
+                if (data.heroes[i].graphData) {
+                    hero.buildExplorer.loadGraphData(data.heroes[i].graphData);
                 }
             }
         }
@@ -501,39 +510,36 @@ var HEROCALCULATOR = (function (my) {
     my.init = function (HERODATA_PATH,ITEMDATA_PATH,UNITDATA_PATH) {
         var loadedFiles = 0;
         var loadedFilesMax = 4;
-        $.get('templates.html', function (templates) {
-            $('body').append('<div style="display:none">' + templates + '<\/div>');
-            loadedFiles++;
-        });
-        $.getJSON(HERODATA_PATH, function (data) {
-            my.heroData = data;
-            my.heroData['npc_dota_hero_chen'].abilities[2].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
-            my.heroData['npc_dota_hero_nevermore'].abilities[1].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
-            my.heroData['npc_dota_hero_nevermore'].abilities[2].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
-            my.heroData['npc_dota_hero_morphling'].abilities[3].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
-            my.heroData['npc_dota_hero_ogre_magi'].abilities[3].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
-            my.heroData['npc_dota_hero_techies'].abilities[4].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
-            my.heroData['npc_dota_hero_beastmaster'].abilities[2].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
-            var index = my.heroData['npc_dota_hero_lone_druid'].abilities[3].behavior.indexOf('DOTA_ABILITY_BEHAVIOR_HIDDEN');
-            my.heroData['npc_dota_hero_lone_druid'].abilities[3].behavior.splice(index, 1);
-            
-            index = my.heroData['npc_dota_hero_abaddon'].abilities[2].behavior.indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE');
-            my.heroData['npc_dota_hero_abaddon'].abilities[2].behavior.splice(index, 1);
-            
-            index = my.heroData['npc_dota_hero_riki'].abilities[2].behavior.indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE');
-            my.heroData['npc_dota_hero_riki'].abilities[2].behavior.splice(index, 1);
-            loadedFiles++;
-            if (loadedFiles == loadedFilesMax) my.run();
-        });
-        $.getJSON(ITEMDATA_PATH, function (data) {
-            my.itemData = data;
-            loadedFiles++;
-            if (loadedFiles == loadedFilesMax) my.run();
-        });
-        $.getJSON(UNITDATA_PATH, function (data) {
-            my.unitData = data;
-            loadedFiles++;
-            if (loadedFiles == loadedFilesMax) my.run();
+        $.when(
+            $.get('templates.html', function (templates) {
+                $('body').append('<div style="display:none">' + templates + '<\/div>');
+            }),
+            $.getJSON(HERODATA_PATH, function (data) {
+                my.heroData = data;
+                my.heroData['npc_dota_hero_chen'].abilities[2].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
+                my.heroData['npc_dota_hero_nevermore'].abilities[1].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
+                my.heroData['npc_dota_hero_nevermore'].abilities[2].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
+                my.heroData['npc_dota_hero_morphling'].abilities[3].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
+                my.heroData['npc_dota_hero_ogre_magi'].abilities[3].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
+                my.heroData['npc_dota_hero_techies'].abilities[4].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
+                my.heroData['npc_dota_hero_beastmaster'].abilities[2].behavior.push('DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE');
+                var index = my.heroData['npc_dota_hero_lone_druid'].abilities[3].behavior.indexOf('DOTA_ABILITY_BEHAVIOR_HIDDEN');
+                my.heroData['npc_dota_hero_lone_druid'].abilities[3].behavior.splice(index, 1);
+                
+                index = my.heroData['npc_dota_hero_abaddon'].abilities[2].behavior.indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE');
+                my.heroData['npc_dota_hero_abaddon'].abilities[2].behavior.splice(index, 1);
+                
+                index = my.heroData['npc_dota_hero_riki'].abilities[2].behavior.indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE');
+                my.heroData['npc_dota_hero_riki'].abilities[2].behavior.splice(index, 1);
+            }),
+            $.getJSON(ITEMDATA_PATH, function (data) {
+                my.itemData = data;
+            }),
+            $.getJSON(UNITDATA_PATH, function (data) {
+                my.unitData = data;
+            })
+        ).done(function(a1, a2, a3, a4){
+            my.run();
         });
     }
     
@@ -565,7 +571,6 @@ var HEROCALCULATOR = (function (my) {
         activeItems: []
     };
 
-    
     function getParameterByName(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
