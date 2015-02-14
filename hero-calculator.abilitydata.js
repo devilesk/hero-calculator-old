@@ -2972,6 +2972,27 @@ var HEROCALCULATOR = (function (my) {
                 }
             }
         ],
+        'winter_wyvern_cold_embrace': [
+            {
+                label: 'Duration',
+                controlType: 'input'
+            },
+            {
+                label: 'Ally Max Health',
+                controlType: 'input'
+            },
+            {
+                attributeName: 'heal_percentage',
+                label: 'TOTAL HEAL:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                controls: [0,1],
+                fn: function(v,a,parent,index) {
+                    var base_heal = parent.ability().getAbilityAttributeValue(parent.ability().abilities()[index].attributes(), 'heal_additive',parent.ability().abilities()[index].level());
+                    return (base_heal + v[1] * a/100) * v[0];
+                }
+            }
+        ],
         'wisp_spirits': [
             {
                 label: 'Duration',

@@ -746,6 +746,10 @@ var HEROCALCULATOR = (function (my) {
                         for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
                             var attribute = self.abilities()[i].attributes()[j];
                             switch(attribute.name()) {
+                                // winter_wyvern_arctic_burn
+                                case 'attack_range_bonus':
+                                    totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                break;
                                 // templar_assassin_psi_blades,sniper_take_aim
                                 case 'bonus_attack_range':
                                 // terrorblade_metamorphosis,troll_warlord_berserkers_rage
@@ -1935,9 +1939,9 @@ var HEROCALCULATOR = (function (my) {
                                         totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100;
                                     }
                                 break;
-                                // broodmother_incapacitating_bite,bounty_hunter_jinada,spectre_spectral_dagger
+                                // broodmother_incapacitating_bite,bounty_hunter_jinada,spectre_spectral_dagger,winter_wyvern_arctic_burn
                                 case 'bonus_movespeed':
-                                    if (ability.name() == 'broodmother_incapacitating_bite' || ability.name() == 'bounty_hunter_jinada') {
+                                    if (ability.name() == 'broodmother_incapacitating_bite' || ability.name() == 'bounty_hunter_jinada' || ability.name() == 'winter_wyvern_arctic_burn' || ability.name() == 'winter_wyvern_splinter_blast') {
                                         totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100;
                                     }
                                     else if (ability.name() == 'spectre_spectral_dagger') {
@@ -2063,6 +2067,8 @@ var HEROCALCULATOR = (function (my) {
                         for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
                             var attribute = self.abilities()[i].attributes()[j];
                             switch(attribute.name()) {
+                                // winter_wyvern_arctic_burn
+                                case 'night_vision_bonus':
                                 // lycan_shapeshift,luna_lunar_blessing
                                 case 'bonus_night_vision':
                                     totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());

@@ -1,3 +1,6 @@
+2015-02-12
+- Added Winter Wyvern
+
 2015-01-29
 - Build Explorer data now included in saved builds.
 

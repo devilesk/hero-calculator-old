@@ -266,7 +266,7 @@ var HEROCALCULATOR = (function (my) {
     };
     
 	ko.bindingHandlers.chart = {
-		/*init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+		init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 			var newCanvas = $('<canvas/>'),
 				data = ko.utils.unwrapObservable(valueAccessor()),
 				ctx = newCanvas[0].getContext("2d"),
@@ -276,7 +276,7 @@ var HEROCALCULATOR = (function (my) {
 			$(element).append(newCanvas);
 			var myChart = new Chart(ctx)[chartType](data, options);
 			ko.utils.domData.set(element, 'myChart', myChart);
-
+			
             //handle disposal (if KO removes by the template binding)
             ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
                 var myChart = ko.utils.domData.get(element, 'myChart');
@@ -284,7 +284,6 @@ var HEROCALCULATOR = (function (my) {
 				myChart.destroy();
             });
 		},
-		*/
 		update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 			var newCanvas = $('<canvas/>').width(730).height(365),
 				data = ko.utils.unwrapObservable(valueAccessor()),
@@ -297,7 +296,9 @@ var HEROCALCULATOR = (function (my) {
                 myChart.clear();
                 myChart.destroy();
             }
-			
+			bindingContext.$root.displayShop();
+			bindingContext.$root.sideView();
+			bindingContext.$root.shopDock();
 			$(element).empty();
 			$(element).append(newCanvas);
             if (data.datasets.length > 0) {

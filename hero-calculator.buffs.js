@@ -157,6 +157,8 @@ var HEROCALCULATOR = (function (my) {
             new my.BuffOption('warlock', 'warlock_upheaval'),
             new my.BuffOption('weaver', 'weaver_the_swarm'),
             new my.BuffOption('windrunner', 'windrunner_windrun'),
+            new my.BuffOption('winter_wyvern', 'winter_wyvern_arctic_burn'),
+            new my.BuffOption('winter_wyvern', 'winter_wyvern_splinter_blast'),
             new my.BuffOption('npc_dota_neutral_ghost', 'ghost_frost_attack'),
             new my.BuffOption('npc_dota_neutral_polar_furbolg_ursa_warrior', 'polar_furbolg_ursa_warrior_thunder_clap'),
             new my.BuffOption('npc_dota_neutral_ogre_magi', 'ogre_magi_frost_armor'),
