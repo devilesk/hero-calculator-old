@@ -5,12 +5,15 @@ var HEROCALCULATOR = (function (my) {
         if (my.heroData['npc_dota_hero_' + hero] == undefined) {
             this.hero = hero;
             this.abilityData = _.findWhere(my.unitData[hero].abilities, {name: ability})
-            this.buffDisplayName = my.unitData[hero].displayname + ' - ' + this.abilityData.displayname;        
+            this.buffDisplayName = my.unitData[hero].displayname + ' - ' + this.abilityData.displayname;
         }
         else {
             this.hero = 'npc_dota_hero_' + hero;
             this.abilityData = _.findWhere(my.heroData['npc_dota_hero_' + hero].abilities, {name: ability})
             this.buffDisplayName = my.heroData['npc_dota_hero_' + hero].displayname + ' - ' + this.abilityData.displayname;        
+            if (ability == 'sven_gods_strength') {
+                this.buffDisplayName += ' (Aura for allies)';
+            }
         }
 
     };
@@ -148,6 +151,7 @@ var HEROCALCULATOR = (function (my) {
             new my.BuffOption('undying', 'undying_flesh_golem'),
             new my.BuffOption('ursa', 'ursa_earthshock'),
             new my.BuffOption('vengefulspirit', 'vengefulspirit_wave_of_terror'),
+            new my.BuffOption('vengefulspirit', 'vengefulspirit_command_aura'),
             new my.BuffOption('venomancer', 'venomancer_venomous_gale'),
             new my.BuffOption('venomancer', 'venomancer_poison_sting'),
             new my.BuffOption('viper', 'viper_poison_attack'),

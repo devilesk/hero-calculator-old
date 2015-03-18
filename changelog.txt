@@ -1,3 +1,14 @@
+2015-03-18
+- Fixed Clinkz Death Pact damage increase not calculating.
+- Added Veil of Discord to debuffs section.
+- Added Bloodseeker Bloodrage.
+
+2015-02-22
+- Fixed delta value colors for stats where a lower value is better (attack time and BAT).
+
+2015-02-20
+- Added Vengeful Spirit Vengeance Aura debuff.
+
 2015-02-12
 - Added Winter Wyvern
 

@@ -998,26 +998,28 @@ var HEROCALCULATOR = (function (my) {
                         }
                     }
                 }
-                else if (ability.baseDamageMultiplier != undefined) {
-                    // earthshaker_enchant_totem
-                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
-                        totalMultiplier += ability.baseDamageMultiplier()/100;
-                        /*totalAttribute += ability.baseDamage();
-                        sources[ability.name()] = {
-                            'damage': ability.baseDamage(),
-                            'damageType': 'physical',
-                            'displayname': ability.displayname()
-                        }*/
+                else {
+                    if (ability.baseDamageMultiplier != undefined) {
+                        // earthshaker_enchant_totem
+                        if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                            totalMultiplier += ability.baseDamageMultiplier()/100;
+                            /*totalAttribute += ability.baseDamage();
+                            sources[ability.name()] = {
+                                'damage': ability.baseDamage(),
+                                'damageType': 'physical',
+                                'displayname': ability.displayname()
+                            }*/
+                        }
                     }
-                }
-                else if (ability.baseDamage != undefined) {
-                    // clinkz_death_pact
-                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
-                        totalAttribute += ability.baseDamage();
-                        sources[ability.name()] = {
-                            'damage': ability.baseDamage(),
-                            'damageType': 'physical',
-                            'displayname': ability.displayname()
+                    if (ability.baseDamage != undefined) {
+                        // clinkz_death_pact
+                        if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                            totalAttribute += ability.baseDamage();
+                            sources[ability.name()] = {
+                                'damage': ability.baseDamage(),
+                                'damageType': 'physical',
+                                'displayname': ability.displayname()
+                            }
                         }
                     }
                 }
@@ -1047,6 +1049,12 @@ var HEROCALCULATOR = (function (my) {
                                 case 'focusfire_damage_reduction_scepter':
                                     if (self.hasScepter()) {
                                         totalAttribute *= (1 + self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
+                                    }
+                                break;
+                                // vengefulspirit_command_aura
+                                case 'bonus_damage_pct':
+                                    if (ability.name() == 'vengefulspirit_command_aura') {
+                                        totalAttribute *= (1 - self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
                                     }
                                 break;
                             }
@@ -1146,6 +1154,17 @@ var HEROCALCULATOR = (function (my) {
                         for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
                             var attribute = self.abilities()[i].attributes()[j];
                             switch(attribute.name()) {
+                                // bloodseeker_bloodrage
+                                case 'damage_increase_pct':
+                                    if (ability.name() == 'bloodseeker_bloodrage') {
+                                        totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100;
+                                        sources[ability.name()] = {
+                                            'damage': self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100,
+                                            'damageType': 'physical',
+                                            'displayname': ability.displayname()
+                                        }
+                                    }
+                                break;
                                 // magnataur_empower,vengefulspirit_command_aura,alpha_wolf_command_aura
                                 case 'bonus_damage_pct':
                                     if (ability.name() == 'magnataur_empower' || ability.name() == 'vengefulspirit_command_aura' || ability.name() == 'alpha_wolf_command_aura') {
@@ -1185,12 +1204,12 @@ var HEROCALCULATOR = (function (my) {
                 else if (ability.bonusDamagePct != undefined && ability.bonusDamagePct() != 0) {
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
                         // bloodseeker_bloodrage
-                        totalAttribute+=ability.bonusDamagePct()/100;
+                        /*totalAttribute+=ability.bonusDamagePct()/100;
                         sources[ability.name()] = {
                             'damage': ability.bonusDamagePct()/100,
                             'damageType': 'physical',
                             'displayname': ability.displayname()
-                        }
+                        }*/
                     }
                 }
             }
@@ -1365,6 +1384,17 @@ var HEROCALCULATOR = (function (my) {
                 var ability = self.abilities()[i];
                 if (!(ability.name() in self.abilityData)) {
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
+                            var attribute = self.abilities()[i].attributes()[j];
+                            switch(attribute.name()) {
+                                // bloodseeker_bloodrage
+                                case 'damage_increase_pct':
+                                    if (ability.name() == 'bloodseeker_bloodrage') {
+                                        totalAttribute *= (1 + self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
+                                    }
+                                break;
+                            }
+                        }
                         // kunkka_ghostship
                         if (ability.name() == 'kunkka_ghostship') {
                             totalAttribute *= (1 - 50/100);

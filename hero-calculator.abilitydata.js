@@ -220,28 +220,6 @@ var HEROCALCULATOR = (function (my) {
                 }
             }
         ],
-        'bloodseeker_bloodrage': [
-            {
-                label: 'Duration',
-                controlType: 'input'
-            },
-            {
-                label: 'DAMAGE OVER TIME:',
-                controlType: 'text',
-                fn: function(v,a,parent,index) {
-                    return parent.ability().getAbilityPropertyValue(parent.ability().abilities()[index], 'damage')*v;
-                }
-            },
-            {
-                attributeName: 'damage_increase_pct',
-                label: 'Total Damage',
-                controlType: 'text',
-                fn: function(v,a) {
-                    return a;
-                },
-                returnProperty: 'bonusDamagePct'
-            }
-        ],
         'bloodseeker_rupture': [
             {
                 label: 'Enemy Distance Traveled',

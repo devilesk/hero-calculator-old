@@ -353,8 +353,8 @@ var HEROCALCULATOR = (function (my) {
                 abilityBaseDamage = self.ability().getBaseDamage(),
                 minDamage = self.heroData().attackdamagemin,
                 maxDamage = self.heroData().attackdamagemax;
-            return [Math.floor((minDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier),
-                    Math.floor((maxDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * abilityBaseDamage.multiplier)];
+            return [Math.floor((minDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * self.debuffs.getBaseDamageReductionPct() * abilityBaseDamage.multiplier),
+                    Math.floor((maxDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * self.debuffs.getBaseDamageReductionPct() * abilityBaseDamage.multiplier)];
         });
         self.bonusDamage = ko.pureComputed(function () {
             return ((self.inventory.getBonusDamage().total
@@ -391,7 +391,8 @@ var HEROCALCULATOR = (function (my) {
 					* self.inventory.getMagicResistReductionSelf()
 					* self.enemy().inventory.getMagicResistReduction()
 					* self.enemy().ability().getMagicResistReduction()
-					* self.debuffs.getMagicResistReduction();
+					* self.debuffs.getMagicResistReduction()
+                    * self.debuffs.itemBuffs.getMagicResistReduction();
         });
         self.totalMagicResistance = ko.pureComputed(function () {
             return ((1 - self.totalMagicResistanceProduct()) * 100).toFixed(2);
