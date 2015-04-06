@@ -1,3 +1,6 @@
+2015-04-06
+- Fixed Medusa Mana Shield damage reduction.
+
 2015-03-18
 - Fixed Clinkz Death Pact damage increase not calculating.
 - Added Veil of Discord to debuffs section.

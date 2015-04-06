@@ -1403,7 +1403,7 @@ var HEROCALCULATOR = (function (my) {
                 }
                 else if (ability.damageReduction != undefined) {
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
-                        // wisp_overcharge,bristleback_bristleback,spectre_dispersion
+                        // wisp_overcharge,bristleback_bristleback,spectre_dispersion,medusa_mana_shield
                         totalAttribute *= (1 + ability.damageReduction()/100);
                     }
                 }

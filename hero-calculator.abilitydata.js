@@ -1522,12 +1522,12 @@ var HEROCALCULATOR = (function (my) {
                 }
             },
             {
-                attributeName: 'damage_per_mana',
+                attributeName: 'absorption_tooltip',
                 label: '%DAMAGE REDUCTION:',
                 ignoreTooltip: true,
                 controlType: 'text',
                 fn: function(v,a) {
-                    return -50;
+                    return -a;
                 },
                 returnProperty: 'damageReduction'
             }
