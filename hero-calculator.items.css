@@ -538,6 +538,12 @@
     background-position: -605px -327px;
 }
 
+.hc-item-enchanted_mango {
+    width: 50px;
+    height: 36px;
+    background-position: -665px -327px;
+}
+
 .hc-item-monkey_king_bar {
     width: 50px;
     height: 36px;
@@ -602,6 +608,12 @@
     width: 50px;
     height: 36px;
     background-position: -605px -373px;
+}
+
+.hc-item-lotus_orb {
+    width: 50px;
+    height: 36px;
+    background-position: -665px -373px;
 }
 
 .hc-item-phase_boots {
@@ -670,6 +682,12 @@
     background-position: -605px -419px;
 }
 
+.hc-item-glimmer_cape {
+    width: 50px;
+    height: 36px;
+    background-position: -665px -419px;
+}
+
 .hc-item-radiance {
     width: 50px;
     height: 36px;
@@ -734,6 +752,12 @@
     width: 50px;
     height: 36px;
     background-position: -605px -465px;
+}
+
+.hc-item-guardian_greaves {
+    width: 50px;
+    height: 36px;
+    background-position: -665px -465px;
 }
 
 .hc-item-ring_of_basilius_active {
@@ -802,6 +826,12 @@
     background-position: -605px -511px;
 }
 
+.hc-item-moon_shard {
+    width: 50px;
+    height: 36px;
+    background-position: -665px -511px;
+}
+
 .hc-item-shivas_guard {
     width: 50px;
     height: 36px;
@@ -866,6 +896,12 @@
     width: 50px;
     height: 36px;
     background-position: -605px -557px;
+}
+
+.hc-item-silver_edge {
+    width: 50px;
+    height: 36px;
+    background-position: -665px -557px;
 }
 
 .hc-item-tango {
@@ -933,6 +969,13 @@
     height: 36px;
     background-position: -605px -603px;
 }
+
+.hc-item-solar_crest {
+    width: 50px;
+    height: 36px;
+    background-position: -665px -603px;
+}
+
 
 .hc-item-vladmir {
     width: 50px;
@@ -1039,5 +1082,11 @@
 .hc-shop-weapons {
     width: 50px;
     height: 50px;
-    background-position: -305px -649px;
+    background-position: -605px -649px;
+}
+
+.hc-item-octarine_core {
+    width: 50px;
+    height: 36px;
+    background-position: -665px -649px;
 }

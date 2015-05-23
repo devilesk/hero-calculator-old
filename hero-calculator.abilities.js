@@ -330,7 +330,7 @@ var HEROCALCULATOR = (function (my) {
                 }
                 else {
                     if (ability.bonusStrength != undefined) {
-                        if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1) || ability.name() == 'invoker_quas')) {
                             // pudge_flesh_heap,invoker_quas,morphling_morph_str,morphling_morph_agi,undying_decay
                             totalAttribute+=ability.bonusStrength();
                         }
@@ -365,7 +365,7 @@ var HEROCALCULATOR = (function (my) {
                 }
                 else {
                     if (ability.bonusAgility != undefined) {
-                        if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1) || ability.name() == 'invoker_wex')) {
                             // invoker_wex,morphling_morph_agi,morphling_morph_str
                             totalAttribute+=ability.bonusAgility();
                         }
@@ -399,7 +399,7 @@ var HEROCALCULATOR = (function (my) {
                     }
                 }
                 else if (ability.bonusInt != undefined) {
-                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1) || ability.name() == 'invoker_exort')) {
                         // invoker_exort
                         totalAttribute+=ability.bonusInt();
                     }

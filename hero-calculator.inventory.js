@@ -5,9 +5,9 @@ var HEROCALCULATOR = (function (my) {
 		my.unitData = {},
 		my.abilityData = {},
 		my.stackableItems = ['clarity','flask','dust','ward_observer','ward_sentry','tango','tpscroll','smoke_of_deceit'],
-		my.levelitems = ['necronomicon','dagon','diffusal_blade'],
-		my.validItems = ["abyssal_blade","ultimate_scepter","courier","arcane_boots","armlet","assault","boots_of_elves","bfury","belt_of_strength","black_king_bar","blade_mail","blade_of_alacrity","blades_of_attack","blink","bloodstone","boots","travel_boots","bottle","bracer","broadsword","buckler","butterfly","chainmail","circlet","clarity","claymore","cloak","lesser_crit","greater_crit","dagon","demon_edge","desolator","diffusal_blade","rapier","ancient_janggo","dust","eagle","energy_booster","ethereal_blade","cyclone","skadi","flying_courier","force_staff","gauntlets","gem","ghost","gloves","hand_of_midas","headdress","flask","heart","heavens_halberd","helm_of_iron_will","helm_of_the_dominator","hood_of_defiance","hyperstone","branches","javelin","sphere","maelstrom","magic_stick","magic_wand","manta","mantle","mask_of_madness","medallion_of_courage","mekansm","mithril_hammer","mjollnir","monkey_king_bar","lifesteal","mystic_staff","necronomicon","null_talisman","oblivion_staff","ward_observer","ogre_axe","orb_of_venom","orchid","pers","phase_boots","pipe","platemail","point_booster","poor_mans_shield","power_treads","quarterstaff","quelling_blade","radiance","reaver","refresher","ring_of_aquila","ring_of_basilius","ring_of_health","ring_of_protection","ring_of_regen","robe","rod_of_atos","relic","sobi_mask","sange","sange_and_yasha","satanic","sheepstick","ward_sentry","shadow_amulet","invis_sword","shivas_guard","basher","slippers","smoke_of_deceit","soul_booster","soul_ring","staff_of_wizardry","stout_shield","talisman_of_evasion","tango","tpscroll","tranquil_boots","ultimate_orb","urn_of_shadows","vanguard","veil_of_discord","vitality_booster","vladmir","void_stone","wraith_band","yasha","crimson_guard"],
-        my.itemsWithActive = ['heart','smoke_of_deceit','dust','ghost','tranquil_boots','phase_boots','power_treads','buckler','medallion_of_courage','ancient_janggo','mekansm','pipe','veil_of_discord','rod_of_atos','orchid','sheepstick','armlet','invis_sword','ethereal_blade','shivas_guard','manta','mask_of_madness','diffusal_blade','mjollnir','satanic','ring_of_basilius','ring_of_aquila'];
+		my.levelitems = ['necronomicon','dagon','diffusal_blade','travel_boots'],
+		my.validItems = ["abyssal_blade","ultimate_scepter","courier","arcane_boots","armlet","assault","boots_of_elves","bfury","belt_of_strength","black_king_bar","blade_mail","blade_of_alacrity","blades_of_attack","blink","bloodstone","boots","travel_boots","bottle","bracer","broadsword","buckler","butterfly","chainmail","circlet","clarity","claymore","cloak","lesser_crit","greater_crit","dagon","demon_edge","desolator","diffusal_blade","rapier","ancient_janggo","dust","eagle","energy_booster","ethereal_blade","cyclone","skadi","flying_courier","force_staff","gauntlets","gem","ghost","gloves","hand_of_midas","headdress","flask","heart","heavens_halberd","helm_of_iron_will","helm_of_the_dominator","hood_of_defiance","hyperstone","branches","javelin","sphere","maelstrom","magic_stick","magic_wand","manta","mantle","mask_of_madness","medallion_of_courage","mekansm","mithril_hammer","mjollnir","monkey_king_bar","lifesteal","mystic_staff","necronomicon","null_talisman","oblivion_staff","ward_observer","ogre_axe","orb_of_venom","orchid","pers","phase_boots","pipe","platemail","point_booster","poor_mans_shield","power_treads","quarterstaff","quelling_blade","radiance","reaver","refresher","ring_of_aquila","ring_of_basilius","ring_of_health","ring_of_protection","ring_of_regen","robe","rod_of_atos","relic","sobi_mask","sange","sange_and_yasha","satanic","sheepstick","ward_sentry","shadow_amulet","invis_sword","shivas_guard","basher","slippers","smoke_of_deceit","soul_booster","soul_ring","staff_of_wizardry","stout_shield","talisman_of_evasion","tango","tpscroll","tranquil_boots","ultimate_orb","urn_of_shadows","vanguard","veil_of_discord","vitality_booster","vladmir","void_stone","wraith_band","yasha","crimson_guard","enchanted_mango","lotus_orb","glimmer_cape","guardian_greaves","moon_shard","silver_edge","solar_crest","octarine_core"],
+        my.itemsWithActive = ['heart','smoke_of_deceit','dust','ghost','tranquil_boots','phase_boots','power_treads','buckler','medallion_of_courage','ancient_janggo','mekansm','pipe','veil_of_discord','rod_of_atos','orchid','sheepstick','armlet','invis_sword','ethereal_blade','shivas_guard','manta','mask_of_madness','diffusal_blade','mjollnir','satanic','ring_of_basilius','ring_of_aquila', 'butterfly', 'moon_shard'];
     
     my.ItemInput = function (value, name) {
         if (my.itemData['item_' + value].ItemAliases instanceof Array) {
@@ -32,6 +32,19 @@ var HEROCALCULATOR = (function (my) {
                     state: ko.observable(0),
                     size: data.itemInputValue(),
                     enabled: ko.observable(true)
+                }
+                switch (new_item.item) {
+                    case 'dagon':
+                        new_item.size = Math.min(new_item.size, 5);
+                    break;
+                    break;
+                    case 'travel_boots':
+                    case 'diffusal_blade':
+                        new_item.size = Math.min(new_item.size, 2);
+                    break;
+                    case 'necronomicon':
+                        new_item.size = Math.min(new_item.size, 3);
+                    break;
                 }
                 self.items.push(new_item);
                 if (data.selectedItem() === 'ring_of_aquila' || data.selectedItem() === 'ring_of_basilius' || data.selectedItem() === 'heart') {
@@ -116,6 +129,7 @@ var HEROCALCULATOR = (function (my) {
                 break;
                 case 'dagon':
                 case 'diffusal_blade':
+                case 'travel_boots':
                 case 'necronomicon':
                     if (data.size > 1) {
                         return '/media/images/items/' + data.item + '_' + data.size + '.png';
@@ -448,6 +462,7 @@ var HEROCALCULATOR = (function (my) {
                                     totalAttribute += parseInt(attribute.value[0]);
                                 }
                             }
+                            if (attribute.name == 'bonus_intelligence') {totalAttribute += parseInt(attribute.value[0]);};
                             if (attribute.name == 'bonus_int') {totalAttribute += parseInt(attribute.value[0]);};
                             if (attribute.name == 'bonus_stat' && self.items()[i].state() == 1) {totalAttribute += parseInt(attribute.value[0]);};
                         break;
@@ -787,6 +802,7 @@ var HEROCALCULATOR = (function (my) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'aura_mana_regen':
+                        case 'mana_regen_aura':
                             totalAttribute += parseFloat(attribute.value[0]);
                         break;
                     }
@@ -937,7 +953,7 @@ var HEROCALCULATOR = (function (my) {
                     var attribute = my.itemData['item_' + item].attributes[j];
                     switch(attribute.name) {
                         case 'bonus_evasion':
-                            totalAttribute *= (1 - parseInt(attribute.value[0]) / 100);
+                            if (item != 'butterfly' || !isActive) totalAttribute *= (1 - parseInt(attribute.value[0]) / 100);
                         break;
                     }
                 }
@@ -948,7 +964,7 @@ var HEROCALCULATOR = (function (my) {
             var totalAttribute = 0,
             hasBoots = false,
             hasEuls = false,
-            bootItems = ['boots','phase_boots','arcane_boots','travel_boots','power_treads','tranquil_boots'];
+            bootItems = ['boots','phase_boots','arcane_boots','travel_boots','power_treads','tranquil_boots','guardian_greaves'];
             for (var i = 0; i < self.items().length; i++) {
                 var item = self.items()[i].item;
                 var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
@@ -996,6 +1012,7 @@ var HEROCALCULATOR = (function (my) {
                 hasDrumsActive = false,
                 hasPhaseActive = false,
                 hasShadowBladeActive = false,
+                hasButterflyActive = false,
                 hasMoMActive = false,
                 yashaItems = ['manta','yasha','sange_and_yasha'];
             for (var i = 0; i < self.items().length; i++) {
@@ -1051,6 +1068,12 @@ var HEROCALCULATOR = (function (my) {
                             }
                             else if (item == 'smoke_of_deceit' && isActive) {
                                 totalAttribute += parseInt(attribute.value[0]);
+                            }
+                        break;
+                        case 'bonus_move_speed':
+                            if (isActive && !hasButterflyActive && item == 'butterfly') {
+                                totalAttribute += parseInt(attribute.value[0]);
+                                hasButterflyActive = true;
                             }
                         break;
                     }
@@ -1184,9 +1207,20 @@ var HEROCALCULATOR = (function (my) {
                                     hasPowerTreads = true;
                                 }
                             }
+                            else if (item == 'moon_shard') {
+                                if (!isActive) {
+                                    totalAttribute += parseInt(attribute.value[0]);
+                                }
+                            }
                             else {
                                 totalAttribute += parseInt(attribute.value[0]);
                             }
+                        break;
+                        case 'consumed_bonus':
+                            if (item == 'moon_shard' && isActive) {
+                                totalAttribute += parseInt(attribute.value[0]);
+                            }
+                        break;
                         break;
                         case 'bonus_speed':
                             totalAttribute += parseInt(attribute.value[0]);
@@ -1355,6 +1389,26 @@ var HEROCALCULATOR = (function (my) {
             return totalAttribute;
         };        
 
+        self.getVisionRangeNight = ko.computed(function () {
+            var totalAttribute = 0;
+            for (var i = 0; i < self.items().length; i++) {
+                var item = self.items()[i].item;
+                var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
+                if (!self.items()[i].enabled()) continue;
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
+                    var attribute = my.itemData['item_' + item].attributes[j];
+                    switch(attribute.name) {
+                        case 'bonus_night_vision':
+                            if (item != 'moon_shard' || !isActive) {
+                                totalAttribute += parseInt(attribute.value[0]);
+                            }
+                        break;
+                    }
+                }
+            }
+            return totalAttribute;
+        });
+        
         self.itemOptions = ko.observableArray([]);
         var itemOptionsArr = [];
         for (var i = 0; i < my.validItems.length; i++) {

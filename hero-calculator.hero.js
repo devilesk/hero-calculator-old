@@ -455,7 +455,7 @@ var HEROCALCULATOR = (function (my) {
                 var ehp = self.health() * (1 + .06 * self.totalArmorPhysical());
             }
             else {
-                var ehp = self.health() / (2 - Math.pow(0.94, -self.totalArmorPhysical()));
+                var ehp = self.health() * (1 - .06 * self.totalArmorPhysical()) / (1 - .12 * self.totalArmorPhysical());
             }
             ehp /= (1 - (1 - (evasion * self.ability().getEvasionBacktrack())))
             ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
@@ -714,12 +714,13 @@ var HEROCALCULATOR = (function (my) {
 			var result = value;
             switch (type) {
                 case 'physical':
-                    if (self.enemy().totalArmorPhysical() >= 0) {
+                    /*if (self.enemy().totalArmorPhysical() >= 0) {
                         result = value * (1 - (0.06 * self.enemy().totalArmorPhysical()) / (1 + 0.06 * self.enemy().totalArmorPhysical()));
                     }
                     else {
-                        result = value * (1 + (1 - Math.pow(0.94, -self.enemy().totalArmorPhysical())));
-                    }
+                        result = value * (1 - (0.06 * Math.abs(self.enemy().totalArmorPhysical())) / (1 + 0.06 * Math.abs(self.enemy().totalArmorPhysical())));
+                    }*/
+                    result = value * (1 - (0.06 * self.enemy().totalArmorPhysical()) / (1 + 0.06 * Math.abs(self.enemy().totalArmorPhysical())));
                 break;
                 case 'magic':
                     result = value * (1 - self.enemy().totalMagicResistance() / 100);
@@ -728,12 +729,13 @@ var HEROCALCULATOR = (function (my) {
                     result = value;
                 break;
                 case 'composite':
-                    if (self.enemy().totalArmorPhysical() >= 0) {
+                    /*if (self.enemy().totalArmorPhysical() >= 0) {
                         result = value * (1 - (0.06 * self.enemy().totalArmorPhysical()) / (1 + 0.06 * self.enemy().totalArmorPhysical()));
                     }
                     else {
                         result = value * (1 + (1 - Math.pow(0.94, -self.enemy().totalArmorPhysical())));
-                    }
+                    }*/
+                    result = value * (1 - (0.06 * self.enemy().totalArmorPhysical()) / (1 + 0.06 * Math.abs(self.enemy().totalArmorPhysical())));
                     result *= (1 - self.enemy().totalMagicResistance() / 100);
                 break;
             }
@@ -1049,7 +1051,7 @@ var HEROCALCULATOR = (function (my) {
             return (self.heroData().visiondaytimerange) * (1 + self.enemy().ability().getVisionRangePctReduction() + self.debuffs.getVisionRangePctReduction());
         });
         self.visionrangenight = ko.pureComputed(function () {
-            return (self.heroData().visionnighttimerange + self.ability().getVisionRangeNight()) * (1 + self.enemy().ability().getVisionRangePctReduction() + self.debuffs.getVisionRangePctReduction());
+            return (self.heroData().visionnighttimerange + self.inventory.getVisionRangeNight() + self.ability().getVisionRangeNight()) * (1 + self.enemy().ability().getVisionRangePctReduction() + self.debuffs.getVisionRangePctReduction());
         });
         self.lifesteal = ko.pureComputed(function () {
             var total = self.inventory.getLifesteal() + self.ability().getLifesteal() + self.buffs.getLifesteal();
