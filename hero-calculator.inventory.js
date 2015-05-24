@@ -7,9 +7,9 @@ var HEROCALCULATOR = (function (my) {
 		my.stackableItems = ['clarity','flask','dust','ward_observer','ward_sentry','tango','tpscroll','smoke_of_deceit'],
 		my.levelitems = ['necronomicon','dagon','diffusal_blade','travel_boots'],
 		my.validItems = ["abyssal_blade","ultimate_scepter","courier","arcane_boots","armlet","assault","boots_of_elves","bfury","belt_of_strength","black_king_bar","blade_mail","blade_of_alacrity","blades_of_attack","blink","bloodstone","boots","travel_boots","bottle","bracer","broadsword","buckler","butterfly","chainmail","circlet","clarity","claymore","cloak","lesser_crit","greater_crit","dagon","demon_edge","desolator","diffusal_blade","rapier","ancient_janggo","dust","eagle","energy_booster","ethereal_blade","cyclone","skadi","flying_courier","force_staff","gauntlets","gem","ghost","gloves","hand_of_midas","headdress","flask","heart","heavens_halberd","helm_of_iron_will","helm_of_the_dominator","hood_of_defiance","hyperstone","branches","javelin","sphere","maelstrom","magic_stick","magic_wand","manta","mantle","mask_of_madness","medallion_of_courage","mekansm","mithril_hammer","mjollnir","monkey_king_bar","lifesteal","mystic_staff","necronomicon","null_talisman","oblivion_staff","ward_observer","ogre_axe","orb_of_venom","orchid","pers","phase_boots","pipe","platemail","point_booster","poor_mans_shield","power_treads","quarterstaff","quelling_blade","radiance","reaver","refresher","ring_of_aquila","ring_of_basilius","ring_of_health","ring_of_protection","ring_of_regen","robe","rod_of_atos","relic","sobi_mask","sange","sange_and_yasha","satanic","sheepstick","ward_sentry","shadow_amulet","invis_sword","shivas_guard","basher","slippers","smoke_of_deceit","soul_booster","soul_ring","staff_of_wizardry","stout_shield","talisman_of_evasion","tango","tpscroll","tranquil_boots","ultimate_orb","urn_of_shadows","vanguard","veil_of_discord","vitality_booster","vladmir","void_stone","wraith_band","yasha","crimson_guard","enchanted_mango","lotus_orb","glimmer_cape","guardian_greaves","moon_shard","silver_edge","solar_crest","octarine_core"],
-        my.itemsWithActive = ['heart','smoke_of_deceit','dust','ghost','tranquil_boots','phase_boots','power_treads','buckler','medallion_of_courage','ancient_janggo','mekansm','pipe','veil_of_discord','rod_of_atos','orchid','sheepstick','armlet','invis_sword','ethereal_blade','shivas_guard','manta','mask_of_madness','diffusal_blade','mjollnir','satanic','ring_of_basilius','ring_of_aquila', 'butterfly', 'moon_shard'];
+        my.itemsWithActive = ['heart','smoke_of_deceit','dust','ghost','tranquil_boots','phase_boots','power_treads','buckler','medallion_of_courage','ancient_janggo','mekansm','pipe','veil_of_discord','rod_of_atos','orchid','sheepstick','armlet','invis_sword','ethereal_blade','shivas_guard','manta','mask_of_madness','diffusal_blade','mjollnir','satanic','ring_of_basilius','ring_of_aquila', 'butterfly', 'moon_shard', 'silver_edge'];
     
-    my.ItemInput = function (value, name) {
+    my.ItemInput = function (value, name, debuff) {
         if (my.itemData['item_' + value].ItemAliases instanceof Array) {
             var itemAlias = my.itemData['item_' + value].ItemAliases.join(' ');
         }
@@ -17,8 +17,17 @@ var HEROCALCULATOR = (function (my) {
             var itemAlias = my.itemData['item_' + value].ItemAliases;
         }
         this.value = ko.observable(value);
-        this.name = ko.observable(name);
-        this.displayname = ko.observable(name + ' <span style="display:none">' + ';' + itemAlias + '</span>');
+        this.debuff = ko.observable(debuff);
+        if (this.debuff()) {
+            this.value = ko.observable(value + '|' + debuff.id);
+            this.name = ko.observable(name + ' (' + debuff.name + ')');
+            this.displayname = ko.observable(name + ' (' + debuff.name + ') <span style="display:none">' + ';' + itemAlias + '</span>');
+        }
+        else {
+            this.value = ko.observable(value);
+            this.name = ko.observable(name);
+            this.displayname = ko.observable(name + ' <span style="display:none">' + ';' + itemAlias + '</span>');
+        }
     };
 	
 	my.BasicInventoryViewModel = function (h) {
@@ -28,7 +37,7 @@ var HEROCALCULATOR = (function (my) {
         self.addItem = function (data, event) {
             if (data.selectedItem() != undefined) {
                 var new_item = {
-                    item: data.selectedItem(),
+                    item: data.selectedItem().split('|')[0],
                     state: ko.observable(0),
                     size: data.itemInputValue(),
                     enabled: ko.observable(true)
@@ -273,10 +282,13 @@ var HEROCALCULATOR = (function (my) {
         self.addItemDebuff = function (data, event) {
             if (self.hasInventory() && self.selectedItemDebuff() != undefined) {
                 var new_item = {
-                    item: self.selectedItemDebuff(),
+                    item: self.selectedItemDebuff().split('|')[0],
                     state: ko.observable(0),
                     size: 1,
                     enabled: ko.observable(true)
+                }
+                if (self.selectedItemDebuff().split('|').length == 2) {
+                    new_item.debuff = self.selectedItemDebuff().split('|')[1]
                 }
                 self.items.push(new_item);
                 if (self.selectedItemDebuff() === 'ring_of_aquila' || self.selectedItemDebuff() === 'ring_of_basilius') {
@@ -1050,7 +1062,7 @@ var HEROCALCULATOR = (function (my) {
                             }
                         break;
                         case 'windwalk_movement_speed':
-                            if (isActive && !hasShadowBladeActive && item == 'invis_sword') {
+                            if (isActive && !hasShadowBladeActive && (item == 'invis_sword' || item == 'silver_edge')) {
                                 totalAttribute += parseInt(attribute.value[0]);
                                 hasShadowBladeActive = true;
                             }
@@ -1105,6 +1117,12 @@ var HEROCALCULATOR = (function (my) {
                         case 'cold_movement_speed':
                             if (item == 'skadi') {
                                 totalAttribute += parseInt(attribute.value[0]);
+                            }
+                        break;
+                        case 'maim_movement_speed':
+                            if (self.items()[i].debuff && self.items()[i].debuff == 'maim') {
+                                totalAttribute += parseInt(attribute.value[0]);
+                                excludeList.push(attribute.name);
                             }
                         break;
                     }
@@ -1274,6 +1292,12 @@ var HEROCALCULATOR = (function (my) {
                                 excludeList.push(attribute.name);
                             }
                         break;
+                        case 'maim_attack_speed':
+                            if (self.items()[i].debuff && self.items()[i].debuff == 'maim') {
+                                totalAttribute += parseInt(attribute.value[0]);
+                                excludeList.push(attribute.name);
+                            }
+                        break;
                     }
                 }
             }
@@ -1409,6 +1433,45 @@ var HEROCALCULATOR = (function (my) {
             return totalAttribute;
         });
         
+        self.getBaseDamageReductionPct = function () {
+            var totalAttribute = 1;
+            for (var i = 0; i < self.items().length; i++) {
+                var item = self.items()[i].item;
+                var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
+                if (!self.items()[i].enabled()) continue;
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
+                    var attribute = my.itemData['item_' + item].attributes[j];
+                    switch(attribute.name) {
+                        case 'backstab_reduction':
+                            if (self.items()[i].debuff && self.items()[i].debuff == 'shadow_walk') {
+                                totalAttribute *= (1 + parseInt(attribute.value[0]) / 100);
+                            }
+                        break;
+                    }
+                }
+            }
+            return totalAttribute;
+        };    
+        self.getBonusDamageReductionPct = function () {
+            var totalAttribute = 1;
+            for (var i = 0; i < self.items().length; i++) {
+                var item = self.items()[i].item;
+                var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
+                if (!self.items()[i].enabled()) continue;
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
+                    var attribute = my.itemData['item_' + item].attributes[j];
+                    switch(attribute.name) {
+                        case 'backstab_reduction':
+                            if (self.items()[i].debuff && self.items()[i].debuff == 'shadow_walk') {
+                                totalAttribute *= (1 + parseInt(attribute.value[0]) / 100);
+                            }
+                        break;
+                    }
+                }
+            }
+            return totalAttribute;
+        };    
+        
         self.itemOptions = ko.observableArray([]);
         var itemOptionsArr = [];
         for (var i = 0; i < my.validItems.length; i++) {
@@ -1419,15 +1482,28 @@ var HEROCALCULATOR = (function (my) {
             self.itemOptions.push(new my.ItemInput(i.replace('item_',''),my.itemData[i].displayname));
         }*/
         
-        var itemBuffs = ['assault', 'ancient_janggo', 'headdress', 'mekansm', 'pipe', 'ring_of_aquila', 'vladmir', 'ring_of_basilius','buckler'];
+        var itemBuffs = ['assault', 'ancient_janggo', 'headdress', 'mekansm', 'pipe', 'ring_of_aquila', 'vladmir', 'ring_of_basilius', 'buckler'];
         self.itemBuffOptions = ko.observableArray(_.map(itemBuffs, function(item) { return new my.ItemInput(item, my.itemData['item_' + item].displayname); }));
         /*for (i in itemBuffs) {
             self.itemBuffOptions.push(new my.ItemInput(itemBuffs[i], my.itemData['item_' + itemBuffs[i]].displayname));
         }*/
         self.selectedItemBuff = ko.observable('assault');
 
-        var itemDebuffs = ['assault', 'shivas_guard', 'desolator', 'medallion_of_courage', 'sheepstick', 'veil_of_discord'];
-        self.itemDebuffOptions = ko.observableArray(_.map(itemDebuffs, function(item) { return new my.ItemInput(item, my.itemData['item_' + item].displayname); }));        
+        var itemDebuffs = [
+            {item: 'assault', debuff: null},
+            {item: 'shivas_guard', debuff: null},
+            {item: 'desolator', debuff: null},
+            {item: 'medallion_of_courage', debuff: null},
+            {item: 'sheepstick', debuff: null},
+            {item: 'veil_of_discord', debuff: null},
+            {item: 'silver_edge', debuff: {id: 'shadow_walk', name: 'Shadow Walk'}},
+            {item: 'silver_edge', debuff: {id: 'maim', name: 'Lesser Maim'}}
+        ]
+        self.itemDebuffOptions = ko.observableArray(_.map(itemDebuffs,
+            function(item) {
+                return new my.ItemInput(item.item, my.itemData['item_' + item.item].displayname, item.debuff);
+            })
+        );
         /*for (i in itemDebuffs) {
             self.itemDebuffOptions.push(new my.ItemInput(itemDebuffs[i], my.itemData['item_' + itemDebuffs[i]].displayname));
         }*/

@@ -353,8 +353,8 @@ var HEROCALCULATOR = (function (my) {
                 abilityBaseDamage = self.ability().getBaseDamage(),
                 minDamage = self.heroData().attackdamagemin,
                 maxDamage = self.heroData().attackdamagemax;
-            return [Math.floor((minDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * self.debuffs.getBaseDamageReductionPct() * abilityBaseDamage.multiplier),
-                    Math.floor((maxDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * self.debuffs.getBaseDamageReductionPct() * abilityBaseDamage.multiplier)];
+            return [Math.floor((minDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * self.debuffs.getBaseDamageReductionPct() * self.debuffs.itemBuffs.getBaseDamageReductionPct() * abilityBaseDamage.multiplier),
+                    Math.floor((maxDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * self.debuffs.getBaseDamageReductionPct() * self.debuffs.itemBuffs.getBaseDamageReductionPct() * abilityBaseDamage.multiplier)];
         });
         self.bonusDamage = ko.pureComputed(function () {
             return ((self.inventory.getBonusDamage().total
@@ -374,7 +374,8 @@ var HEROCALCULATOR = (function (my) {
                     + Math.floor(
                         ((self.selectedHero().heroName == 'riki') ? self.ability().getBonusDamageBackstab().total[0] * self.totalAgi() : 0)
                       )
-                    ) * self.ability().getBaseDamageReductionPct());
+                    ) * self.ability().getBaseDamageReductionPct()
+                      * self.debuffs.itemBuffs.getBaseDamageReductionPct());
         });
         self.bonusDamageReduction = ko.pureComputed(function () {
             return Math.abs(self.enemy().ability().getBonusDamageReduction() + self.debuffs.getBonusDamageReduction());
@@ -776,7 +777,7 @@ var HEROCALCULATOR = (function (my) {
 
             // bonus damage from items
             for (i in itemBonusDamage) {
-                var d = itemBonusDamage[i].damage*itemBonusDamage[i].count;
+                var d = itemBonusDamage[i].damage*itemBonusDamage[i].count * self.ability().getBaseDamageReductionPct() * self.debuffs.itemBuffs.getBaseDamageReductionPct();
                 result.push({
                     name: itemBonusDamage[i].displayname + (itemBonusDamage[i].count > 1 ? ' x' + itemBonusDamage[i].count : ''),
                     damage: d,

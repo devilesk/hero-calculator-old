@@ -1,3 +1,6 @@
+2015-05-24
+- Added Silver Edge passives to debuff section.
+
 2015-05-23
 - Fixed Vladmir's Offering not giving mana regen from aura.
 - Added Butterfly Flutter active.
