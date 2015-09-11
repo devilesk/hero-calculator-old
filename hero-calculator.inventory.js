@@ -789,6 +789,7 @@ var HEROCALCULATOR = (function (my) {
             }
             return {value: totalAttribute, excludeList: excludeList};
         };
+        
         self.getMana = function () {
             var totalAttribute = 0;
             for (var i = 0; i < self.items().length; i++) {
@@ -805,6 +806,7 @@ var HEROCALCULATOR = (function (my) {
             }
             return totalAttribute;
         };
+        
         self.getManaRegen = function () {
             var totalAttribute = 0;
             for (var i = 0; i < self.items().length; i++) {
@@ -850,6 +852,7 @@ var HEROCALCULATOR = (function (my) {
             }
             return 0;
         };
+        
         self.getArmor = function () {
             var totalAttribute = 0;
             for (var i = 0; i < self.items().length; i++) {
@@ -867,6 +870,7 @@ var HEROCALCULATOR = (function (my) {
             }
             return totalAttribute;
         };
+        
         self.getArmorAura = function (aList) {
             var totalAttribute = 0,
                 attributeList = aList || [];
@@ -934,13 +938,11 @@ var HEROCALCULATOR = (function (my) {
                 if (!self.items()[i].enabled()) continue;
                 for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
                     var attribute = my.itemData['item_' + item].attributes[j];
-                    if (excludeList.indexOf(attribute.name) > -1) continue;
+                    if (excludeList.indexOf(attribute.name) > -1 || excludeList.indexOf(item + '_' + attribute.name) > -1) continue;
                     switch(attribute.name) {
-                        case 'bonus_armor':
-                            if (isActive && item == 'medallion_of_courage') {
-                                totalAttribute -= parseInt(attribute.value[0]);
-                                excludeList.push(attribute.name);
-                            }
+                        case 'armor_reduction':
+                            totalAttribute += parseInt(attribute.value[0]);
+                            excludeList.push(item + '_' + attribute.name);
                         break;
                         case 'aura_negative_armor':
                             totalAttribute += parseInt(attribute.value[0]);
@@ -1433,6 +1435,31 @@ var HEROCALCULATOR = (function (my) {
             return totalAttribute;
         });
         
+        self.getMissChance = function (e) {
+            var totalAttribute = 1,
+                excludeList = e || [];
+            for (var i = 0; i < self.items().length; i++) {
+                var item = self.items()[i].item;
+                var isActive = self.activeItems.indexOf(self.items()[i]) >= 0 ? true : false;
+                if (!self.items()[i].enabled()) continue;
+                for (var j = 0; j < my.itemData['item_' + item].attributes.length; j++) {
+                    var attribute = my.itemData['item_' + item].attributes[j];
+                    if (excludeList.indexOf(attribute.name) > -1) continue;
+                    switch(attribute.name) {
+                        case 'miss_chance':
+                            totalAttribute *= (1 - parseInt(attribute.value[0]) / 100);
+                            excludeList.push(attribute.name);
+                        break;
+                        case 'blind_pct':
+                            totalAttribute *= (1 - parseInt(attribute.value[0]) / 100);
+                            excludeList.push(attribute.name);
+                        break;
+                    }
+                }
+            }
+            return {value: totalAttribute, excludeList: excludeList};
+        };
+        
         self.getBaseDamageReductionPct = function () {
             var totalAttribute = 1;
             for (var i = 0; i < self.items().length; i++) {
@@ -1482,7 +1509,7 @@ var HEROCALCULATOR = (function (my) {
             self.itemOptions.push(new my.ItemInput(i.replace('item_',''),my.itemData[i].displayname));
         }*/
         
-        var itemBuffs = ['assault', 'ancient_janggo', 'headdress', 'mekansm', 'pipe', 'ring_of_aquila', 'vladmir', 'ring_of_basilius', 'buckler'];
+        var itemBuffs = ['assault', 'ancient_janggo', 'headdress', 'mekansm', 'pipe', 'ring_of_aquila', 'vladmir', 'ring_of_basilius', 'buckler', 'solar_crest'];
         self.itemBuffOptions = ko.observableArray(_.map(itemBuffs, function(item) { return new my.ItemInput(item, my.itemData['item_' + item].displayname); }));
         /*for (i in itemBuffs) {
             self.itemBuffOptions.push(new my.ItemInput(itemBuffs[i], my.itemData['item_' + itemBuffs[i]].displayname));
@@ -1494,8 +1521,10 @@ var HEROCALCULATOR = (function (my) {
             {item: 'shivas_guard', debuff: null},
             {item: 'desolator', debuff: null},
             {item: 'medallion_of_courage', debuff: null},
+            {item: 'radiance', debuff: null},
             {item: 'sheepstick', debuff: null},
             {item: 'veil_of_discord', debuff: null},
+            {item: 'solar_crest', debuff: null},
             {item: 'silver_edge', debuff: {id: 'shadow_walk', name: 'Shadow Walk'}},
             {item: 'silver_edge', debuff: {id: 'maim', name: 'Lesser Maim'}}
         ]

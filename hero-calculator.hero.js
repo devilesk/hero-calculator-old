@@ -265,7 +265,10 @@ var HEROCALCULATOR = (function (my) {
                     ).toFixed(2);
         });
         self.mana = ko.pureComputed(function () {
-            return (self.heroData().statusmana + self.totalInt() * 13 + self.inventory.getMana()).toFixed(2);
+            return (self.heroData().statusmana
+                    + self.totalInt() * 13
+                    + self.inventory.getMana()
+                    + self.ability().getMana()).toFixed(2);
         });
         self.manaregen = ko.pureComputed(function () {
             return ((self.heroData().statusmanaregen 
@@ -294,6 +297,7 @@ var HEROCALCULATOR = (function (my) {
                     + self.ability().getArmor()
                     + self.enemy().ability().getArmorReduction()
                     + self.buffs.getArmor()
+                    + self.buffs.itemBuffs.getArmor()
                     + self.debuffs.getArmorReduction()
                     //+ self.buffs.itemBuffs.getArmorAura().value
                     + armorAura.value
@@ -353,8 +357,8 @@ var HEROCALCULATOR = (function (my) {
                 abilityBaseDamage = self.ability().getBaseDamage(),
                 minDamage = self.heroData().attackdamagemin,
                 maxDamage = self.heroData().attackdamagemax;
-            return [Math.floor((minDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * self.debuffs.getBaseDamageReductionPct() * self.debuffs.itemBuffs.getBaseDamageReductionPct() * abilityBaseDamage.multiplier),
-                    Math.floor((maxDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getBaseDamageReductionPct() * self.debuffs.getBaseDamageReductionPct() * self.debuffs.itemBuffs.getBaseDamageReductionPct() * abilityBaseDamage.multiplier)];
+            return [Math.floor((minDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getSelfBaseDamageReductionPct() * self.enemy().ability().getBaseDamageReductionPct() * self.debuffs.getBaseDamageReductionPct() * self.debuffs.itemBuffs.getBaseDamageReductionPct() * abilityBaseDamage.multiplier),
+                    Math.floor((maxDamage + totalAttribute + abilityBaseDamage.total) * self.ability().getSelfBaseDamageReductionPct() * self.enemy().ability().getBaseDamageReductionPct() * self.debuffs.getBaseDamageReductionPct() * self.debuffs.itemBuffs.getBaseDamageReductionPct() * abilityBaseDamage.multiplier)];
         });
         self.bonusDamage = ko.pureComputed(function () {
             return ((self.inventory.getBonusDamage().total
@@ -374,7 +378,8 @@ var HEROCALCULATOR = (function (my) {
                     + Math.floor(
                         ((self.selectedHero().heroName == 'riki') ? self.ability().getBonusDamageBackstab().total[0] * self.totalAgi() : 0)
                       )
-                    ) * self.ability().getBaseDamageReductionPct()
+                    ) * self.ability().getSelfBaseDamageReductionPct()
+                      * self.enemy().ability().getBaseDamageReductionPct()
                       * self.debuffs.itemBuffs.getBaseDamageReductionPct());
         });
         self.bonusDamageReduction = ko.pureComputed(function () {
@@ -447,18 +452,19 @@ var HEROCALCULATOR = (function (my) {
                 return (e * 100).toFixed(2);
             }
             else {
-                return ((1-(self.inventory.getEvasion() * self.ability().getEvasion() * self.ability().getEvasionBacktrack())) * 100).toFixed(2);
+                return ((1-(self.inventory.getEvasion() * self.ability().getEvasion() * self.ability().getEvasionBacktrack() * self.buffs.itemBuffs.getEvasion())) * 100).toFixed(2);
             }
         });
         self.ehpPhysical = ko.pureComputed(function () {
-            var evasion = self.enemy().inventory.isSheeped() || self.debuffs.itemBuffs.isSheeped() ? 1 : self.inventory.getEvasion() * self.ability().getEvasion();
+            var evasion = self.enemy().inventory.isSheeped() || self.debuffs.itemBuffs.isSheeped() ? 1 : self.inventory.getEvasion() * self.ability().getEvasion() * self.buffs.itemBuffs.getEvasion();
             if (self.totalArmorPhysical() >= 0) {
                 var ehp = self.health() * (1 + .06 * self.totalArmorPhysical());
             }
             else {
                 var ehp = self.health() * (1 - .06 * self.totalArmorPhysical()) / (1 - .12 * self.totalArmorPhysical());
             }
-            ehp /= (1 - (1 - (evasion * self.ability().getEvasionBacktrack())))
+            ehp /= (1 - (1 - (evasion * self.ability().getEvasionBacktrack())));
+            ehp /= (1 - parseFloat(self.enemy().missChance()) / 100);
             ehp *= (_.some(self.inventory.activeItems(), function (item) {return item.item == 'mask_of_madness';}) ? (1 / 1.3) : 1);
 			ehp *= (1 / self.ability().getDamageReduction());
 			ehp *= (1 / self.buffs.getDamageReduction());
@@ -777,7 +783,7 @@ var HEROCALCULATOR = (function (my) {
 
             // bonus damage from items
             for (i in itemBonusDamage) {
-                var d = itemBonusDamage[i].damage*itemBonusDamage[i].count * self.ability().getBaseDamageReductionPct() * self.debuffs.itemBuffs.getBaseDamageReductionPct();
+                var d = itemBonusDamage[i].damage*itemBonusDamage[i].count * self.ability().getSelfBaseDamageReductionPct() * self.enemy().ability().getBaseDamageReductionPct() * self.debuffs.itemBuffs.getBaseDamageReductionPct();
                 result.push({
                     name: itemBonusDamage[i].displayname + (itemBonusDamage[i].count > 1 ? ' x' + itemBonusDamage[i].count : ''),
                     damage: d,
@@ -1043,7 +1049,12 @@ var HEROCALCULATOR = (function (my) {
             return 0;
         });
         self.missChance = ko.pureComputed(function () {
-            return ((1 - (self.enemy().ability().getMissChance() * self.debuffs.getMissChance())) * 100).toFixed(2);
+            var missDebuff = _.reduce([self.enemy().inventory.getMissChance, self.debuffs.itemBuffs.getMissChance], function (memo, fn) {
+                var obj = fn(memo.excludeList);
+                obj.value *= memo.value;
+                return obj;
+            }, {value:1, excludeList:[]});
+            return ((1 - (self.enemy().ability().getMissChance() * self.debuffs.getMissChance() * missDebuff.value)) * 100).toFixed(2);
         });
         self.totalattackrange = ko.pureComputed(function () {
             return self.heroData().attackrange + self.ability().getAttackRange();

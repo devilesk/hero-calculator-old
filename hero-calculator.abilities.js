@@ -660,6 +660,27 @@ var HEROCALCULATOR = (function (my) {
             return totalAttribute;
         });
 
+        self.getMana = ko.computed(function () {
+            var totalAttribute = 0;
+            for (var i = 0; i < self.abilities().length; i++) {
+                var ability = self.abilities()[i];
+                if (!(ability.name() in self.abilityData)) {
+                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
+                            var attribute = self.abilities()[i].attributes()[j];
+                            switch(attribute.name()) {
+                                // obsidian_destroyer_essence_aura
+                                case 'bonus_mana':
+									totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return totalAttribute;
+        });
+        
         self.getManaRegen = ko.computed(function () {
             var totalAttribute = 0;
             for (var i = 0; i < self.abilities().length; i++) {
@@ -1027,7 +1048,7 @@ var HEROCALCULATOR = (function (my) {
             return { sources: sources, total: totalAttribute, multiplier: totalMultiplier };
         });
         
-        self.getBaseDamageReductionPct = ko.computed(function () {
+        self.getSelfBaseDamageReductionPct = ko.computed(function () {
             var totalAttribute = 1;
             for (var i = 0; i < self.abilities().length; i++) {
                 var ability = self.abilities()[i];
@@ -1051,6 +1072,23 @@ var HEROCALCULATOR = (function (my) {
                                         totalAttribute *= (1 + self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level())/100);
                                     }
                                 break;
+                            }
+                        }
+                    }
+                }
+            }
+            return totalAttribute;
+        });
+        
+        self.getBaseDamageReductionPct = ko.computed(function () {
+            var totalAttribute = 1;
+            for (var i = 0; i < self.abilities().length; i++) {
+                var ability = self.abilities()[i];
+                if (!(ability.name() in self.abilityData)) {
+                    if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
+                        for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
+                            var attribute = self.abilities()[i].attributes()[j];
+                            switch(attribute.name()) {
                                 // vengefulspirit_command_aura
                                 case 'bonus_damage_pct':
                                     if (ability.name() == 'vengefulspirit_command_aura') {
