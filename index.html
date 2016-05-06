@@ -116,8 +116,8 @@
                     </li>      
                 <!-- /ko -->
             <!-- /ko -->
-                <li data-bind="secondTab: 'settingsTab'"><a id="settingsTab" href="#settings" data-toggle="tab" data-bind="click: clickTab">Settings</a></li>
-                <li><div class="checkbox" style="margin-left:15px"><label><input type="checkbox" data-bind="checked: sideView"> Fullscreen</label></div></li>
+                <li data-bind="secondTab: 'settingsTab'"><a id="settingsTab" href="#settings" data-toggle="tab" data-bind="click: clickTab"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+                <li><div class="checkbox" style="margin-left:15px"><label><input type="checkbox" data-bind="checked: sideView"><span class="glyphicon glyphicon-fullscreen"></span> Fullscreen</label></div></li>
                 <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-plus pull-right" data-bind="toggle: displayShop, visible: !displayShop() && !shopPopout()" title="Maximize shop"></button>
                 <button class="btn btn-default btn-xs shop-button glyphicon glyphicon-new-window pull-right hidden-xs" data-bind="click: shopPopout, visible: !displayShop() && !shopPopout()" title="Popout shop"></button>
                 <strong style="cursor:pointer" class="pull-right shop-button" data-bind="toggle: displayShop, visible: !displayShop() && !shopPopout()">Shop</strong>

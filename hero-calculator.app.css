@@ -499,3 +499,12 @@ border-bottom: 1px solid #303239;
         border: 1px solid #202126;
     }
 }
+
+.shop-tab {
+  width: 100%;
+}
+
+.shop-column {
+  width: 50px;
+  display: inline-block;
+}

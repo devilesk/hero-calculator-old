@@ -38,11 +38,14 @@ var HEROCALCULATOR = (function (my) {
         '$evasion': 'Evasion',
         '$spell_resist': 'Spell Resistance',
         '$selected_attribute': 'Selected Attribute',
-        '$selected_attrib': 'Selected Attribute'
+        '$selected_attrib': 'Selected Attribute',
+        '$cast_range': 'Cast Range',
+        '$attack_range': 'Attack Range'
     }
 
     function getTooltipItemAttributes(item) {
         var a = '';
+        console.log('getTooltip', item);
         for (var i = 0; i < item.attributes.length; i++) {
             if (item.attributes[i].tooltip != null) {
                 var attributeTooltip = item.attributes[i].tooltip;

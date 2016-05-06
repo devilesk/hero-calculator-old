@@ -1,12 +1,12 @@
 var HEROCALCULATOR = (function (my) {
 
-    my.GraphPropertyOption = function (id, label) {
-		this.id = id;
-        this.label = label;
-    };
+  my.GraphPropertyOption = function (id, label) {
+  this.id = id;
+    this.label = label;
+  };
     
 	my.BuildExplorerViewModel = function (h) {
-        var self = this;
+    var self = this;
 		self.parent = h;
 
 		self.itemBuild = ko.observableArray([]);
@@ -49,12 +49,12 @@ var HEROCALCULATOR = (function (my) {
 		});
 		
 		self.availableSkillBuildPoints = ko.computed(function () {
-            return _.reduce(self.skillBuild(), function(memo, num){ return memo + (num() == -1); }, 0);
-        });
-        self.getSkillBuildAbilityLevel = function (index) {
-            return _.reduce(self.skillBuild(), function(memo, num){ return memo + (num() == index); }, 0);
-        };
-        self.toggleAbilitySkillBuild = function (index, abilityIndex, data, event) {
+      return _.reduce(self.skillBuild(), function(memo, num){ return memo + (num() == -1); }, 0);
+    });
+    self.getSkillBuildAbilityLevel = function (index) {
+      return _.reduce(self.skillBuild(), function(memo, num){ return memo + (num() == index); }, 0);
+    };
+    self.toggleAbilitySkillBuild = function (index, abilityIndex, data, event) {
 			if (self.skillBuild()[index]() != abilityIndex) {
 				var ability = self.parent.ability().abilities()[abilityIndex],
 					abilityType = ability.abilitytype(),
@@ -87,7 +87,7 @@ var HEROCALCULATOR = (function (my) {
 			else {
 				self.skillBuild()[index](-1);
 			}
-        };
+    };
 		self.IsValidAbilityLevel = function (ability, heroName, heroLevel, abilityLevel) {
 			var a = 1, b = 2, m = 4;
 			if (ability.name() == 'attribute_bonus') {
@@ -120,26 +120,26 @@ var HEROCALCULATOR = (function (my) {
 			return heroLevel >= a + b * abilityLevel && abilityLevel < m;
 		}
 		
-        self.resetItemBuild = function (index) {
-            self.itemBuild()[index].removeAll();
-        };		
-        self.resetAllItemBuilds = function () {
-            for (var i = 0; i < 25; i++) {
-                self.itemBuild()[i].removeAll();
-                self.itemBuild()[i].carryOver(true);
-            }
-        };
-        self.resetSkillBuild = function () {
-            for (var i = 0; i < 25; i++) {
-                self.skillBuild()[i](-1);
-            }
-        };
-        self.graphData = ko.observableArray([]);
-        self.graphDataHeader = ko.observable('');
+    self.resetItemBuild = function (index) {
+      self.itemBuild()[index].removeAll();
+    };		
+    self.resetAllItemBuilds = function () {
+      for (var i = 0; i < 25; i++) {
+        self.itemBuild()[i].removeAll();
+        self.itemBuild()[i].carryOver(true);
+      }
+    };
+    self.resetSkillBuild = function () {
+      for (var i = 0; i < 25; i++) {
+        self.skillBuild()[i](-1);
+      }
+    };
+    self.graphData = ko.observableArray([]);
+    self.graphDataHeader = ko.observable('');
 		self.parent.selectedHero.subscribe(function (newValue) {
 			self.graphDataHeader(self.parent.selectedHero().heroDisplayName);
 		});
-        self.graphDataDescription = ko.observable('');
+    self.graphDataDescription = ko.observable('');
 		self.graphProperties = ko.observableArray([
 			new my.GraphPropertyOption('totalArmorPhysical', 'Armor'),
 			new my.GraphPropertyOption('totalArmorPhysicalReduction', 'Physical Damage Reduction'),
@@ -155,26 +155,26 @@ var HEROCALCULATOR = (function (my) {
 			new my.GraphPropertyOption('attacksPerSecond', 'Attacks per second'),
 			new my.GraphPropertyOption('attackTime', 'Time per attack')
 		]);
-        self.graph = function () {
-            var savedAbilityLevels = [],
-                savedLevel = self.parent.selectedHeroLevel(),
-				savedItems = self.parent.inventory.items();
-				savedActiveItems = self.parent.inventory.activeItems(),
-                s = ko.toJS(self.skillBuild),
-				carryOverItems = [],
-				carryOverActiveItems = [],
-                dataset = [];
-            for (var i = 0; i < self.parent.ability().abilities().length; i++) {
-                savedAbilityLevels.push(self.parent.ability().abilities()[i].level());
-            }
-            for (var i = 1; i < 26; i++) {
-                self.parent.selectedHeroLevel(i);
-                var skillBuildSubset = s.slice(0, i);
-                for (var j = 0; j < self.parent.ability().abilities().length; j++) {
-                    var a = self.parent.ability().abilities()[j],
-                        count = _.reduce(skillBuildSubset, function(memo, num){ return memo + (num == j); }, 0);
-                    a.level(count);
-                }
+    self.graph = function () {
+      var savedAbilityLevels = [],
+          savedLevel = self.parent.selectedHeroLevel(),
+          savedItems = self.parent.inventory.items(),
+          savedActiveItems = self.parent.inventory.activeItems(),
+          s = ko.toJS(self.skillBuild),
+          carryOverItems = [],
+          carryOverActiveItems = [],
+          dataset = [];
+      for (var i = 0; i < self.parent.ability().abilities().length; i++) {
+        savedAbilityLevels.push(self.parent.ability().abilities()[i].level());
+      }
+      for (var i = 1; i < 26; i++) {
+        self.parent.selectedHeroLevel(i);
+        var skillBuildSubset = s.slice(0, i);
+        for (var j = 0; j < self.parent.ability().abilities().length; j++) {
+          var a = self.parent.ability().abilities()[j],
+              count = _.reduce(skillBuildSubset, function(memo, num){ return memo + (num == j); }, 0);
+          a.level(count);
+        }
 				
 				if (!self.itemBuild()[i-1].carryOver()) {
 					carryOverItems = [];
@@ -188,42 +188,42 @@ var HEROCALCULATOR = (function (my) {
 				dataObj = {};
 				for (var j = 0; j < self.graphProperties().length; j++) {
 					var prop = self.graphProperties()[j];
-                    switch (prop.id) {
-                        case 'dps':
-                            dataObj[prop.id] = self.parent['damageTotalInfo']().dps.total.toFixed(2);
-                        break;
-                        case 'damage':
-                            dataObj[prop.id] = self.parent['damageTotalInfo']().total.toFixed(2);
-                        break;
-                        default :
-                            dataObj[prop.id] = self.parent[prop.id]();
-                        break;
-                    }
+          switch (prop.id) {
+            case 'dps':
+              dataObj[prop.id] = self.parent['damageTotalInfo']().dps.total.toFixed(2);
+            break;
+            case 'damage':
+              dataObj[prop.id] = self.parent['damageTotalInfo']().total.toFixed(2);
+            break;
+            default :
+              dataObj[prop.id] = self.parent[prop.id]();
+            break;
+          }
 				}
 				
 				dataObj.items = _.map(carryOverItems, function(item) {
-                    return ko.toJS(item);
-                });
-                dataset.push(dataObj);
+          return ko.toJS(item);
+        });
+        dataset.push(dataObj);
 				if (carryOverItems > 0) {
 					self.graphDataItemRows[i-1](true);
 				}
-            }
+      }
 			var data = {
-                header: self.graphDataHeader(),
+        header: self.graphDataHeader(),
 				description: self.graphDataDescription(),
-                items: _.map(self.parent.inventory.items(), function(item) {
-                    return ko.toJS(item);
-                }),
-                skillBuild: ko.toJS(self.skillBuild),
-                data: dataset,
+        items: _.map(self.parent.inventory.items(), function(item) {
+          return ko.toJS(item);
+        }),
+        skillBuild: ko.toJS(self.skillBuild),
+        data: dataset,
 				abilityMap : self.abilityMapData.slice(0),
 				cumulativeSkillBuild: [],
 				visible: ko.observable(true)
-            }
+      }
 			for (var i = 0; i < 25; i++) {
 				var skillBuildAtLevel = [],
-					skillBuildSlice = data.skillBuild.slice(0, i + 1);
+            skillBuildSlice = data.skillBuild.slice(0, i + 1);
 				for (var j = 0; j < data.abilityMap.length; j++) {
 					var abilityIndex = data.abilityMap[j];
 					skillBuildAtLevel.push(_.reduce(skillBuildSlice, function(memo, num){ return memo + (num == abilityIndex); }, 0));
@@ -231,14 +231,14 @@ var HEROCALCULATOR = (function (my) {
 				data.cumulativeSkillBuild.push(skillBuildAtLevel);
 			}
 				
-            self.graphData.push(data);
-            self.parent.selectedHeroLevel(savedLevel);
-            for (var i = 0; i < self.parent.ability().abilities().length; i++) {
-                self.parent.ability().abilities()[i].level(savedAbilityLevels[i]);
-            }
+      self.graphData.push(data);
+      self.parent.selectedHeroLevel(savedLevel);
+      for (var i = 0; i < self.parent.ability().abilities().length; i++) {
+        self.parent.ability().abilities()[i].level(savedAbilityLevels[i]);
+      }
 			self.parent.inventory.items(savedItems);
 			self.parent.inventory.activeItems(savedActiveItems);
-        };
+    };
 		self.removeGraphDataSet = function (data) {
 			self.graphData.remove(data);
 		}
@@ -281,41 +281,42 @@ var HEROCALCULATOR = (function (my) {
 			}
 			return data;
 		});
-        self.graphDistinctColor = function (max, index, alpha) {
-            var alpha = alpha || 1;
-            rgba = self.hslToRgb((1 / max) * index % 1, 1, .5);
-            rgba.push(alpha);
-            return "rgba(" + rgba.join() + ")";
+    self.graphDistinctColor = function (max, index, alpha) {
+      var alpha = alpha || 1;
+      rgba = self.hslToRgb((1 / max) * index % 1, 1, .5);
+      rgba.push(alpha);
+      return "rgba(" + rgba.join() + ")";
+    }
+    self.getDistinctColor = function (max, index, alpha) {
+      var alpha = alpha || 1;
+      rgba = self.hslToRgb((1 / max) * index % 1, 1, .5);
+      rgba.push(alpha);
+      return rgba;
+    }
+    self.hslToRgb = function (h, s, l) {
+      var r, g, b;
+      if (s == 0) {
+        r = g = b = l; // achromatic
+      }
+      else {
+        var hue2rgb = function hue2rgb(p, q, t) {
+          if(t < 0) t += 1;
+          if(t > 1) t -= 1;
+          if(t < 1/6) return p + (q - p) * 6 * t;
+          if(t < 1/2) return q;
+          if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
         }
-        self.getDistinctColor = function (max, index, alpha) {
-            var alpha = alpha || 1;
-            rgba = self.hslToRgb((1 / max) * index % 1, 1, .5);
-            rgba.push(alpha);
-            return rgba;
-        }
-        self.hslToRgb = function (h, s, l) {
-            var r, g, b;
-            if(s == 0){
-                r = g = b = l; // achromatic
-            }else{
-                var hue2rgb = function hue2rgb(p, q, t){
-                    if(t < 0) t += 1;
-                    if(t > 1) t -= 1;
-                    if(t < 1/6) return p + (q - p) * 6 * t;
-                    if(t < 1/2) return q;
-                    if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-                    return p;
-                }
 
-                var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                var p = 2 * l - q;
-                r = hue2rgb(p, q, h + 1/3);
-                g = hue2rgb(p, q, h);
-                b = hue2rgb(p, q, h - 1/3);
-            }
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        var p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
 
-            return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-        }
+      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    }
 		
 		self.showGraphItemBuildRows = ko.observable(false);
 		self.showGraphSkillBuildColumns = ko.observable(false);
@@ -364,15 +365,20 @@ var HEROCALCULATOR = (function (my) {
 				}
             }
 		}
-        self.loadGraphData = function (data) {
-			self.parent.sectionDisplay()['skillbuild'](true);
-            for (var i = 0; i < data.length; i++) {
-                data[i].visible = ko.observable(data[i].visible);
-            }
-            self.graphData(data);
-        }
-
-        return self;
+    self.loadGraphData = function (data) {
+      self.parent.sectionDisplay()['skillbuild'](true);
+      for (var i = 0; i < data.length; i++) {
+        data[i].visible = ko.observable(data[i].visible);
+      }
+      self.graphData(data);
+    }
+    self.graphChartContext = ko.observable();
+    self.exportImage = function () {
+      console.log('graphChartContext', self.graphData());
+      var w = window.open();
+      w.document.write('<img src="'+ self.graphChartContext().canvas.toDataURL() +'"/>');
+    }
+    return self;
 	}
-    return my;
+  return my;
 }(HEROCALCULATOR));

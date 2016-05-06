@@ -35,8 +35,8 @@ var HEROCALCULATOR = (function (my) {
         return options;
     }
     
-    my.totalExp = [0, 200, 500, 900, 1400, 2000, 2600, 3200, 4400, 5400, 6000, 8200, 9000, 10400, 11900, 13500, 15200, 17000, 18900, 20900, 23000, 25200, 27500, 29900, 32400];
-    my.nextLevelExp = [200, 300, 400, 500, 600, 600, 600, 1200, 1000, 600, 2200, 800, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, '&mdash;'];
+    my.totalExp = [0, 200, 500, 900, 1400, 2000, 2600, 3400, 4400, 5400, 6000, 8200, 9000, 10400, 11900, 13500, 15200, 17000, 18900, 20900, 23000, 25200, 27500, 29900, 32400];
+    my.nextLevelExp = [200, 300, 400, 500, 600, 600, 800, 1000, 1000, 600, 2200, 800, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, '&mdash;'];
     
     my.HeroCalculatorModel = function (h) {
         var self = this;
@@ -247,7 +247,7 @@ var HEROCALCULATOR = (function (my) {
                    ).toFixed(2);
         });
         self.health = ko.pureComputed(function () {
-            return (self.heroData().statushealth + Math.floor(self.totalStr()) * 19 
+            return (self.heroData().statushealth + Math.floor(self.totalStr()) * 20 
                     + self.inventory.getHealth()
                     + self.ability().getHealth()).toFixed(2);
         });
@@ -266,7 +266,7 @@ var HEROCALCULATOR = (function (my) {
         });
         self.mana = ko.pureComputed(function () {
             return (self.heroData().statusmana
-                    + self.totalInt() * 13
+                    + self.totalInt() * 12
                     + self.inventory.getMana()
                     + self.ability().getMana()).toFixed(2);
         });
@@ -1057,7 +1057,8 @@ var HEROCALCULATOR = (function (my) {
             return ((1 - (self.enemy().ability().getMissChance() * self.debuffs.getMissChance() * missDebuff.value)) * 100).toFixed(2);
         });
         self.totalattackrange = ko.pureComputed(function () {
-            return self.heroData().attackrange + self.ability().getAttackRange();
+            var attacktype = self.heroData().attacktype;
+            return self.heroData().attackrange + self.ability().getAttackRange() + self.inventory.getAttackRange(attacktype).value;
         });
         self.visionrangeday = ko.pureComputed(function () {
             return (self.heroData().visiondaytimerange) * (1 + self.enemy().ability().getVisionRangePctReduction() + self.debuffs.getVisionRangePctReduction());

@@ -502,6 +502,15 @@ border-bottom: 1px solid #ddd;
     }
 }
 
+.shop-tab {
+  width: 100%;
+}
+
+.shop-column {
+  width: 50px;
+  display: inline-block;
+}
+
 /* light theme only */
 
 .progress > div {

@@ -1325,6 +1325,22 @@ var HEROCALCULATOR = (function (my) {
                 }
             }
         ],
+        'legion_commander_duel': [
+            {
+                label: 'Duel Wins',
+                controlType: 'input'
+            },
+            {
+                attributeName: 'reward_damage',
+                label: 'Total Damage:',
+                ignoreTooltip: true,
+                controlType: 'text',
+                fn: function(v,a) {
+                    return v*a;
+                },
+                returnProperty: 'bonusDamage'
+            }
+        ],
         'leshrac_pulse_nova': [
             {
                 label: 'Duration',

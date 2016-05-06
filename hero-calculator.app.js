@@ -180,6 +180,7 @@ var HEROCALCULATOR = (function (my) {
             else {
             }
         });
+    
 		self.shopDockTrigger = ko.computed(function () {
 			self.windowWidth();
 			self.shopDock();

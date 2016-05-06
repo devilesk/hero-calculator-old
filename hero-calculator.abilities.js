@@ -801,6 +801,16 @@ var HEROCALCULATOR = (function (my) {
                             totalAttribute -= 422;
                         }
                     }
+                    else if (ability.level() > 0 && ability.name() == 'enchantress_impetus' && self.hasScepter()) {
+                        for (var j = 0; j < self.abilities()[i].attributes().length; j++) {
+                            var attribute = self.abilities()[i].attributes()[j];
+                            switch(attribute.name()) {
+                              case 'bonus_attack_range_scepter':
+                                totalAttribute += self.getAbilityAttributeValue(self.abilities()[i].attributes(), attribute.name(), ability.level());
+                              break;
+                            }
+                        }
+                    }
                 }
                 else if (ability.attackrange != undefined) {
                     if (ability.level() > 0 && (ability.isActive() || (ability.behavior().indexOf('DOTA_ABILITY_BEHAVIOR_PASSIVE') != -1))) {
@@ -1488,7 +1498,7 @@ var HEROCALCULATOR = (function (my) {
                                 if (sources[ability.name()] == undefined) {
                                     sources[ability.name()] = {
                                         'chance': self.getAbilityAttributeValue(self.abilities()[i].attributes(), 'crit_chance', ability.level())/100,
-                                        'multiplier': self.getAbilityAttributeValue(self.abilities()[i].attributes(), 'crit_damage', ability.level())/100,
+                                        'multiplier': self.getAbilityAttributeValue(self.abilities()[i].attributes(), 'crit_multiplier', ability.level())/100,
                                         'count': 1,
                                         'displayname': ability.displayname()
                                     }
